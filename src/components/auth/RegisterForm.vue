@@ -1,14 +1,26 @@
 <template>
   <v-form fast-fail @submit.prevent>
-    <v-text-field label="Firstname" variant="outlined"></v-text-field>
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-text-field label="Firstname"></v-text-field>
+      </v-col>
 
-    <v-text-field label="Lastname" variant="outlined"></v-text-field>
+      <v-col cols="12" md="6">
+        <v-text-field label="Lastname"></v-text-field>
+      </v-col>
 
-    <v-text-field label="Email" variant="outlined"></v-text-field>
+      <v-col cols="12">
+        <v-text-field label="Email"></v-text-field>
+      </v-col>
 
-    <v-text-field label="Password" type="password" variant="outlined"></v-text-field>
+      <v-col cols="12" md="6">
+        <v-text-field label="Password" type="password"></v-text-field>
+      </v-col>
 
-    <v-text-field label="Password Confirmation" type="password" variant="outlined"></v-text-field>
+      <v-col cols="12" md="6">
+        <v-text-field label="Password Confirmation" type="password"></v-text-field>
+      </v-col>
+    </v-row>
 
     <v-btn
       class="mt-2"
