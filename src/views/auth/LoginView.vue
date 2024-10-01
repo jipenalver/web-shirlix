@@ -21,7 +21,7 @@ const { mobile } = useDisplay()
                   :width="mobile ? '75%' : '25%'"
                 ></v-img>
                 <h3 class="font-weight-black">Shirlix Meatshop</h3>
-                <p class="font-weight-bold">Login Form</p>
+                <p class="font-weight-bold">Login</p>
               </v-card-title>
 
               <v-card-text class="pt-4">
