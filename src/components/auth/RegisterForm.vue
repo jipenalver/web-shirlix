@@ -10,7 +10,13 @@
 
     <v-text-field label="Password Confirmation" type="password" variant="outlined"></v-text-field>
 
-    <v-btn class="mt-2" type="submit" block color="primary" prepend-icon="mdi-account-plus">
+    <v-btn
+      class="mt-2"
+      type="submit"
+      block
+      color="deep-orange-lighten-1"
+      prepend-icon="mdi-account-plus"
+    >
       Register
     </v-btn>
   </v-form>
