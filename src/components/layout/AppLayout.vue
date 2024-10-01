@@ -41,7 +41,7 @@ function onClick() {
         border
         app
       >
-        2024 - Shirlix Meatshop
+        Copyright © 2024 - Shirlix Meatshop | All Rights Reserved
       </v-footer>
     </v-app>
   </v-responsive>
