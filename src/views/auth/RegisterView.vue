@@ -31,7 +31,7 @@ const { mobile } = useDisplay()
 
               <h4 class="text-center">
                 Already have account?
-                <RouterLink class="text-deep-orange-lighten-1" to="/">
+                <RouterLink class="text-deep-orange-lighten-1 font-weight-black" to="/">
                   Click here to Login
                 </RouterLink>
               </h4>
