@@ -10,9 +10,9 @@ const { mobile } = useDisplay()
   <AppLayout>
     <template #content>
       <v-container fluid>
-        <v-row>
-          <v-col cols="12" md="8" class="bg-surface-light h-screen" v-if="!mobile"></v-col>
-          <v-col cols="12" md="4" :class="mobile ? '' : 'pt-16'">
+        <v-row :class="mobile ? 'd-flex justify-center' : ''">
+          <v-col cols="12" lg="8" class="bg-surface-light h-screen" v-if="!mobile"></v-col>
+          <v-col cols="12" lg="4" :class="mobile ? '' : 'pt-16'">
             <v-card class="mx-auto" elevation="0" max-width="600">
               <v-card-title class="text-center">
                 <v-img
