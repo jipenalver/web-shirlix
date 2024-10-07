@@ -22,27 +22,31 @@ watch(props, () => {
   isDrawerVisible.value = props.isDrawerVisible
 })
 
-const userManagementNav = [
-  ['User Roles', 'mdi-tag-multiple'],
-  ['Users Management', 'mdi-account-multiple']
+// Main Navigation
+const mainNav = [
+  ['User Management', 'mdi-account-box-multiple'],
+  ['Product Management', 'mdi-clipboard-list'],
+  ['Inventory', 'mdi-invoice-list'],
+  ['Expense Management', 'mdi-cash-register'],
+  ['Reporting', 'mdi-file-chart']
 ]
 
-const individualNav = [
-  ['Individual Performance Accomplishment', 'mdi-list-box', 'Accomplishment Report Form']
+// Sub Navigations
+const menuItemsNav1 = [
+  ['User Roles', 'mdi-tag-multiple', '', ''],
+  ['Users Management', 'mdi-account-multiple', '', '']
 ]
-
-const officeNav = [
-  ['Office Performance Accomplishment', 'mdi-list-box', 'Accomplishment Report Form']
+const menuItemsNav2 = [['Product Information', 'mdi-information-box', 'Add & Manage Products', '']]
+const menuItemsNav3 = [
+  ['Stock In', 'mdi-tray-arrow-down', '', ''],
+  ['Stock Out', 'mdi-tray-arrow-up', '', '']
 ]
-
-const divisionNav = [
-  ['Division Performance Accomplishment', 'mdi-list-box', 'Accomplishment Report Form']
-]
-
-const reportNav = [
-  ['Individual Performance', 'mdi-account', 'Contract & Rating'],
-  ['Office Performance', 'mdi-office-building', 'Contract & Rating'],
-  ['Division Performance', 'mdi-domain', 'Contract & Rating']
+const menuItemsNav4 = [['Expenses', 'mdi-cash-remove', 'Tally and Manage Expenses', '']]
+const menuItemsNav5 = [
+  ['Balance Sheet', 'mdi-scale-balance', '', ''],
+  ['Gross Revenue & Net Profit', 'mdi-cash-100', '', ''],
+  ['Sales', 'mdi-sale', '', ''],
+  ['Expenses', 'mdi-cash-multiple', '', '']
 ]
 
 const onLogout = async () => {
@@ -91,101 +95,68 @@ onMounted(() => {
 
       <v-divider></v-divider>
 
-      <v-list-group value="User Management">
+      <v-list-group :key="i" v-for="([title, icon], i) in mainNav">
         <template #activator="{ props }">
+          <v-list-item v-bind="props" :prepend-icon="icon" :title="title"></v-list-item>
+        </template>
+
+        <template v-if="title === 'User Management'">
           <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-account-wrench"
-            title="User Management"
+            v-for="([title, icon, subtitle, to], i) in menuItemsNav1"
+            :key="i"
+            :prepend-icon="icon"
+            :title="title"
+            :subtitle="subtitle ?? undefined"
+            :to="to ?? undefined"
           ></v-list-item>
         </template>
 
-        <v-list-item
-          v-for="([title, icon], i) in userManagementNav"
-          :key="i"
-          :prepend-icon="icon"
-          :title="title"
-          :value="title"
-        ></v-list-item>
-      </v-list-group>
-
-      <v-list-group value="Individual Level">
-        <template #activator="{ props }">
+        <template v-if="title === 'Product Management'">
           <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-account"
-            title="Individual Level"
+            v-for="([title, icon, subtitle, to], i) in menuItemsNav2"
+            :key="i"
+            :prepend-icon="icon"
+            :title="title"
+            :subtitle="subtitle ?? undefined"
+            :to="to ?? undefined"
           ></v-list-item>
         </template>
 
-        <v-list-item
-          v-for="([title, icon, subtitle], i) in individualNav"
-          :key="i"
-          :prepend-icon="icon"
-          :title="title"
-          :value="title"
-          :subtitle="subtitle"
-        ></v-list-item>
-      </v-list-group>
-
-      <v-list-group value="Office Level">
-        <template #activator="{ props }">
+        <template v-if="title === 'Inventory'">
           <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-office-building"
-            title="Office Level"
+            v-for="([title, icon, subtitle, to], i) in menuItemsNav3"
+            :key="i"
+            :prepend-icon="icon"
+            :title="title"
+            :subtitle="subtitle ?? undefined"
+            :to="to ?? undefined"
           ></v-list-item>
         </template>
 
-        <v-list-item
-          v-for="([title, icon, subtitle], i) in officeNav"
-          :key="i"
-          :prepend-icon="icon"
-          :title="title"
-          :value="title"
-          :subtitle="subtitle"
-        ></v-list-item>
-      </v-list-group>
-
-      <v-list-group value="Division Level">
-        <template #activator="{ props }">
+        <template v-if="title === 'Expense Management'">
           <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-domain"
-            title="Division Level"
+            v-for="([title, icon, subtitle, to], i) in menuItemsNav4"
+            :key="i"
+            :prepend-icon="icon"
+            :title="title"
+            :subtitle="subtitle ?? undefined"
+            :to="to ?? undefined"
           ></v-list-item>
         </template>
 
-        <v-list-item
-          v-for="([title, icon, subtitle], i) in divisionNav"
-          :key="i"
-          :prepend-icon="icon"
-          :title="title"
-          :value="title"
-          :subtitle="subtitle"
-        ></v-list-item>
+        <template v-if="title === 'Reporting'">
+          <v-list-item
+            v-for="([title, icon, subtitle, to], i) in menuItemsNav5"
+            :key="i"
+            :prepend-icon="icon"
+            :title="title"
+            :subtitle="subtitle ?? undefined"
+            :to="to ?? undefined"
+          ></v-list-item>
+        </template>
       </v-list-group>
 
       <v-divider></v-divider>
-
-      <v-list-group value="Reports">
-        <template #activator="{ props }">
-          <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-file-delimited"
-            title="Reports"
-          ></v-list-item>
-        </template>
-
-        <v-list-item
-          v-for="([title, icon, subtitle], i) in reportNav"
-          :key="i"
-          :prepend-icon="icon"
-          :title="title"
-          :value="title"
-          :subtitle="subtitle"
-        ></v-list-item>
-      </v-list-group>
 
       <v-list-item
         prepend-icon="mdi-wrench"
