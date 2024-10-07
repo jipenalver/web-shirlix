@@ -39,6 +39,7 @@ const onSubmit = async () => {
       data: {
         firstname: formData.value.firstname,
         lastname: formData.value.lastname
+        // Add is_admin: true if Admin Account; just comment if not an admin account
       }
     }
   })
@@ -50,11 +51,11 @@ const onSubmit = async () => {
   } else if (data) {
     console.log(data)
     formAction.value.formSuccessMessage = 'Successfully Registered Account.'
-    // Add here more actions if you want
-    refVForm.value?.reset()
+    // Add more actions if you want
   }
 
   formAction.value.formProcess = false
+  refVForm.value?.reset()
 }
 
 const onFormSubmit = () => {
@@ -127,11 +128,11 @@ const onFormSubmit = () => {
     <v-btn
       class="mt-2"
       type="submit"
-      block
       color="deep-orange-lighten-1"
       prepend-icon="mdi-account-plus"
       :disabled="formAction.formProcess"
       :loading="formAction.formProcess"
+      block
     >
       Register
     </v-btn>

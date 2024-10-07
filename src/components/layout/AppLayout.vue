@@ -2,8 +2,11 @@
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
-const { mobile } = useDisplay()
+const props = defineProps(['isWithAppBarNavIcon'])
 
+const emit = defineEmits(['isDrawerVisible'])
+
+const { mobile } = useDisplay()
 const theme = ref(localStorage.getItem('theme') ?? 'light')
 
 function onClick() {
@@ -20,6 +23,14 @@ function onClick() {
         :color="theme === 'light' ? 'grey-lighten-1' : 'grey-darken-4'"
         border
       >
+        <v-app-bar-nav-icon
+          v-if="props.isWithAppBarNavIcon"
+          icon="mdi-menu"
+          :theme="theme"
+          @click="emit('isDrawerVisible')"
+        >
+        </v-app-bar-nav-icon>
+
         <v-spacer></v-spacer>
 
         <v-btn
@@ -30,6 +41,8 @@ function onClick() {
           @click="onClick"
         ></v-btn>
       </v-app-bar>
+
+      <slot name="navigation"></slot>
 
       <v-main>
         <slot name="content"></slot>
