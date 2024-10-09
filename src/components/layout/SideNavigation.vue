@@ -1,23 +1,14 @@
 <script setup>
-import { supabase, formActionDefault } from '@/utils/supabase'
 import { useDisplay } from 'vuetify'
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
 
 const props = defineProps(['isDrawerVisible'])
 
-const router = useRouter()
+// Utilize predefined vue functions
 const { mobile } = useDisplay()
 
+// Load Variables
 const isDrawerVisible = ref(props.isDrawerVisible)
-const userData = ref({
-  email: '',
-  fullname: ''
-})
-const formAction = ref({
-  ...formActionDefault
-})
-
 watch(props, () => {
   isDrawerVisible.value = props.isDrawerVisible
 })
@@ -48,35 +39,6 @@ const menuItemsNav5 = [
   ['Sales', 'mdi-sale', '', ''],
   ['Expenses', 'mdi-cash-multiple', '', '']
 ]
-
-const onLogout = async () => {
-  formAction.value = { ...formActionDefault }
-  formAction.value.formProcess = true
-
-  const { error } = await supabase.auth.signOut()
-  if (error) {
-    console.error('Error during logout:', error)
-    return
-  }
-
-  formAction.value.formProcess = false
-  router.replace('/')
-}
-
-const getUser = async () => {
-  const {
-    data: {
-      user: { user_metadata: metadata }
-    }
-  } = await supabase.auth.getUser()
-
-  userData.value.email = metadata.email
-  userData.value.fullname = metadata.lastname + ', ' + metadata.firstname
-}
-
-onMounted(() => {
-  getUser()
-})
 </script>
 
 <template>
@@ -164,26 +126,5 @@ onMounted(() => {
         value="Account Settings"
       ></v-list-item>
     </v-list>
-
-    <template #append>
-      <v-card prepend-icon="mdi-account-circle" :subtitle="userData.email" variant="tonal">
-        <template #title>
-          <span class="font-weight-bold text-h6">{{ userData.fullname }}</span>
-        </template>
-      </v-card>
-
-      <div class="pa-2">
-        <v-btn
-          color="deep-orange-lighten-1"
-          prepend-icon="mdi-logout"
-          @click="onLogout"
-          :loading="formAction.formProcess"
-          :disabled="formAction.formProcess"
-          block
-        >
-          Logout
-        </v-btn>
-      </div>
-    </template>
   </v-navigation-drawer>
 </template>
