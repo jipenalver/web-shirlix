@@ -8,7 +8,12 @@ import {
 import { ref } from 'vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { supabase, formActionDefault } from '@/utils/supabase.js'
+import { useRouter } from 'vue-router'
 
+// Load pre-defined vue functions
+const router = useRouter()
+
+// Load Variables
 const formDataDefault = {
   firstname: '',
   lastname: '',
@@ -16,20 +21,21 @@ const formDataDefault = {
   password: '',
   password_confirmation: ''
 }
-
 const formData = ref({
   ...formDataDefault
 })
 const formAction = ref({
   ...formActionDefault
 })
-
 const isPasswordVisible = ref(false)
 const isPasswordConfirmVisible = ref(false)
 const refVForm = ref()
 
+// Register Functionality
 const onSubmit = async () => {
+  // Reset Form Action utils
   formAction.value = { ...formActionDefault }
+  // Turn on processing
   formAction.value.formProcess = true
 
   const { data, error } = await supabase.auth.signUp({
@@ -38,26 +44,31 @@ const onSubmit = async () => {
     options: {
       data: {
         firstname: formData.value.firstname,
-        lastname: formData.value.lastname
-        // Add is_admin: true if Admin Account; just comment if not an admin account
+        lastname: formData.value.lastname,
+        is_admin: false // Just turn to true if admin account
+        // role: 'Administrator' // If role based
       }
     }
   })
 
   if (error) {
-    console.log(error)
+    // Add Error Message and Status Code
     formAction.value.formErrorMessage = error.message
     formAction.value.formStatus = error.status
   } else if (data) {
-    console.log(data)
+    // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Registered Account.'
     // Add more actions if you want
+    router.replace('/dashboard')
   }
 
-  formAction.value.formProcess = false
+  // Reset Form
   refVForm.value?.reset()
+  // Turn off processing
+  formAction.value.formProcess = false
 }
 
+// Trigger Validators
 const onFormSubmit = () => {
   refVForm.value?.validate().then(({ valid }) => {
     if (valid) onSubmit()
