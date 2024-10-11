@@ -30,6 +30,7 @@ export const requiredValidator = (value) => {
 // 👉 Email Validator
 export const emailValidator = (value) => {
   if (isEmpty(value)) return true
+
   const re =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   if (Array.isArray(value))
@@ -69,6 +70,7 @@ export const betweenValidator = (value, min, max) => {
 // 👉 Integer Validator
 export const integerValidator = (value) => {
   if (isEmpty(value)) return true
+
   if (Array.isArray(value))
     return value.every((val) => /^-?[0-9]+$/.test(String(val))) || 'This field must be a number'
 
@@ -78,8 +80,10 @@ export const integerValidator = (value) => {
 // 👉 Regex Validator
 export const regexValidator = (value, regex) => {
   if (isEmpty(value)) return true
+
   let regeX = regex
   if (typeof regeX === 'string') regeX = new RegExp(regeX)
+
   if (Array.isArray(value)) return value.every((val) => regexValidator(val, regeX))
 
   return (
@@ -97,6 +101,7 @@ export const alphaValidator = (value) => {
 // 👉 URL Validator
 export const urlValidator = (value) => {
   if (isEmpty(value)) return true
+
   const re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}[.]{0,1}/
 
   return re.test(String(value)) || 'URL is invalid'
@@ -115,6 +120,7 @@ export const lengthValidator = (value, length) => {
 // 👉 Alpha-dash Validator
 export const alphaDashValidator = (value) => {
   if (isEmpty(value)) return true
+
   const valueAsString = String(value)
 
   return (
