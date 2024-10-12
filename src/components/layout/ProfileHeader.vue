@@ -4,7 +4,7 @@ import { getAvatarText } from '@/utils/helpers'
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 
-// Utilize predefined vue functions
+// Utilize pre-defined vue functions
 const router = useRouter()
 
 // Load Variables
