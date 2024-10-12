@@ -1,10 +1,10 @@
 <script setup>
-import { supabase, formActionDefault } from '@/utils/supabase'
+import { supabase, formActionDefault, getUserInformation } from '@/utils/supabase'
 import { getAvatarText } from '@/utils/helpers'
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 
-// Utilize predefined vue functions
+// Utilize pre-defined vue functions
 const router = useRouter()
 
 // Load Variables
@@ -22,6 +22,7 @@ const onLogout = async () => {
   formAction.value = { ...formActionDefault }
   formAction.value.formProcess = true
 
+  // Get supabase logout functionality
   const { error } = await supabase.auth.signOut()
   if (error) {
     console.error('Error during logout:', error)
@@ -29,19 +30,18 @@ const onLogout = async () => {
   }
 
   formAction.value.formProcess = false
+  // Redirect to homepage
   router.replace('/')
 }
 
 // Getting User Information Functionality
 const getUser = async () => {
-  const {
-    data: {
-      user: { user_metadata: metadata }
-    }
-  } = await supabase.auth.getUser()
+  // Retrieve User Information
+  const userMetadata = await getUserInformation()
 
-  userData.value.email = metadata.email
-  userData.value.fullname = metadata.firstname + ' ' + metadata.lastname
+  // Assign the retrieved informations
+  userData.value.email = userMetadata.email
+  userData.value.fullname = userMetadata.firstname + ' ' + userMetadata.lastname
   userData.value.initials = getAvatarText(userData.value.fullname)
 }
 

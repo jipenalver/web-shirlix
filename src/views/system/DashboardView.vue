@@ -14,6 +14,7 @@ const isDrawerVisible = ref(true)
     <template #navigation>
       <SideNavigation :is-drawer-visible="isDrawerVisible"></SideNavigation>
     </template>
+
     <template #content>
       <v-container></v-container>
     </template>
