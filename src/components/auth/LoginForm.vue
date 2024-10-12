@@ -81,7 +81,15 @@ const onFormSubmit = () => {
       :rules="[requiredValidator]"
     ></v-text-field>
 
-    <v-btn class="mt-2" type="submit" block color="deep-orange-lighten-1" prepend-icon="mdi-login">
+    <v-btn
+      class="mt-2"
+      type="submit"
+      color="deep-orange-lighten-1"
+      prepend-icon="mdi-login"
+      :disabled="formAction.formProcess"
+      :loading="formAction.formProcess"
+      block
+    >
       Login
     </v-btn>
   </v-form>
