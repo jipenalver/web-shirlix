@@ -128,3 +128,12 @@ export const alphaDashValidator = (value) => {
     'Your input must be alphanumeric and can only include dashes (-) and underscores (_).'
   )
 }
+
+// 👉 Image Validator
+export const imageValidator = (value) => {
+  if (isEmpty(value)) return true
+
+  return (
+    !value || !value.length || value[0].size < 2000000 || 'Image size should be less than 2 MB!'
+  )
+}

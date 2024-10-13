@@ -1,23 +1,11 @@
 <script setup>
-import {
-  requiredValidator,
-  emailValidator,
-  passwordValidator,
-  confirmedValidator
-} from '@/utils/validators'
-import { ref } from 'vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import { supabase, formActionDefault } from '@/utils/supabase.js'
-import { useRouter } from 'vue-router'
-
-// Utilize pre-defined vue functions
-const router = useRouter()
+import { formActionDefault, supabase } from '@/utils/supabase.js'
+import { confirmedValidator, passwordValidator, requiredValidator } from '@/utils/validators'
+import { ref } from 'vue'
 
 // Load Variables
 const formDataDefault = {
-  firstname: '',
-  lastname: '',
-  email: '',
   password: '',
   password_confirmation: ''
 }
@@ -31,33 +19,24 @@ const isPasswordVisible = ref(false)
 const isPasswordConfirmVisible = ref(false)
 const refVForm = ref()
 
-// Register Functionality
+// Submit Functionality
 const onSubmit = async () => {
-  // Reset Form Action utils
+  /// Reset Form Action utils; Turn on processing at the same time
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { data, error } = await supabase.auth.signUp({
-    email: formData.value.email,
-    password: formData.value.password,
-    options: {
-      data: {
-        firstname: formData.value.firstname,
-        lastname: formData.value.lastname,
-        is_admin: false // Just turn to true if admin account
-        // role: 'Administrator' // If role based; just change the string based on role
-      }
-    }
+  const { data, error } = await supabase.auth.updateUser({
+    password: formData.value.password
   })
 
+  // Check if has error
   if (error) {
     // Add Error Message and Status Code
     formAction.value.formErrorMessage = error.message
     formAction.value.formStatus = error.status
-  } else if (data) {
-    // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Registered Account.'
-    // Redirect Acct to Dashboard
-    router.replace('/dashboard')
+  }
+  // If Successful Add Success Message
+  else if (data) {
+    formAction.value.formSuccessMessage = 'Successfully Changed Password.'
   }
 
   // Reset Form
@@ -84,34 +63,9 @@ const onFormSubmit = () => {
     <v-row>
       <v-col cols="12" md="6">
         <v-text-field
-          v-model="formData.firstname"
-          label="Firstname"
-          :rules="[requiredValidator]"
-        ></v-text-field>
-      </v-col>
-
-      <v-col cols="12" md="6">
-        <v-text-field
-          v-model="formData.lastname"
-          label="Lastname"
-          :rules="[requiredValidator]"
-        ></v-text-field>
-      </v-col>
-
-      <v-col cols="12">
-        <v-text-field
-          v-model="formData.email"
-          label="Email"
-          prepend-inner-icon="mdi-email-outline"
-          :rules="[requiredValidator, emailValidator]"
-        ></v-text-field>
-      </v-col>
-
-      <v-col cols="12" md="6">
-        <v-text-field
           v-model="formData.password"
           prepend-inner-icon="mdi-lock-outline"
-          label="Password"
+          label="New Password"
           :type="isPasswordVisible ? 'text' : 'password'"
           :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
           @click:append-inner="isPasswordVisible = !isPasswordVisible"
@@ -138,12 +92,11 @@ const onFormSubmit = () => {
       class="mt-2"
       type="submit"
       color="deep-orange-lighten-1"
-      prepend-icon="mdi-account-plus"
+      prepend-icon="mdi-key"
       :disabled="formAction.formProcess"
       :loading="formAction.formProcess"
-      block
     >
-      Register
+      Change Password
     </v-btn>
   </v-form>
 </template>
