@@ -34,9 +34,7 @@ const refVForm = ref()
 // Register Functionality
 const onSubmit = async () => {
   // Reset Form Action utils
-  formAction.value = { ...formActionDefault }
-  // Turn on processing
-  formAction.value.formProcess = true
+  formAction.value = { ...formActionDefault, formProcess: true }
 
   const { data, error } = await supabase.auth.signUp({
     email: formData.value.email,

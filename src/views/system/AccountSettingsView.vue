@@ -2,8 +2,13 @@
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/SideNavigation.vue'
 import ProfileForm from '@/components/system/account-settings/ProfileForm.vue'
+import { useAuthUserStore } from '@/stores/authUser'
 import { ref } from 'vue'
 
+// Utilize pre-defined vue functions
+const authStore = useAuthUserStore()
+
+// Load Variables
 const isDrawerVisible = ref(true)
 </script>
 
@@ -31,16 +36,19 @@ const isDrawerVisible = ref(true)
                 </v-img>
 
                 <h3 class="d-flex align-center justify-center mt-5">
-                  <v-icon class="me-2" icon="mdi-account"> </v-icon>
-                  Administrator
+                  <v-icon class="me-2" icon="mdi-account-badge"> </v-icon>
+                  {{ authStore.userRole }}
                 </h3>
 
                 <v-divider class="my-5"></v-divider>
 
                 <div class="text-center">
-                  <h4 class="my-2"><b>Fullname:</b> John Doe</h4>
-                  <h4 class="my-2"><b>Email:</b></h4>
-                  <h4 class="my-2"><b>Contact No.:</b></h4>
+                  <h4 class="my-2">
+                    <b>Fullname:</b>
+                    {{ authStore.userData.firstname + ' ' + authStore.userData.lastname }}
+                  </h4>
+                  <h4 class="my-2"><b>Email:</b> {{ authStore.userData.email }}</h4>
+                  <h4 class="my-2"><b>Contact No.:</b> {{ authStore.userData.phone }}</h4>
                 </div>
               </v-card-text>
             </v-card>
