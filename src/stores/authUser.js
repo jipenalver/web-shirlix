@@ -22,6 +22,7 @@ export const useAuthUserStore = defineStore('authUser', () => {
   async function getUserInformation() {
     const {
       data: {
+        // Retrieve Email and Metadata thru Destructuring
         user: { email, user_metadata }
       }
     } = await supabase.auth.getUser()
@@ -30,9 +31,11 @@ export const useAuthUserStore = defineStore('authUser', () => {
     userData.value = { email, ...user_metadata }
   }
 
+  // Update User Information
   async function updateUserInformation(updatedData) {
     const {
       data: {
+        // Retrieve Email and Metadata thru Destructuring
         user: { email, user_metadata }
       },
       error

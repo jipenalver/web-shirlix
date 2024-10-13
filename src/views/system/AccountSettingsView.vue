@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/SideNavigation.vue'
+import PictureForm from '@/components/system/account-settings/PictureForm.vue'
 import ProfileForm from '@/components/system/account-settings/ProfileForm.vue'
 import { useAuthUserStore } from '@/stores/authUser'
 import { ref } from 'vue'
@@ -56,7 +57,9 @@ const isDrawerVisible = ref(true)
 
           <v-col cols="12" lg="8">
             <v-card class="mb-5" title="Profile Picture">
-              <v-card-text> </v-card-text>
+              <v-card-text>
+                <PictureForm></PictureForm>
+              </v-card-text>
             </v-card>
 
             <v-card class="mb-5" title="Profile Information">

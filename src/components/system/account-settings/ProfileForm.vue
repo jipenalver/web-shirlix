@@ -108,7 +108,7 @@ const onFormSubmit = () => {
       :disabled="formAction.formProcess"
       :loading="formAction.formProcess"
     >
-      Update Profile
+      Update Information
     </v-btn>
   </v-form>
 </template>
