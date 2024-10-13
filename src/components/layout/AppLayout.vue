@@ -1,6 +1,6 @@
 <script setup>
 import { isAuthenticated } from '@/utils/supabase'
-import ProfileHeader from './ProfileHeader.vue'
+import ProfileHeaderNavigation from './ProfileHeaderNavigation.vue'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -58,7 +58,7 @@ onMounted(() => {
           @click="onToggleTheme"
         ></v-btn>
 
-        <ProfileHeader v-if="isLoggedIn"></ProfileHeader>
+        <ProfileHeaderNavigation v-if="isLoggedIn"></ProfileHeaderNavigation>
       </v-app-bar>
 
       <slot name="navigation"></slot>

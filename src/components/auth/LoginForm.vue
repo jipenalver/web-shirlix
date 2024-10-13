@@ -23,10 +23,8 @@ const isPasswordVisible = ref(false)
 const refVForm = ref()
 
 const onSubmit = async () => {
-  // Reset Form Action utils
-  formAction.value = { ...formActionDefault }
-  // Turn on processing
-  formAction.value.formProcess = true
+  // Reset Form Action utils; Turn on processing at the same time
+  formAction.value = { ...formActionDefault, formProcess: true }
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email: formData.value.email,
@@ -41,7 +39,7 @@ const onSubmit = async () => {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Logged Account.'
     // Redirect Acct to Dashboard
-    router.replace('/system/dashboard')
+    router.replace('/dashboard')
   }
 
   // Reset Form
@@ -81,7 +79,15 @@ const onFormSubmit = () => {
       :rules="[requiredValidator]"
     ></v-text-field>
 
-    <v-btn class="mt-2" type="submit" block color="deep-orange-lighten-1" prepend-icon="mdi-login">
+    <v-btn
+      class="mt-2"
+      type="submit"
+      color="deep-orange-lighten-1"
+      prepend-icon="mdi-login"
+      :disabled="formAction.formProcess"
+      :loading="formAction.formProcess"
+      block
+    >
       Login
     </v-btn>
   </v-form>
