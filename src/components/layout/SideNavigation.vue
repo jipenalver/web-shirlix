@@ -46,13 +46,13 @@ const menuItemsNav5 = [
     v-model="isDrawerVisible"
     :temporary="mobile"
     :permanent="!mobile"
-    width="350"
+    width="325"
   >
     <v-list density="compact" nav>
       <v-list-item
         prepend-icon="mdi-view-dashboard"
         title="Dashboard"
-        value="Dashboard"
+        to="/dashboard"
       ></v-list-item>
 
       <v-divider></v-divider>
@@ -123,7 +123,7 @@ const menuItemsNav5 = [
       <v-list-item
         prepend-icon="mdi-wrench"
         title="Account Settings"
-        value="Account Settings"
+        to="/account/settings"
       ></v-list-item>
     </v-list>
   </v-navigation-drawer>

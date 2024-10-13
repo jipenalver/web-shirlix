@@ -5,6 +5,7 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 import DashboardView from '@/views/system/DashboardView.vue'
 import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
+import AccountSettingsView from '@/views/system/AccountSettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,19 +18,34 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      meta: { requiresAuth: false }
     },
     {
       path: '/register',
       name: 'register',
-      component: RegisterView
+      component: RegisterView,
+      meta: { requiresAuth: false }
     },
 
     // System Pages
     {
-      path: '/system/dashboard',
+      path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/account/settings',
+      name: 'account-settings',
+      component: AccountSettingsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/manage/users',
+      name: 'manage-users',
+      component: AccountSettingsView,
+      meta: { requiresAuth: true, requiresAdmin: true }
     },
     // Add More Pages Here
     // {
@@ -45,8 +61,7 @@ const router = createRouter({
       component: ForbiddenView
     },
     {
-      path: '/not-found',
-      name: 'not-found',
+      path: '/:catchAll(.*)',
       component: NotFoundView
     }
   ]
@@ -60,10 +75,16 @@ router.beforeEach(async (to) => {
     return isLoggedIn ? { name: 'dashboard' } : { name: 'login' }
   }
 
-  // Check if the user is logged in
-  if (isLoggedIn && (to.name === 'login' || to.name === 'register')) {
+  // If logged in, prevent access to login or register pages
+  if (isLoggedIn && !to.meta.requiresAuth) {
     // redirect the user to the dashboard page
     return { name: 'dashboard' }
+  }
+
+  // If not logged in, prevent access to system pages
+  if (!isLoggedIn && to.meta.requiresAuth) {
+    // redirect the user to the login page
+    return { name: 'login' }
   }
 
   // Check if the user is logged in
@@ -77,28 +98,14 @@ router.beforeEach(async (to) => {
     // remove this comment if not need; String Approach
     // const isCashier = userMetadata.role === 'Cashier'
 
-    // Check if the user not admin
-    if (!isAdmin) {
-      // Check if the user is going to forbidden pages
-      if (to.name.startsWith('system/users')) {
-        return { name: 'forbidden' }
-      }
+    // Restrict access to admin-only routes
+    if (!isAdmin && to.meta.requiresAdmin) {
+      return { name: 'forbidden' }
     }
-    // Add conditions here if needed
-    // if(isCashier) {
+    // Add conditions here if needed; create boolean meta for cashier
+    // if(!isCashier && to.meta.requiresCashier)) {
 
     // }
-  }
-
-  // If not logged in and going to system pages
-  if (!isLoggedIn && to.path.startsWith('/system')) {
-    // redirect the user to the login page
-    return { name: 'login' }
-  }
-
-  // Redirect to 404 Not Found if the route does not exist
-  if (router.resolve(to).matched.length === 0) {
-    return { name: 'not-found' }
   }
 })
 
