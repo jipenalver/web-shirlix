@@ -1,8 +1,12 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
+import { useAuthUserStore } from '@/stores/authUser'
 import { formActionDefault } from '@/utils/supabase.js'
 import { imageValidator, requiredValidator } from '@/utils/validators'
 import { ref } from 'vue'
+
+// Utilize pre-defined vue functions
+const authStore = useAuthUserStore()
 
 // Load Variables
 const formDataDefault = {
@@ -15,7 +19,7 @@ const formAction = ref({
   ...formActionDefault
 })
 const refVForm = ref()
-const imgPreview = ref('/images/img-profile.png')
+const imgPreview = ref(authStore.userData.image_url || '/images/img-profile.png')
 
 // Function to handle file change and show image preview
 const onPreview = (event) => {
@@ -34,12 +38,26 @@ const onPreview = (event) => {
   }
 }
 
+// Function to reset preview if file-input clear is clicked
+const onPreviewReset = () => {
+  imgPreview.value = authStore.userData.image_url || '/images/img-profile.png'
+}
+
 // Submit Functionality
 const onSubmit = async () => {
   /// Reset Form Action utils; Turn on processing at the same time
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  alert(formData.value.image)
+  const response = await authStore.updateUserImage(formData.value.image)
+
+  // Check if successful
+  if (response.success) {
+    formAction.value.formSuccessMessage = 'Successfully Updated Profile Image.'
+  } else {
+    // Add Error Message and Status Code
+    formAction.value.formErrorMessage = response.error.message
+    formAction.value.formStatus = response.error.status
+  }
 
   // Turn off processing
   formAction.value.formProcess = false
@@ -85,6 +103,7 @@ const onFormSubmit = () => {
           show-size
           chips
           @change="onPreview"
+          @click:clear="onPreviewReset"
         ></v-file-input>
 
         <v-btn

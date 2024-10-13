@@ -29,10 +29,13 @@ const isDrawerVisible = ref(true)
             <v-card>
               <v-card-text>
                 <v-img
+                  width="50%"
                   class="mx-auto rounded-circle"
                   color="deep-orange-lighten-1"
-                  width="50%"
-                  src="/images/img-profile.png"
+                  aspect-ratio="1"
+                  :src="authStore.userData.image_url || '/images/img-profile.png'"
+                  alt="Profile Picture"
+                  cover
                 >
                 </v-img>
 
