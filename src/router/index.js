@@ -1,3 +1,4 @@
+import { useAuthUserStore } from '@/stores/authUser'
 import { isAuthenticated } from '@/utils/supabase'
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/auth/LoginView.vue'
@@ -6,7 +7,7 @@ import DashboardView from '@/views/system/DashboardView.vue'
 import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
 import AccountSettingsView from '@/views/system/AccountSettingsView.vue'
-import { useAuthUserStore } from '@/stores/authUser'
+import UserRolesView from '@/views/system/manage-users/UserRolesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,9 +44,9 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/manage/users',
-      name: 'manage-users',
-      component: AccountSettingsView,
+      path: '/manage/user/roles',
+      name: 'manage-user-roles',
+      component: UserRolesView,
       meta: { requiresAuth: true, requiresAdmin: true }
     },
     // Add More Pages Here

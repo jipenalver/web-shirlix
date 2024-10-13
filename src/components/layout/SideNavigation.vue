@@ -24,7 +24,7 @@ const mainNav = [
 
 // Sub Navigations
 const menuItemsNav1 = [
-  ['User Roles', 'mdi-tag-multiple', '', ''],
+  ['User Roles', 'mdi-tag-multiple', '', '/manage/user/roles'],
   ['Users Management', 'mdi-account-multiple', '', '']
 ]
 const menuItemsNav2 = [['Product Information', 'mdi-information-box', 'Add & Manage Products', '']]

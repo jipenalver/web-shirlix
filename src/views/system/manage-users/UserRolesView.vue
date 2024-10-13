@@ -17,12 +17,14 @@ const isDrawerVisible = ref(true)
 
     <template #content>
       <v-container>
-        <v-card class="mb-5">
+        <v-card>
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['System', 'Dashboard']"></v-breadcrumbs>
+              <v-breadcrumbs :items="['User Management', 'User Roles']"></v-breadcrumbs>
             </span>
           </template>
+
+          <v-card-title> </v-card-title>
         </v-card>
       </v-container>
     </template>

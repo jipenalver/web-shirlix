@@ -1,5 +1,5 @@
 <script setup>
-import { requiredValidator } from '@/utils/validators'
+import { integerValidator, requiredValidator } from '@/utils/validators'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { formActionDefault } from '@/utils/supabase.js'
 import { useAuthUserStore } from '@/stores/authUser'
@@ -95,7 +95,8 @@ const onFormSubmit = () => {
           v-model="formData.phone"
           label="Phone Number"
           prepend-inner-icon="mdi-phone"
-          :rules="[requiredValidator]"
+          prefix="+63"
+          :rules="[requiredValidator, integerValidator]"
         ></v-text-field>
       </v-col>
     </v-row>
