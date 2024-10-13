@@ -1,4 +1,4 @@
-import { getUserInformation, isAuthenticated } from '@/utils/supabase'
+import { isAuthenticated } from '@/utils/supabase'
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
@@ -6,6 +6,7 @@ import DashboardView from '@/views/system/DashboardView.vue'
 import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
 import AccountSettingsView from '@/views/system/AccountSettingsView.vue'
+import { useAuthUserStore } from '@/stores/authUser'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,12 +63,16 @@ const router = createRouter({
     },
     {
       path: '/:catchAll(.*)',
+      name: 'not-found',
       component: NotFoundView
     }
   ]
 })
 
 router.beforeEach(async (to) => {
+  // Load auth Pinia Store
+  const authStore = useAuthUserStore()
+  // Load if user is logged in
   const isLoggedIn = await isAuthenticated()
 
   // Redirect to appropriate page if accessing home route
@@ -76,7 +81,7 @@ router.beforeEach(async (to) => {
   }
 
   // If logged in, prevent access to login or register pages
-  if (isLoggedIn && !to.meta.requiresAuth) {
+  if (isLoggedIn && (to.name === 'login' || to.name === 'register')) {
     // redirect the user to the dashboard page
     return { name: 'dashboard' }
   }
@@ -89,10 +94,13 @@ router.beforeEach(async (to) => {
 
   // Check if the user is logged in
   if (isLoggedIn) {
-    // Retrieve information
-    const userMetadata = await getUserInformation()
+    // Load user data if not already done
+    if (!authStore.userData) {
+      await authStore.getUserInformation()
+    }
+
     // Get the user role
-    const isAdmin = userMetadata.is_admin
+    const isAdmin = authStore.userData.is_admin
     // remove this comment if not need; Boolean Approach
     // const isCashier = userMetadata.is_cashier
     // remove this comment if not need; String Approach
