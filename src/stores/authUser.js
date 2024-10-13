@@ -83,5 +83,12 @@ export const useAuthUserStore = defineStore('authUser', () => {
     }
   }
 
-  return { userData, userRole, $reset, getUserInformation, updateUserInformation, updateUserImage }
+  return {
+    userData,
+    userRole,
+    $reset,
+    getUserInformation,
+    updateUserInformation,
+    updateUserImage
+  }
 })

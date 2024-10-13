@@ -3,6 +3,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/SideNavigation.vue'
 import PictureForm from '@/components/system/account-settings/PictureForm.vue'
 import ProfileForm from '@/components/system/account-settings/ProfileForm.vue'
+import PasswordForn from '@/components/system/account-settings/PasswordForn.vue'
 import { useAuthUserStore } from '@/stores/authUser'
 import { ref } from 'vue'
 
@@ -72,7 +73,9 @@ const isDrawerVisible = ref(true)
             </v-card>
 
             <v-card class="mb-5" title="Change Password">
-              <v-card-text> </v-card-text>
+              <v-card-text>
+                <PasswordForn></PasswordForn>
+              </v-card-text>
             </v-card>
           </v-col>
         </v-row>
