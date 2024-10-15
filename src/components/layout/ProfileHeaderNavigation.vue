@@ -30,7 +30,9 @@ const onLogout = async () => {
 
   formAction.value.formProcess = false
   // Reset State
-  authStore.$reset()
+  setTimeout(() => {
+    authStore.$reset()
+  }, 3500)
   // Redirect to homepage
   router.replace('/')
 }

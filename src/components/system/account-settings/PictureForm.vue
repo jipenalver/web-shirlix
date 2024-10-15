@@ -77,7 +77,7 @@ const onFormSubmit = () => {
     :form-error-message="formAction.formErrorMessage"
   ></AlertNotification>
 
-  <v-form class="mt-5" ref="refVForm" @submit.prevent="onFormSubmit">
+  <v-form ref="refVForm" @submit.prevent="onFormSubmit">
     <v-row>
       <v-col cols="12" md="5">
         <v-img

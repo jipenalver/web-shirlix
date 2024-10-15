@@ -88,7 +88,7 @@ const onFormReset = () => {
         :form-error-message="formAction.formErrorMessage"
       ></AlertNotification>
 
-      <v-form class="mt-5" ref="refVForm" @submit.prevent="onFormSubmit">
+      <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
             <v-col cols="12">

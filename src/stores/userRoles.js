@@ -35,5 +35,10 @@ export const useUserRolesStore = defineStore('userRoles', () => {
     return await supabase.from('user_roles').update(formData).eq('id', formData.id).select()
   }
 
-  return { userRoles, $reset, getUserRoles, addUserRole, updateUserRole }
+  // Delete User Roles
+  async function deleteUserRole(id) {
+    return await supabase.from('user_roles').delete().eq('id', id)
+  }
+
+  return { userRoles, $reset, getUserRoles, addUserRole, updateUserRole, deleteUserRole }
 })
