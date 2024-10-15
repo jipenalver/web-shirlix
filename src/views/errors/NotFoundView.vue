@@ -1,7 +1,7 @@
 <script setup>
 import { isAuthenticated } from '@/utils/supabase'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import SideNavigation from '@/components/layout/SideNavigation.vue'
+import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { onMounted, ref } from 'vue'
 
 // Load Variables

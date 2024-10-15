@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/components/layout/AppLayout.vue'
-import SideNavigation from '@/components/layout/SideNavigation.vue'
+import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import PictureForm from '@/components/system/account-settings/PictureForm.vue'
 import ProfileForm from '@/components/system/account-settings/ProfileForm.vue'
 import PasswordForn from '@/components/system/account-settings/PasswordForn.vue'
