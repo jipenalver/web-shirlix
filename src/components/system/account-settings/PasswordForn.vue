@@ -60,7 +60,7 @@ const onFormSubmit = () => {
   ></AlertNotification>
 
   <v-form class="mt-5" ref="refVForm" @submit.prevent="onFormSubmit">
-    <v-row>
+    <v-row dense>
       <v-col cols="12" md="6">
         <v-text-field
           v-model="formData.password"

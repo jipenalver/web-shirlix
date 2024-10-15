@@ -1,4 +1,5 @@
 <script setup>
+import UserRolesList from '@/components/system/manage-users/UserRolesList.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/SideNavigation.vue'
 import { ref } from 'vue'
@@ -17,15 +18,26 @@ const isDrawerVisible = ref(true)
 
     <template #content>
       <v-container>
-        <v-card>
+        <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['User Management', 'User Roles']"></v-breadcrumbs>
+              <v-breadcrumbs :items="['User Management', 'User Roles']">
+                <template #prepend>
+                  <v-icon icon="mdi-tag-multiple" size="small"></v-icon>
+                </template>
+              </v-breadcrumbs>
             </span>
           </template>
 
-          <v-card-title> </v-card-title>
+          <template #subtitle>
+            <p class="ms-4">
+              A role grants access to specific pages and features, ensuring that admin users can
+              access what they need based on their assigned role.
+            </p>
+          </template>
         </v-card>
+
+        <UserRolesList></UserRolesList>
       </v-container>
     </template>
   </AppLayout>
