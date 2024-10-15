@@ -8,6 +8,7 @@ import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
 import AccountSettingsView from '@/views/system/AccountSettingsView.vue'
 import UserRolesView from '@/views/system/manage-users/UserRolesView.vue'
+import UsersView from '@/views/system/manage-users/UsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,11 +50,17 @@ const router = createRouter({
       component: UserRolesView,
       meta: { requiresAuth: true, requiresAdmin: true }
     },
+    {
+      path: '/manage/users',
+      name: 'manage-users',
+      component: UsersView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
     // Add More Pages Here
     // {
     //   path: '/system/sample-page',
     //   name: 'sample-page',
-    //   component: sample-page
+    //   component: SamplePageView
     // },
 
     // Errors Pages

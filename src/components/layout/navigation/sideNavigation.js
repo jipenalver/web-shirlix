@@ -1,4 +1,4 @@
-// Main Navigation
+// Main Navigation; Title, Icon
 export const mainNav = [
   ['User Management', 'mdi-account-box-multiple'],
   ['Product Management', 'mdi-clipboard-list'],
@@ -7,10 +7,10 @@ export const mainNav = [
   ['Reporting', 'mdi-file-chart']
 ]
 
-// Sub Navigations
+// Sub Navigations; Title, Icon, Subtitle, Redirect Path
 export const menuItemsNav1 = [
   ['User Roles', 'mdi-tag-multiple', '', '/manage/user/roles'],
-  ['Users Management', 'mdi-account-multiple', '', '']
+  ['Users Management', 'mdi-account-multiple', '', '/manage/users']
 ]
 export const menuItemsNav2 = [
   ['Product Information', 'mdi-information-box', 'Add & Manage Products', '']

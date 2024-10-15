@@ -7,7 +7,7 @@ const isDialogVisible = ref(false)
 
 <template>
   <v-row>
-    <v-col cols="12" lg="3">
+    <v-col cols="12" md="4">
       <v-card>
         <v-card-title class="mt-3 font-weight-bold"> Administrator </v-card-title>
         <v-card-text class="d-flex align-center justify-space-between">
@@ -27,7 +27,7 @@ const isDialogVisible = ref(false)
       </v-card>
     </v-col>
 
-    <v-col cols="12" lg="3">
+    <v-col cols="12" md="4">
       <v-card>
         <v-card-title class="mt-3 d-flex justify-end">
           <v-btn
