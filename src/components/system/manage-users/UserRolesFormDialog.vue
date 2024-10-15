@@ -1,4 +1,6 @@
 <script setup>
+import { useUserRolesStore } from '@/stores/userRoles'
+import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref } from 'vue'
@@ -6,6 +8,8 @@ import { ref } from 'vue'
 const props = defineProps(['isDialogVisible'])
 
 const emit = defineEmits(['update:isDialogVisible'])
+
+const userRolesStore = useUserRolesStore()
 
 // Load Variables
 const formDataDefault = {
@@ -24,27 +28,24 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  //   const { data, error } = await supabase.auth.signUp({
-  //     email: formData.value.email,
-  //     password: formData.value.password,
-  //     options: {
-  //       data: {
-  //         firstname: formData.value.firstname,
-  //         lastname: formData.value.lastname,
-  //         is_admin: false // Just turn to true if admin account
-  //         // role: 'Administrator' // If role based; just change the string based on role
-  //       }
-  //     }
-  //   })
+  const { data, error } = await userRolesStore.addUserRole(formData.value)
 
-  //   if (error) {
-  //     // Add Error Message and Status Code
-  //     formAction.value.formErrorMessage = error.message
-  //     formAction.value.formStatus = error.status
-  //   } else if (data) {
-  //     // Add Success Message
-  //     formAction.value.formSuccessMessage = 'Successfully Registered Account.'
-  //   }
+  if (error) {
+    // Add Error Message and Status Code
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+  } else if (data) {
+    // Add Success Message
+    formAction.value.formSuccessMessage = 'Successfully Added User Role.'
+
+    // Retrieve User Roles
+    userRolesStore.getUserRoles()
+
+    // Form Reset and Close Dialog
+    setTimeout(() => {
+      onFormReset()
+    }, 3500)
+  }
 
   // Turn off processing
   formAction.value.formProcess = false
@@ -56,12 +57,24 @@ const onFormSubmit = () => {
     if (valid) onSubmit()
   })
 }
+
+// Form Reset
+const onFormReset = () => {
+  formAction.value = { ...formActionDefault }
+  formData.value = { ...formDataDefault }
+  emit('update:isDialogVisible', false)
+}
 </script>
 
 <template>
   <v-dialog max-width="600" :model-value="props.isDialogVisible" persistent>
     <v-card prepend-icon="mdi-tag" title="User Role">
-      <v-form ref="refVForm" @submit.prevent="onFormSubmit">
+      <AlertNotification
+        :form-success-message="formAction.formSuccessMessage"
+        :form-error-message="formAction.formErrorMessage"
+      ></AlertNotification>
+
+      <v-form class="mt-5" ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
             <v-col cols="12">
@@ -79,11 +92,7 @@ const onFormSubmit = () => {
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
 
-          <v-btn
-            text="Close"
-            variant="plain"
-            @click="emit('update:isDialogVisible', false)"
-          ></v-btn>
+          <v-btn text="Close" variant="plain" @click="onFormReset"></v-btn>
 
           <v-btn
             prepend-icon="mdi-tag-plus"

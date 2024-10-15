@@ -7,7 +7,7 @@ import PasswordForn from '@/components/system/account-settings/PasswordForn.vue'
 import { useAuthUserStore } from '@/stores/authUser'
 import { ref } from 'vue'
 
-// Utilize pre-defined vue functions
+// Use Pinia Store
 const authStore = useAuthUserStore()
 
 // Load Variables

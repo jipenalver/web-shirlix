@@ -6,8 +6,10 @@ import { ref } from 'vue'
 import { useAuthUserStore } from '@/stores/authUser'
 
 // Utilize pre-defined vue functions
-const authStore = useAuthUserStore()
 const router = useRouter()
+
+// Use Pinia Store
+const authStore = useAuthUserStore()
 
 // Load Variables
 const formAction = ref({

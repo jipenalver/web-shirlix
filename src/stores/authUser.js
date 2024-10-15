@@ -45,14 +45,15 @@ export const useAuthUserStore = defineStore('authUser', () => {
       }
     })
 
-    // Check if it has error;
+    // Check if it has error
     if (error) {
-      return { success: false, error }
+      return { error }
     }
     // If no error set updatedData to userData state
     else if (user_metadata) {
       userData.value = { id, email, ...user_metadata }
-      return { success: true, data: userData.value }
+
+      return { data: userData.value }
     }
   }
 
@@ -71,7 +72,7 @@ export const useAuthUserStore = defineStore('authUser', () => {
 
     // Check if it has error
     if (error) {
-      return { success: false, error }
+      return { error }
     }
     // If no error set data to userData state with the image_url
     else if (data) {

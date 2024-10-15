@@ -78,7 +78,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-  // Load auth Pinia Store
+  // Use Pinia Store
   const authStore = useAuthUserStore()
   // Load if user is logged in
   const isLoggedIn = await isAuthenticated()

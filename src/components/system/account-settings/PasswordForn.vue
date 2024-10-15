@@ -28,14 +28,12 @@ const onSubmit = async () => {
     password: formData.value.password
   })
 
-  // Check if has error
   if (error) {
     // Add Error Message and Status Code
     formAction.value.formErrorMessage = error.message
     formAction.value.formStatus = error.status
-  }
-  // If Successful Add Success Message
-  else if (data) {
+  } else if (data) {
+    // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Changed Password.'
   }
 
