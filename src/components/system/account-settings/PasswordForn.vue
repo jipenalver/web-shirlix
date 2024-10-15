@@ -28,14 +28,12 @@ const onSubmit = async () => {
     password: formData.value.password
   })
 
-  // Check if has error
   if (error) {
     // Add Error Message and Status Code
     formAction.value.formErrorMessage = error.message
     formAction.value.formStatus = error.status
-  }
-  // If Successful Add Success Message
-  else if (data) {
+  } else if (data) {
+    // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Changed Password.'
   }
 
@@ -59,8 +57,8 @@ const onFormSubmit = () => {
     :form-error-message="formAction.formErrorMessage"
   ></AlertNotification>
 
-  <v-form class="mt-5" ref="refVForm" @submit.prevent="onFormSubmit">
-    <v-row>
+  <v-form ref="refVForm" @submit.prevent="onFormSubmit">
+    <v-row dense>
       <v-col cols="12" md="6">
         <v-text-field
           v-model="formData.password"

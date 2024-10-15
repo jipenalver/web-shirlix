@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
+    "apexcharts": "^3.54.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
+    "vue3-apexcharts": "^1.7.0",
     "vuetify": "^3.7.2"
   },
   "devDependencies": {
