@@ -20,8 +20,16 @@ const isDrawerVisible = ref(true)
         <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['System', 'Dashboard']"></v-breadcrumbs>
+              <v-breadcrumbs :items="['System', 'Dashboard']">
+                <template #prepend>
+                  <v-icon icon="mdi-view-dashboard" size="small" class="me-1"></v-icon>
+                </template>
+              </v-breadcrumbs>
             </span>
+          </template>
+
+          <template #subtitle>
+            <p class="ms-4"></p>
           </template>
         </v-card>
       </v-container>

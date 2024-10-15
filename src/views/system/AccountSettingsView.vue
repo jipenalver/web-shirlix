@@ -28,8 +28,18 @@ const isDrawerVisible = ref(true)
         <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['Account', 'Settings']"></v-breadcrumbs>
+              <v-breadcrumbs :items="['Account', 'Settings']">
+                <template #prepend>
+                  <v-icon icon="mdi-wrench" size="small" class="me-1"></v-icon>
+                </template>
+              </v-breadcrumbs>
             </span>
+          </template>
+
+          <template #subtitle>
+            <p class="ms-4">
+              Edit profile information, update profile picture and change password.
+            </p>
           </template>
         </v-card>
 

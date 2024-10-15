@@ -23,7 +23,7 @@ const isDrawerVisible = ref(true)
             <span class="text-h6 font-weight-bold">
               <v-breadcrumbs :items="['User Management', 'User Roles']">
                 <template #prepend>
-                  <v-icon icon="mdi-tag-multiple" size="small"></v-icon>
+                  <v-icon icon="mdi-tag-multiple" size="small" class="me-1"></v-icon>
                 </template>
               </v-breadcrumbs>
             </span>

@@ -1,4 +1,12 @@
 <script setup>
+import {
+  mainNav,
+  menuItemsNav1,
+  menuItemsNav2,
+  menuItemsNav3,
+  menuItemsNav4,
+  menuItemsNav5
+} from './sideNavigation'
 import { useDisplay } from 'vuetify'
 import { ref, watch } from 'vue'
 
@@ -12,33 +20,6 @@ const isDrawerVisible = ref(props.isDrawerVisible)
 watch(props, () => {
   isDrawerVisible.value = props.isDrawerVisible
 })
-
-// Main Navigation
-const mainNav = [
-  ['User Management', 'mdi-account-box-multiple'],
-  ['Product Management', 'mdi-clipboard-list'],
-  ['Inventory', 'mdi-invoice-list'],
-  ['Expense Management', 'mdi-cash-register'],
-  ['Reporting', 'mdi-file-chart']
-]
-
-// Sub Navigations
-const menuItemsNav1 = [
-  ['User Roles', 'mdi-tag-multiple', '', '/manage/user/roles'],
-  ['Users Management', 'mdi-account-multiple', '', '']
-]
-const menuItemsNav2 = [['Product Information', 'mdi-information-box', 'Add & Manage Products', '']]
-const menuItemsNav3 = [
-  ['Stock In', 'mdi-tray-arrow-down', '', ''],
-  ['Stock Out', 'mdi-tray-arrow-up', '', '']
-]
-const menuItemsNav4 = [['Expenses', 'mdi-cash-remove', 'Tally and Manage Expenses', '']]
-const menuItemsNav5 = [
-  ['Balance Sheet', 'mdi-scale-balance', '', ''],
-  ['Gross Revenue & Net Profit', 'mdi-cash-100', '', ''],
-  ['Sales', 'mdi-sale', '', ''],
-  ['Expenses', 'mdi-cash-multiple', '', '']
-]
 </script>
 
 <template>
