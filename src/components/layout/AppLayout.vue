@@ -10,10 +10,10 @@ const emit = defineEmits(['isDrawerVisible'])
 
 // Utilize predefined vue functions
 const { mobile } = useDisplay()
-const theme = ref(localStorage.getItem('theme') ?? 'light')
 
 // Load Variables
 const isLoggedIn = ref(false)
+const theme = ref(localStorage.getItem('theme') ?? 'light')
 
 //  Toggle Theme
 function onToggleTheme() {
