@@ -1,13 +1,13 @@
 <script setup>
 import AppLayout from '@/components/layout/AppLayout.vue'
-import SideNavigation from '@/components/layout/SideNavigation.vue'
+import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import PictureForm from '@/components/system/account-settings/PictureForm.vue'
 import ProfileForm from '@/components/system/account-settings/ProfileForm.vue'
 import PasswordForn from '@/components/system/account-settings/PasswordForn.vue'
 import { useAuthUserStore } from '@/stores/authUser'
 import { ref } from 'vue'
 
-// Utilize pre-defined vue functions
+// Use Pinia Store
 const authStore = useAuthUserStore()
 
 // Load Variables
@@ -28,8 +28,18 @@ const isDrawerVisible = ref(true)
         <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['Account', 'Settings']"></v-breadcrumbs>
+              <v-breadcrumbs :items="['Account', 'Settings']">
+                <template #prepend>
+                  <v-icon icon="mdi-wrench" size="small" class="me-1"></v-icon>
+                </template>
+              </v-breadcrumbs>
             </span>
+          </template>
+
+          <template #subtitle>
+            <p class="ms-4">
+              Edit profile information, update profile picture and change password.
+            </p>
           </template>
         </v-card>
 

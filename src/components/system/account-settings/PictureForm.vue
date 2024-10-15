@@ -5,7 +5,7 @@ import { formActionDefault } from '@/utils/supabase.js'
 import { imageValidator, requiredValidator } from '@/utils/validators'
 import { ref } from 'vue'
 
-// Utilize pre-defined vue functions
+// Use Pinia Store
 const authStore = useAuthUserStore()
 
 // Load Variables
@@ -48,15 +48,15 @@ const onSubmit = async () => {
   /// Reset Form Action utils; Turn on processing at the same time
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const response = await authStore.updateUserImage(formData.value.image)
+  const { data, error } = await authStore.updateUserImage(formData.value.image)
 
-  // Check if successful
-  if (response.success) {
-    formAction.value.formSuccessMessage = 'Successfully Updated Profile Image.'
-  } else {
+  if (error) {
     // Add Error Message and Status Code
-    formAction.value.formErrorMessage = response.error.message
-    formAction.value.formStatus = response.error.status
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+  } else if (data) {
+    // Add Success Message
+    formAction.value.formSuccessMessage = 'Successfully Updated Profile Image.'
   }
 
   // Turn off processing
@@ -77,7 +77,7 @@ const onFormSubmit = () => {
     :form-error-message="formAction.formErrorMessage"
   ></AlertNotification>
 
-  <v-form class="mt-5" ref="refVForm" @submit.prevent="onFormSubmit">
+  <v-form ref="refVForm" @submit.prevent="onFormSubmit">
     <v-row>
       <v-col cols="12" md="5">
         <v-img

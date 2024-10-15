@@ -1,0 +1,30 @@
+<script setup>
+const props = defineProps(['isDialogVisible', 'title', 'text'])
+
+const emit = defineEmits(['update:isDialogVisible', 'confirm'])
+
+const onConfirm = () => {
+  emit('update:isDialogVisible', false)
+  emit('confirm')
+}
+</script>
+
+<template>
+  <v-dialog max-width="400" :model-value="props.isDialogVisible" persistent>
+    <v-card prepend-icon="mdi-map-marker" :title="props.title">
+      <v-card-text>
+        {{ props.text }}
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+
+        <v-btn @click="emit('update:isDialogVisible', false)"> Disagree </v-btn>
+
+        <v-btn color="deep-orange-lighten-1" variant="elevated" @click="onConfirm"> Agree </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
