@@ -8,6 +8,19 @@ const userRolesStore = useUserRolesStore()
 
 // Load Variables
 const isDialogVisible = ref(false)
+const itemData = ref(null)
+
+// Trigger Update Btn
+const onUpdate = (item) => {
+  itemData.value = item
+  isDialogVisible.value = true
+}
+
+// Trigger Add Btn
+const onAdd = () => {
+  itemData.value = null
+  isDialogVisible.value = true
+}
 
 // Load Functions during component rendering
 onMounted(() => {
@@ -26,7 +39,7 @@ onMounted(() => {
           0 Total User(s)
 
           <div class="d-flex flex-wrap ga-2">
-            <v-btn icon color="deep-orange-lighten-1" density="comfortable">
+            <v-btn icon color="deep-orange-lighten-1" density="comfortable" @click="onUpdate(item)">
               <v-icon icon="mdi-tag-edit"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Role</v-tooltip>
             </v-btn>
@@ -42,11 +55,7 @@ onMounted(() => {
     <v-col cols="12" md="4">
       <v-card>
         <v-card-title class="mt-3 d-flex justify-end">
-          <v-btn
-            prepend-icon="mdi-tag-plus"
-            color="deep-orange-lighten-1"
-            @click="isDialogVisible = true"
-          >
+          <v-btn prepend-icon="mdi-tag-plus" color="deep-orange-lighten-1" @click="onAdd">
             Add Role
           </v-btn>
         </v-card-title>
@@ -55,5 +64,8 @@ onMounted(() => {
     </v-col>
   </v-row>
 
-  <UserRolesFormDialog v-model:is-dialog-visible="isDialogVisible"></UserRolesFormDialog>
+  <UserRolesFormDialog
+    v-model:is-dialog-visible="isDialogVisible"
+    :item-data="itemData"
+  ></UserRolesFormDialog>
 </template>

@@ -16,7 +16,10 @@ export const useUserRolesStore = defineStore('userRoles', () => {
 
   // Retrieve User Roles
   async function getUserRoles() {
-    const { data } = await supabase.from('user_roles').select()
+    const { data } = await supabase
+      .from('user_roles')
+      .select()
+      .order('user_role', { ascending: true })
 
     // Set the retrieved data to state
     userRoles.value = data
@@ -27,5 +30,10 @@ export const useUserRolesStore = defineStore('userRoles', () => {
     return await supabase.from('user_roles').insert([formData]).select()
   }
 
-  return { userRoles, $reset, getUserRoles, addUserRole }
+  // Update User Roles
+  async function updateUserRole(formData) {
+    return await supabase.from('user_roles').update(formData).eq('id', formData.id).select()
+  }
+
+  return { userRoles, $reset, getUserRoles, addUserRole, updateUserRole }
 })

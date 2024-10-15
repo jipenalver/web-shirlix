@@ -3,9 +3,9 @@ import { useUserRolesStore } from '@/stores/userRoles'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible'])
+const props = defineProps(['isDialogVisible', 'itemData'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
@@ -23,33 +23,46 @@ const formAction = ref({
   ...formActionDefault
 })
 const refVForm = ref()
+const isUpdate = ref(false)
+
+// Monitor itemData if it has data
+watch(
+  () => props.itemData,
+  (propsItemData) => {
+    isUpdate.value = propsItemData ? true : false
+    formData.value = propsItemData ? { ...propsItemData } : { ...formActionDefault }
+  }
+)
 
 // Submit Functionality
 const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { data, error } = await userRolesStore.addUserRole(formData.value)
+  // Check if isUpdate is true, then do update, if false do add
+  const { data, error } = isUpdate.value
+    ? await userRolesStore.updateUserRole(formData.value)
+    : await userRolesStore.addUserRole(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
     formAction.value.formErrorMessage = error.message
     formAction.value.formStatus = error.status
+
+    // Turn off processing
+    formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Added User Role.'
 
     // Retrieve User Roles
-    userRolesStore.getUserRoles()
+    await userRolesStore.getUserRoles()
 
     // Form Reset and Close Dialog
     setTimeout(() => {
       onFormReset()
     }, 3500)
   }
-
-  // Turn off processing
-  formAction.value.formProcess = false
 }
 
 // Trigger Validators
@@ -96,14 +109,14 @@ const onFormReset = () => {
           <v-btn text="Close" variant="plain" @click="onFormReset"></v-btn>
 
           <v-btn
-            prepend-icon="mdi-tag-plus"
+            prepend-icon="mdi-pencil"
             color="deep-orange-lighten-1"
             type="submit"
             variant="elevated"
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            Add Role
+            {{ isUpdate ? 'Update Role' : 'Add Role' }}
           </v-btn>
         </v-card-actions>
       </v-form>
