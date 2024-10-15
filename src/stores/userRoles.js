@@ -4,40 +4,28 @@ import { supabase } from '@/utils/supabase'
 
 export const useUserRolesStore = defineStore('userRoles', () => {
   // States
-  const userRoles = ref([])
+  const userRoles = ref(null)
 
   // Getters
   // const doubleCount = computed(() => count.value * 2)
 
+  // Reset State Action
+  function $reset() {
+    userRoles.value = null
+  }
+
   // Retrieve User Roles
   async function getUserRoles() {
-    const { data, error } = await supabase.from('user_roles').select()
+    const { data } = await supabase.from('user_roles').select()
 
-    // Check if it has error
-    if (error) {
-      return { error }
-    }
-    // If no error set updatedData to userData state
-    else if (data) {
-      userRoles.value = data
-
-      return { data }
-    }
+    // Set the retrieved data to state
+    userRoles.value = data
   }
 
   // Add User Roles
   async function addUserRole(formData) {
-    const { data, error } = await supabase.from('user_roles').insert([formData]).select()
-
-    // Check if it has error
-    if (error) {
-      return { error }
-    }
-    // If no error set updatedData to userData state
-    else if (data) {
-      return { data }
-    }
+    return await supabase.from('user_roles').insert([formData]).select()
   }
 
-  return { userRoles, getUserRoles, addUserRole }
+  return { userRoles, $reset, getUserRoles, addUserRole }
 })

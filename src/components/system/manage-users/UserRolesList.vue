@@ -1,15 +1,27 @@
 <script setup>
+import { useUserRolesStore } from '@/stores/userRoles'
 import UserRolesFormDialog from './UserRolesFormDialog.vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
+// Use Pinia Store
+const userRolesStore = useUserRolesStore()
+
+// Load Variables
 const isDialogVisible = ref(false)
+
+// Load Functions during component rendering
+onMounted(() => {
+  if (!userRolesStore.userRoles) {
+    userRolesStore.getUserRoles()
+  }
+})
 </script>
 
 <template>
   <v-row>
-    <v-col cols="12" md="4">
+    <v-col cols="12" md="4" v-for="item in userRolesStore.userRoles" :key="item.id">
       <v-card>
-        <v-card-title class="mt-3 font-weight-bold"> Administrator </v-card-title>
+        <v-card-title class="mt-3 font-weight-bold"> {{ item.user_role }} </v-card-title>
         <v-card-text class="d-flex align-center justify-space-between">
           0 Total User(s)
 
