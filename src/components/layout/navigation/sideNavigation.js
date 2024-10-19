@@ -10,7 +10,8 @@ export const mainNav = [
 // Sub Navigations; Title, Icon, Subtitle, Redirect Path
 export const menuItemsNav1 = [
   ['User Roles', 'mdi-tag-multiple', '', '/manage/user/roles'],
-  ['Users Management', 'mdi-account-multiple', '', '/manage/users']
+  ['Users Management', 'mdi-account-multiple', '', '/manage/users'],
+  ['List of Branches', 'mdi-store', '', '/manage/branches']
 ]
 export const menuItemsNav2 = [
   ['Product Information', 'mdi-information-box', 'Add & Manage Products', '']

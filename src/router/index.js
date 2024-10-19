@@ -9,6 +9,7 @@ import NotFoundView from '@/views/errors/NotFoundView.vue'
 import AccountSettingsView from '@/views/system/AccountSettingsView.vue'
 import UserRolesView from '@/views/system/manage-users/UserRolesView.vue'
 import UsersView from '@/views/system/manage-users/UsersView.vue'
+import BranchesView from '@/views/system/manage-users/BranchesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,6 +55,12 @@ const router = createRouter({
       path: '/manage/users',
       name: 'manage-users',
       component: UsersView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/manage/branches',
+      name: 'manage-branches',
+      component: BranchesView,
       meta: { requiresAuth: true, requiresAdmin: true }
     },
     // Add More Pages Here
