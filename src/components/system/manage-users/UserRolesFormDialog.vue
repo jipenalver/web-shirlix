@@ -30,7 +30,7 @@ watch(
   () => props.itemData,
   (propsItemData) => {
     isUpdate.value = propsItemData ? true : false
-    formData.value = propsItemData ? { ...propsItemData } : { ...formActionDefault }
+    formData.value = propsItemData ? { ...propsItemData } : { ...formDataDefault }
   }
 )
 

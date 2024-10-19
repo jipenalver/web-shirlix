@@ -1,7 +1,10 @@
 <script setup>
+import UsersFormDialog from './UsersFormDialog.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useDate } from 'vuetify'
 import { useUsersStore } from '@/stores/users'
 import { ref } from 'vue'
+import { formActionDefault } from '@/utils/supabase'
 
 // Utilize
 const date = useDate()
@@ -17,6 +20,12 @@ const tableHeaders = [
   {
     title: 'Fullname',
     key: 'lastname',
+    sortable: false,
+    align: 'start'
+  },
+  {
+    title: 'Phone',
+    key: 'phone',
     sortable: false,
     align: 'start'
   },
@@ -44,31 +53,79 @@ const tableHeaders = [
 const usersStore = useUsersStore()
 
 // Load Variables
-const tableData = ref({
-  items: [],
-  itemsLength: 0,
-  itemsPerPage: 5,
+const tableOptions = ref({
+  page: 1,
+  itemsPerPage: 10,
+  sortBy: [],
   isLoading: false
 })
 const tableFilters = ref({
   search: '',
   user_role: null
 })
+const isDialogVisible = ref(false)
+const isConfirmDeleteDialog = ref(false)
+const itemData = ref(null)
+const deleteId = ref('')
+const formAction = ref({
+  ...formActionDefault
+})
+
+// Trigger Update Btn
+const onUpdate = (item) => {
+  const { id, email, phone, user_metadata } = item
+
+  itemData.value = { id, email, phone, ...user_metadata }
+  isDialogVisible.value = true
+}
+
+// Trigger Add Btn
+const onAdd = () => {
+  itemData.value = null
+  isDialogVisible.value = true
+}
+
+// Trigger Delete Btn
+const onDelete = (id) => {
+  deleteId.value = id
+  isConfirmDeleteDialog.value = true
+}
+
+// Confirm Delete
+const onConfirmDelete = async () => {
+  // Reset Form Action utils
+  formAction.value = { ...formActionDefault, formProcess: true }
+
+  //   const { error } = await usersStore.deleteUserRole(deleteId.value)
+
+  //   // Turn off processing
+  //   formAction.value.formProcess = false
+
+  //   if (error) {
+  //     // Add Error Message and Status Code
+  //     formAction.value.formErrorMessage = error.message
+  //     formAction.value.formStatus = error.status
+
+  //     return
+  //   }
+
+  //   // Add Success Message
+  //   formAction.value.formSuccessMessage = 'Successfully Deleted User Role.'
+
+  // Retrieve User Roles
+  //   await usersStore.getUserRoles()
+}
 
 // Load Tables Data
 const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
-  tableData.value.isLoading = true
+  tableOptions.value.isLoading = true
 
   // Load Users
   await usersStore.getUsers({ page, itemsPerPage, sortBy })
 
-  // Table Datas
-  tableData.value.items = usersStore.usersTable
-  tableData.value.itemsLength = usersStore.usersTable.length
-
   // Trigger Loading
-  tableData.value.isLoading = false
+  tableOptions.value.isLoading = false
 }
 </script>
 
@@ -76,11 +133,13 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   <v-row>
     <v-col cols="12">
       <v-data-table-server
-        v-model:items-per-page="tableData.itemsPerPage"
-        :items="tableData.items"
-        :items-length="tableData.itemsLength"
-        :loading="tableData.isLoading"
+        v-model:items-per-page="tableOptions.itemsPerPage"
+        v-model:page="tableOptions.page"
+        v-model:sort-by="tableOptions.sortBy"
+        :loading="tableOptions.isLoading"
         :headers="tableHeaders"
+        :items="usersStore.usersTable"
+        :items-length="usersStore.usersTable.length"
         @update:options="loadItems"
       >
         <template #top>
@@ -102,6 +161,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
                 prepend-icon="mdi-account-plus"
                 color="deep-orange-lighten-1"
                 block
+                @click="onAdd"
               >
                 Add User
               </v-btn>
@@ -115,6 +175,10 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
           {{ item.user_metadata.lastname }}, {{ item.user_metadata.firstname }}
         </template>
 
+        <template #item.phone="{ item }">
+          {{ item.user_metadata.phone }}
+        </template>
+
         <template #item.user_role="{ item }">
           {{ item.user_metadata.user_role }}
         </template>
@@ -124,17 +188,29 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
         </template>
 
         <template #item.actions="{ item }">
-          <v-btn variant="text">
-            <v-icon icon="mdi-pencil" size="large" color="deep-orange-lighten-1"></v-icon>
+          <v-btn variant="text" @click="onUpdate(item)">
+            <v-icon icon="mdi-pencil" size="large"></v-icon>
             <v-tooltip activator="parent" location="top">Edit User</v-tooltip>
           </v-btn>
 
-          <v-btn variant="text">
-            <v-icon icon="mdi-trash-can"></v-icon>
+          <v-btn variant="text" @click="onDelete(item.id)">
+            <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
             <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
           </v-btn>
         </template>
       </v-data-table-server>
     </v-col>
   </v-row>
+
+  <UsersFormDialog
+    v-model:is-dialog-visible="isDialogVisible"
+    :item-data="itemData"
+  ></UsersFormDialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmDeleteDialog"
+    title="Confirm Delete"
+    text="Are you sure you want to delete user?"
+    @confirm="onConfirmDelete"
+  ></ConfirmDialog>
 </template>

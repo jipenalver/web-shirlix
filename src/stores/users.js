@@ -14,6 +14,7 @@ export const useUsersStore = defineStore('users', () => {
     usersTable.value = null
   }
 
+  // Actions
   async function getUsers({ page, itemsPerPage }) {
     const {
       data: { users }
