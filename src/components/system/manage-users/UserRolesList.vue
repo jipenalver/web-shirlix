@@ -62,10 +62,8 @@ const onConfirmDelete = async () => {
 }
 
 // Load Functions during component rendering
-onMounted(() => {
-  if (!userRolesStore.userRoles) {
-    userRolesStore.getUserRoles()
-  }
+onMounted(async () => {
+  if (userRolesStore.userRoles.length == 0) await userRolesStore.getUserRoles()
 })
 </script>
 
@@ -80,7 +78,7 @@ onMounted(() => {
       <v-card>
         <v-card-title class="mt-3 font-weight-bold"> {{ item.user_role }} </v-card-title>
         <v-card-text class="d-flex align-center justify-space-between">
-          0 Total User(s)
+          <v-spacer></v-spacer>
 
           <div class="d-flex flex-wrap ga-2">
             <v-btn icon color="deep-orange-lighten-1" density="comfortable" @click="onUpdate(item)">

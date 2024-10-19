@@ -30,7 +30,7 @@ watch(
   () => props.itemData,
   (propsItemData) => {
     isUpdate.value = propsItemData ? true : false
-    formData.value = propsItemData ? { ...propsItemData } : { ...formActionDefault }
+    formData.value = propsItemData ? { ...propsItemData } : { ...formDataDefault }
   }
 )
 
@@ -61,7 +61,7 @@ const onSubmit = async () => {
     // Form Reset and Close Dialog
     setTimeout(() => {
       onFormReset()
-    }, 3500)
+    }, 2500)
   }
 }
 

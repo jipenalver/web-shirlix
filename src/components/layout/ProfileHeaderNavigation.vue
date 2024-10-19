@@ -32,7 +32,7 @@ const onLogout = async () => {
   // Reset State
   setTimeout(() => {
     authStore.$reset()
-  }, 3500)
+  }, 2500)
   // Redirect to homepage
   router.replace('/')
 }

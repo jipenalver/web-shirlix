@@ -45,7 +45,7 @@ const series = [
           </template>
 
           <template #subtitle>
-            <p class="ms-4"></p>
+            <p class="ms-4 text-wrap"></p>
           </template>
         </v-card>
 

@@ -16,7 +16,7 @@ const isLoggedIn = ref(false)
 const theme = ref(localStorage.getItem('theme') ?? 'light')
 
 //  Toggle Theme
-function onToggleTheme() {
+const onToggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('theme', theme.value)
 }

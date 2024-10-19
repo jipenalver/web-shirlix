@@ -30,7 +30,7 @@ const isDrawerVisible = ref(true)
           </template>
 
           <template #subtitle>
-            <p class="ms-4">
+            <p class="ms-4 text-wrap">
               A role grants access to specific pages and features, ensuring that admin users can
               access what they need based on their assigned role.
             </p>
