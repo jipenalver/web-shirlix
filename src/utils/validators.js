@@ -86,9 +86,7 @@ export const regexValidator = (value, regex) => {
 
   if (Array.isArray(value)) return value.every((val) => regexValidator(val, regeX))
 
-  return (
-    regeX.test(String(value)) || "Your input doesn't match the expected format. Please try again."
-  )
+  return regeX.test(String(value)) || "Your input doesn't match the expected format."
 }
 
 // 👉 Alpha Validator
