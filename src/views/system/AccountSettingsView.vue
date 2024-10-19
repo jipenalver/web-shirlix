@@ -37,7 +37,7 @@ const isDrawerVisible = ref(true)
           </template>
 
           <template #subtitle>
-            <p class="ms-4">
+            <p class="ms-4 text-wrap">
               Edit profile information, update profile picture and change password.
             </p>
           </template>

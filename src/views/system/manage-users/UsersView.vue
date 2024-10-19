@@ -30,7 +30,7 @@ const isDrawerVisible = ref(true)
           </template>
 
           <template #subtitle>
-            <p class="ms-4"></p>
+            <p class="ms-4 text-wrap">Manage user accounts and assign roles dynamically.</p>
           </template>
         </v-card>
 

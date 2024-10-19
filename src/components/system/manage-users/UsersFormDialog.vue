@@ -70,7 +70,7 @@ const onSubmit = async () => {
     // Form Reset and Close Dialog
     setTimeout(() => {
       onFormReset()
-    }, 3500)
+    }, 2500)
   }
 }
 

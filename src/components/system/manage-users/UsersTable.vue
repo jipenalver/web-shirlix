@@ -41,7 +41,7 @@ const tableHeaders = [
     title: 'Registered Date',
     key: 'created_at',
     sortable: false,
-    align: 'end'
+    align: 'center'
   },
   {
     title: 'Actions',
@@ -173,7 +173,9 @@ onMounted(async () => {
         </template>
 
         <template #item.lastname="{ item }">
-          {{ item.user_metadata.lastname }}, {{ item.user_metadata.firstname }}
+          <span class="font-weight-bold">
+            {{ item.user_metadata.lastname }}, {{ item.user_metadata.firstname }}
+          </span>
         </template>
 
         <template #item.phone="{ item }">
@@ -185,19 +187,29 @@ onMounted(async () => {
         </template>
 
         <template #item.created_at="{ item }">
-          {{ date.format(item.created_at, 'fullDateTime') }}
+          <span class="font-weight-bold">
+            {{ date.format(item.created_at, 'fullDateTime') }}
+          </span>
         </template>
 
         <template #item.actions="{ item }">
-          <v-btn variant="text" density="comfortable" @click="onUpdate(item)">
-            <v-icon icon="mdi-pencil" size="large"></v-icon>
-            <v-tooltip activator="parent" location="top">Edit User</v-tooltip>
-          </v-btn>
+          <div class="d-flex align-center">
+            <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
+              <v-icon icon="mdi-pencil" size="large"></v-icon>
+              <v-tooltip activator="parent" location="top">Edit User</v-tooltip>
+            </v-btn>
 
-          <v-btn variant="text" density="comfortable" @click="onDelete(item.id)">
-            <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
-            <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
-          </v-btn>
+            <v-btn
+              variant="text"
+              density="comfortable"
+              :disabled="item.user_metadata.is_admin"
+              @click="onDelete(item.id)"
+              icon
+            >
+              <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
+              <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
+            </v-btn>
+          </div>
         </template>
       </v-data-table-server>
     </v-col>
