@@ -4,12 +4,14 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { emailValidator, passwordValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
+import { useUserRolesStore } from '@/stores/userRoles'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Use Pinia Store
+const userRolesStore = useUserRolesStore()
 const usersStore = useUsersStore()
 
 // Load Variables
@@ -19,7 +21,8 @@ const formDataDefault = {
   firstname: '',
   middlename: '',
   lastname: '',
-  phone: ''
+  phone: '',
+  user_role: null
 }
 const formData = ref({
   ...formDataDefault
@@ -115,6 +118,17 @@ const onFormReset = () => {
                 label="Lastname"
                 :rules="[requiredValidator]"
               ></v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <v-autocomplete
+                v-model="formData.user_role"
+                label="User Role"
+                :items="userRolesStore.userRoles"
+                item-title="user_role"
+                item-value="user_role"
+                clearable
+              ></v-autocomplete>
             </v-col>
 
             <v-col cols="12" md="6">

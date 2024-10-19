@@ -63,7 +63,7 @@ const onConfirmDelete = async () => {
 
 // Load Functions during component rendering
 onMounted(async () => {
-  if (!userRolesStore.userRoles) await userRolesStore.getUserRoles()
+  if (userRolesStore.userRoles.length == 0) await userRolesStore.getUserRoles()
 })
 </script>
 

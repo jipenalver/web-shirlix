@@ -4,8 +4,9 @@ import UsersFormDialog from './UsersFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useDate } from 'vuetify'
 import { useUsersStore } from '@/stores/users'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { formActionDefault } from '@/utils/supabase'
+import { useUserRolesStore } from '@/stores/userRoles'
 
 // Utilize
 const date = useDate()
@@ -51,6 +52,7 @@ const tableHeaders = [
 ]
 
 // Use Pinia Store
+const userRolesStore = useUserRolesStore()
 const usersStore = useUsersStore()
 
 // Load Variables
@@ -59,10 +61,6 @@ const tableOptions = ref({
   itemsPerPage: 10,
   sortBy: [],
   isLoading: false
-})
-const tableFilters = ref({
-  search: '',
-  user_role: null
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -128,6 +126,11 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
+
+// Load Functions during component rendering
+onMounted(async () => {
+  if (userRolesStore.userRoles.length == 0) await userRolesStore.getUserRoles()
+})
 </script>
 
 <template>
@@ -152,15 +155,6 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
         <template #top>
           <v-row dense>
             <v-spacer></v-spacer>
-
-            <v-col cols="12" md="4">
-              <v-text-field
-                v-model="tableFilters.name"
-                density="compact"
-                prepend-inner-icon="mdi-magnify"
-                placeholder="Search"
-              ></v-text-field>
-            </v-col>
 
             <v-col cols="12" md="2">
               <v-btn

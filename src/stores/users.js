@@ -11,7 +11,7 @@ export const useUsersStore = defineStore('users', () => {
 
   // Reset State Action
   function $reset() {
-    usersTable.value = null
+    usersTable.value = []
   }
 
   // Retrieve Users
@@ -23,6 +23,7 @@ export const useUsersStore = defineStore('users', () => {
       perPage: itemsPerPage
     })
 
+    // Set the retrieved data to state
     usersTable.value = users
   }
 
@@ -33,6 +34,7 @@ export const useUsersStore = defineStore('users', () => {
 
     return await supabaseAdmin.auth.admin.createUser({
       email: formData.email,
+      email_confirm: true,
       password: formData.password,
       user_metadata: { ...userMetadata }
     })

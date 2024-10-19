@@ -4,14 +4,14 @@ import { supabase } from '@/utils/supabase'
 
 export const useUserRolesStore = defineStore('userRoles', () => {
   // States
-  const userRoles = ref(null)
+  const userRoles = ref([])
 
   // Getters
   // const doubleCount = computed(() => count.value * 2)
 
   // Reset State Action
   function $reset() {
-    userRoles.value = null
+    userRoles.value = []
   }
 
   // Retrieve User Roles
