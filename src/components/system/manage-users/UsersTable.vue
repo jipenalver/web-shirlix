@@ -1,175 +1,86 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { useDate } from 'vuetify'
+import { useUsersStore } from '@/stores/users'
+import { ref } from 'vue'
 
-const headers = ref([
+// Utilize
+const date = useDate()
+
+// Table Headers
+const tableHeaders = [
   {
-    title: 'Dessert (100g serving)',
-    align: 'start',
+    title: 'Email',
+    key: 'email',
     sortable: false,
-    key: 'name'
-  },
-  { title: 'Calories', key: 'calories', align: 'end' },
-  { title: 'Fat (g)', key: 'fat', align: 'end' },
-  { title: 'Carbs (g)', key: 'carbs', align: 'end' },
-  { title: 'Protein (g)', key: 'protein', align: 'end' },
-  { title: 'Iron (%)', key: 'iron', align: 'end' }
-])
-
-const desserts = [
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6,
-    carbs: 24,
-    protein: 4,
-    iron: '1'
+    align: 'start'
   },
   {
-    name: 'Jelly bean',
-    calories: 375,
-    fat: 0,
-    carbs: 94,
-    protein: 0,
-    iron: '0'
+    title: 'Fullname',
+    key: 'lastname',
+    sortable: false,
+    align: 'start'
   },
   {
-    name: 'KitKat',
-    calories: 518,
-    fat: 26,
-    carbs: 65,
-    protein: 7,
-    iron: '6'
+    title: 'Role',
+    key: 'user_role',
+    sortable: false,
+    align: 'start'
   },
   {
-    name: 'Eclair',
-    calories: 262,
-    fat: 16,
-    carbs: 23,
-    protein: 6,
-    iron: '7'
+    title: 'Registered Date',
+    key: 'created_at',
+    sortable: false,
+    align: 'end'
   },
   {
-    name: 'Gingerbread',
-    calories: 356,
-    fat: 16,
-    carbs: 49,
-    protein: 3.9,
-    iron: '16'
-  },
-  {
-    name: 'Ice cream sandwich',
-    calories: 237,
-    fat: 9,
-    carbs: 37,
-    protein: 4.3,
-    iron: '1'
-  },
-  {
-    name: 'Lollipop',
-    calories: 392,
-    fat: 0.2,
-    carbs: 98,
-    protein: 0,
-    iron: '2'
-  },
-  {
-    name: 'Cupcake',
-    calories: 305,
-    fat: 3.7,
-    carbs: 67,
-    protein: 4.3,
-    iron: '8'
-  },
-  {
-    name: 'Honeycomb',
-    calories: 408,
-    fat: 3.2,
-    carbs: 87,
-    protein: 6.5,
-    iron: '45'
-  },
-  {
-    name: 'Donut',
-    calories: 452,
-    fat: 25,
-    carbs: 51,
-    protein: 4.9,
-    iron: '22'
+    title: 'Actions',
+    key: 'actions',
+    sortable: false,
+    align: 'center'
   }
 ]
 
-const FakeAPI = {
-  async fetch({ page, itemsPerPage, sortBy, search }) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const start = (page - 1) * itemsPerPage
-        const end = start + itemsPerPage
-        const items = desserts.slice().filter((item) => {
-          if (search.name && !item.name.toLowerCase().includes(search.name.toLowerCase())) {
-            return false
-          }
-          if (search.calories && !(item.calories >= Number(search.calories))) {
-            return false
-          }
-          return true
-        })
-        if (sortBy.length) {
-          const sortKey = sortBy[0].key
-          const sortOrder = sortBy[0].order
-          items.sort((a, b) => {
-            const aValue = a[sortKey]
-            const bValue = b[sortKey]
-            return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
-          })
-        }
-        const paginated = items.slice(start, end)
-        resolve({ items: paginated, total: items.length })
-      }, 500)
-    })
-  }
-}
+// Use Pinia Store
+const usersStore = useUsersStore()
 
-const itemsPerPage = ref(5)
-const serverItems = ref([])
-const loading = ref(true)
-const totalItems = ref(0)
-const name = ref('')
-const calories = ref('')
-const search = ref('')
-
-function loadItems({ page, itemsPerPage, sortBy }) {
-  loading.value = true
-  FakeAPI.fetch({
-    page,
-    itemsPerPage,
-    sortBy,
-    search: { name: name.value, calories: calories.value }
-  }).then(({ items, total }) => {
-    serverItems.value = items
-    totalItems.value = total
-    loading.value = false
-  })
-}
-
-watch(name, () => {
-  search.value = String(Date.now())
+// Load Variables
+const tableData = ref({
+  items: [],
+  itemsLength: 0,
+  itemsPerPage: 5,
+  isLoading: false
 })
-watch(calories, () => {
-  search.value = String(Date.now())
+const tableFilters = ref({
+  search: '',
+  user_role: null
 })
+
+// Load Tables Data
+const loadItems = async ({ page, itemsPerPage, sortBy }) => {
+  // Trigger Loading
+  tableData.value.isLoading = true
+
+  // Load Users
+  await usersStore.getUsers({ page, itemsPerPage, sortBy })
+
+  // Table Datas
+  tableData.value.items = usersStore.usersTable
+  tableData.value.itemsLength = usersStore.usersTable.length
+
+  // Trigger Loading
+  tableData.value.isLoading = false
+}
 </script>
 
 <template>
   <v-row>
     <v-col cols="12">
       <v-data-table-server
-        v-model:items-per-page="itemsPerPage"
-        :headers="headers"
-        :items="serverItems"
-        :items-length="totalItems"
-        :loading="loading"
-        :search="search"
-        item-value="name"
+        v-model:items-per-page="tableData.itemsPerPage"
+        :items="tableData.items"
+        :items-length="tableData.itemsLength"
+        :loading="tableData.isLoading"
+        :headers="tableHeaders"
         @update:options="loadItems"
       >
         <template #top>
@@ -178,7 +89,7 @@ watch(calories, () => {
 
             <v-col cols="12" md="4">
               <v-text-field
-                v-model="name"
+                v-model="tableFilters.name"
                 density="compact"
                 prepend-inner-icon="mdi-magnify"
                 placeholder="Search"
@@ -198,6 +109,30 @@ watch(calories, () => {
           </v-row>
 
           <v-divider class="my-5"></v-divider>
+        </template>
+
+        <template #item.lastname="{ item }">
+          {{ item.user_metadata.lastname }}, {{ item.user_metadata.firstname }}
+        </template>
+
+        <template #item.user_role="{ item }">
+          {{ item.user_metadata.user_role }}
+        </template>
+
+        <template #item.created_at="{ item }">
+          {{ date.format(item.created_at, 'fullDateTime') }}
+        </template>
+
+        <template #item.actions="{ item }">
+          <v-btn variant="text">
+            <v-icon icon="mdi-pencil" size="large" color="deep-orange-lighten-1"></v-icon>
+            <v-tooltip activator="parent" location="top">Edit User</v-tooltip>
+          </v-btn>
+
+          <v-btn variant="text">
+            <v-icon icon="mdi-trash-can"></v-icon>
+            <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
+          </v-btn>
         </template>
       </v-data-table-server>
     </v-col>
