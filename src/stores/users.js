@@ -14,7 +14,7 @@ export const useUsersStore = defineStore('users', () => {
     usersTable.value = null
   }
 
-  // Actions
+  // Retrieve Users
   async function getUsers({ page, itemsPerPage }) {
     const {
       data: { users }
@@ -26,5 +26,32 @@ export const useUsersStore = defineStore('users', () => {
     usersTable.value = users
   }
 
-  return { usersTable, $reset, getUsers }
+  // Add User
+  async function addUser(formData) {
+    // eslint-disable-next-line no-unused-vars
+    const { password, ...userMetadata } = formData
+
+    return await supabaseAdmin.auth.admin.createUser({
+      email: formData.email,
+      password: formData.password,
+      user_metadata: { ...userMetadata }
+    })
+  }
+
+  // Update User
+  async function updateUser(formData) {
+    // eslint-disable-next-line no-unused-vars
+    const { email, password, ...userMetadata } = formData
+
+    return await supabaseAdmin.auth.admin.updateUserById(formData.id, {
+      user_metadata: { ...userMetadata }
+    })
+  }
+
+  // Delete User
+  async function deleteUser(id) {
+    return await supabaseAdmin.auth.admin.deleteUser(id)
+  }
+
+  return { usersTable, $reset, getUsers, addUser, updateUser, deleteUser }
 })

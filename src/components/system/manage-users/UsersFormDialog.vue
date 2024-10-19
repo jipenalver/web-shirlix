@@ -5,7 +5,7 @@ import { emailValidator, passwordValidator, requiredValidator } from '@/utils/va
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData'])
+const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
@@ -28,6 +28,7 @@ const formAction = ref({
   ...formActionDefault
 })
 const refVForm = ref()
+const isPasswordVisible = ref(false)
 const isUpdate = ref(false)
 
 // Monitor itemData if it has data
@@ -45,29 +46,29 @@ const onSubmit = async () => {
   formAction.value = { ...formActionDefault, formProcess: true }
 
   // Check if isUpdate is true, then do update, if false do add
-  //   const { data, error } = isUpdate.value
-  //     ? await usersStore.updateUserRole(formData.value)
-  //     : await usersStore.addUserRole(formData.value)
+  const { data, error } = isUpdate.value
+    ? await usersStore.updateUser(formData.value)
+    : await usersStore.addUser(formData.value)
 
-  //   if (error) {
-  //     // Add Error Message and Status Code
-  //     formAction.value.formErrorMessage = error.message
-  //     formAction.value.formStatus = error.status
+  if (error) {
+    // Add Error Message and Status Code
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
 
-  //     // Turn off processing
-  //     formAction.value.formProcess = false
-  //   } else if (data) {
-  //     // Add Success Message
-  //     formAction.value.formSuccessMessage = 'Successfully Added User.'
+    // Turn off processing
+    formAction.value.formProcess = false
+  } else if (data) {
+    // Add Success Message
+    formAction.value.formSuccessMessage = 'Successfully Added User.'
 
-  //     // Retrieve User Roles
-  //     await usersStore.getUserRoles()
+    // Retrieve Users
+    await usersStore.getUsers(props.tableOptions)
 
-  //     // Form Reset and Close Dialog
-  //     setTimeout(() => {
-  //       onFormReset()
-  //     }, 3500)
-  //   }
+    // Form Reset and Close Dialog
+    setTimeout(() => {
+      onFormReset()
+    }, 3500)
+  }
 }
 
 // Trigger Validators
@@ -121,6 +122,7 @@ const onFormReset = () => {
                 v-model="formData.email"
                 label="Email"
                 prepend-inner-icon="mdi-email-outline"
+                :readonly="isUpdate"
                 :rules="[requiredValidator, emailValidator]"
               ></v-text-field>
             </v-col>
@@ -135,11 +137,13 @@ const onFormReset = () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12">
+            <v-col cols="12" v-if="!isUpdate">
               <v-text-field
                 v-model="formData.password"
                 label="Password"
-                type="password"
+                :type="isPasswordVisible ? 'text' : 'password'"
+                :append-inner-icon="isPasswordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+                @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 :rules="[requiredValidator, passwordValidator]"
               ></v-text-field>
             </v-col>

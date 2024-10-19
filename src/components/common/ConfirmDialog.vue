@@ -21,9 +21,18 @@ const onConfirm = () => {
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <v-btn @click="emit('update:isDialogVisible', false)"> Disagree </v-btn>
+        <v-btn prepend-icon="mdi-thumb-down" @click="emit('update:isDialogVisible', false)">
+          Disagree
+        </v-btn>
 
-        <v-btn color="deep-orange-lighten-1" variant="elevated" @click="onConfirm"> Agree </v-btn>
+        <v-btn
+          prepend-icon="mdi-thumb-up"
+          color="deep-orange-lighten-1"
+          variant="elevated"
+          @click="onConfirm"
+        >
+          Agree
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

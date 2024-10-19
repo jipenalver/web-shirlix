@@ -1,4 +1,5 @@
 <script setup>
+import AlertNotification from '@/components/common/AlertNotification.vue'
 import UsersFormDialog from './UsersFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useDate } from 'vuetify'
@@ -96,24 +97,24 @@ const onConfirmDelete = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  //   const { error } = await usersStore.deleteUserRole(deleteId.value)
+  const { error } = await usersStore.deleteUser(deleteId.value)
 
-  //   // Turn off processing
-  //   formAction.value.formProcess = false
+  // Turn off processing
+  formAction.value.formProcess = false
 
-  //   if (error) {
-  //     // Add Error Message and Status Code
-  //     formAction.value.formErrorMessage = error.message
-  //     formAction.value.formStatus = error.status
+  if (error) {
+    // Add Error Message and Status Code
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
 
-  //     return
-  //   }
+    return
+  }
 
-  //   // Add Success Message
-  //   formAction.value.formSuccessMessage = 'Successfully Deleted User Role.'
+  // Add Success Message
+  formAction.value.formSuccessMessage = 'Successfully Deleted User.'
 
-  // Retrieve User Roles
-  //   await usersStore.getUserRoles()
+  // Retrieve Users
+  await usersStore.getUsers(tableOptions)
 }
 
 // Load Tables Data
@@ -130,8 +131,14 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
 </script>
 
 <template>
+  <AlertNotification
+    :form-success-message="formAction.formSuccessMessage"
+    :form-error-message="formAction.formErrorMessage"
+  ></AlertNotification>
+
   <v-row>
     <v-col cols="12">
+      <!-- eslint-disable vue/valid-v-slot -->
       <v-data-table-server
         v-model:items-per-page="tableOptions.itemsPerPage"
         v-model:page="tableOptions.page"
@@ -188,12 +195,12 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
         </template>
 
         <template #item.actions="{ item }">
-          <v-btn variant="text" @click="onUpdate(item)">
+          <v-btn variant="text" density="comfortable" @click="onUpdate(item)">
             <v-icon icon="mdi-pencil" size="large"></v-icon>
             <v-tooltip activator="parent" location="top">Edit User</v-tooltip>
           </v-btn>
 
-          <v-btn variant="text" @click="onDelete(item.id)">
+          <v-btn variant="text" density="comfortable" @click="onDelete(item.id)">
             <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
             <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
           </v-btn>
@@ -205,6 +212,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   <UsersFormDialog
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
+    :table-options="tableOptions"
   ></UsersFormDialog>
 
   <ConfirmDialog
