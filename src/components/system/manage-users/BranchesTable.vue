@@ -4,9 +4,8 @@ import UsersFormDialog from './UsersFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useDate } from 'vuetify'
 import { useUsersStore } from '@/stores/users'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { formActionDefault } from '@/utils/supabase'
-import { useUserRolesStore } from '@/stores/userRoles'
 
 // Utilize
 const date = useDate()
@@ -14,31 +13,19 @@ const date = useDate()
 // Table Headers
 const tableHeaders = [
   {
-    title: 'Email',
-    key: 'email',
+    title: 'Name',
+    key: 'name',
     sortable: false,
     align: 'start'
   },
   {
-    title: 'Fullname',
-    key: 'lastname',
+    title: 'Address',
+    key: 'address',
     sortable: false,
     align: 'start'
   },
   {
-    title: 'Phone',
-    key: 'phone',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Role',
-    key: 'user_role',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Registered Date',
+    title: 'Created Date',
     key: 'created_at',
     sortable: false,
     align: 'center'
@@ -52,7 +39,6 @@ const tableHeaders = [
 ]
 
 // Use Pinia Store
-const userRolesStore = useUserRolesStore()
 const usersStore = useUsersStore()
 
 // Load Variables
@@ -109,9 +95,9 @@ const onConfirmDelete = async () => {
   }
 
   // Add Success Message
-  formAction.value.formSuccessMessage = 'Successfully Deleted User.'
+  formAction.value.formSuccessMessage = 'Successfully Deleted Branch.'
 
-  // Retrieve Users
+  // Retrieve Branches
   await usersStore.getUsers(tableOptions)
 }
 
@@ -120,17 +106,12 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  // Load Users
+  // Load Branches
   await usersStore.getUsers({ page, itemsPerPage, sortBy })
 
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
-
-// Load Functions during component rendering
-onMounted(async () => {
-  if (userRolesStore.userRoles.length == 0) await userRolesStore.getUserRoles()
-})
 </script>
 
 <template>
@@ -164,7 +145,7 @@ onMounted(async () => {
                 block
                 @click="onAdd"
               >
-                Add User
+                Add Branch
               </v-btn>
             </v-col>
           </v-row>
@@ -196,7 +177,7 @@ onMounted(async () => {
           <div class="d-flex align-center justify-center">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil" size="large"></v-icon>
-              <v-tooltip activator="parent" location="top">Edit User</v-tooltip>
+              <v-tooltip activator="parent" location="top">Edit Branch</v-tooltip>
             </v-btn>
 
             <v-btn
@@ -207,7 +188,7 @@ onMounted(async () => {
               icon
             >
               <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
-              <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
+              <v-tooltip activator="parent" location="top">Delete Branch</v-tooltip>
             </v-btn>
           </div>
         </template>
@@ -224,7 +205,7 @@ onMounted(async () => {
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
     title="Confirm Delete"
-    text="Are you sure you want to delete user?"
+    text="Are you sure you want to delete branch?"
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>
