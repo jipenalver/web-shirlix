@@ -49,7 +49,7 @@ export const passwordValidator = (password) => {
   return (
     // eslint-disable-next-line operator-linebreak
     validPassword ||
-    'Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.'
+    'The password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.'
   )
 }
 
@@ -86,9 +86,7 @@ export const regexValidator = (value, regex) => {
 
   if (Array.isArray(value)) return value.every((val) => regexValidator(val, regeX))
 
-  return (
-    regeX.test(String(value)) || "Your input doesn't match the expected format. Please try again."
-  )
+  return regeX.test(String(value)) || "The input doesn't match the expected format"
 }
 
 // 👉 Alpha Validator
@@ -125,7 +123,7 @@ export const alphaDashValidator = (value) => {
 
   return (
     /^[0-9A-Z_-]*$/i.test(valueAsString) ||
-    'Your input must be alphanumeric and can only include dashes (-) and underscores (_).'
+    'The input must be alphanumeric and can only include dashes (-) and underscores (_).'
   )
 }
 
@@ -133,7 +131,5 @@ export const alphaDashValidator = (value) => {
 export const imageValidator = (value) => {
   if (isEmpty(value)) return true
 
-  return (
-    !value || !value.length || value[0].size < 2000000 || 'Image size should be less than 2 MB!'
-  )
+  return !value || !value.length || value[0].size < 2000000 || 'Image size should be less than 2 MB'
 }
