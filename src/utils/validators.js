@@ -86,7 +86,7 @@ export const regexValidator = (value, regex) => {
 
   if (Array.isArray(value)) return value.every((val) => regexValidator(val, regeX))
 
-  return regeX.test(String(value)) || "Your input doesn't match the expected format."
+  return regeX.test(String(value)) || "Your input doesn't match the expected format"
 }
 
 // 👉 Alpha Validator
@@ -131,7 +131,5 @@ export const alphaDashValidator = (value) => {
 export const imageValidator = (value) => {
   if (isEmpty(value)) return true
 
-  return (
-    !value || !value.length || value[0].size < 2000000 || 'Image size should be less than 2 MB!'
-  )
+  return !value || !value.length || value[0].size < 2000000 || 'Image size should be less than 2 MB'
 }
