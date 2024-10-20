@@ -1,6 +1,6 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import BranchesFormDialog from '@/components/system/manage-users/BranchesFormDialog.vue'
+import ExpensesFormDialog from './ExpensesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { formActionDefault } from '@/utils/supabase'
 import { useExpensesStore } from '@/stores/expenses'
@@ -212,12 +212,12 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
     </v-col>
   </v-row>
 
-  <BranchesFormDialog
+  <ExpensesFormDialog
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
     :table-options="tableOptions"
     :table-filters="tableFilters"
-  ></BranchesFormDialog>
+  ></ExpensesFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
