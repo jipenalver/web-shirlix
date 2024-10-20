@@ -1,20 +1,21 @@
 <script setup>
-import { useUserRolesStore } from '@/stores/userRoles'
+import { useBranchesStore } from '@/stores/branches'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData'])
+const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Use Pinia Store
-const userRolesStore = useUserRolesStore()
+const branchesStore = useBranchesStore()
 
 // Load Variables
 const formDataDefault = {
-  user_role: ''
+  name: '',
+  address: ''
 }
 const formData = ref({
   ...formDataDefault
@@ -41,8 +42,8 @@ const onSubmit = async () => {
 
   // Check if isUpdate is true, then do update, if false do add
   const { data, error } = isUpdate.value
-    ? await userRolesStore.updateUserRole(formData.value)
-    : await userRolesStore.addUserRole(formData.value)
+    ? await branchesStore.updateBranch(formData.value)
+    : await branchesStore.addBranch(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -53,9 +54,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added User Role.'
+    formAction.value.formSuccessMessage = 'Successfully Added Branch.'
 
-    await userRolesStore.getUserRoles()
+    await branchesStore.getBranchesTable(props.tableOptions, props.tableFilters)
 
     // Form Reset and Close Dialog
     setTimeout(() => {
@@ -81,7 +82,7 @@ const onFormReset = () => {
 
 <template>
   <v-dialog max-width="600" :model-value="props.isDialogVisible" persistent>
-    <v-card prepend-icon="mdi-tag" title="User Role">
+    <v-card prepend-icon="mdi-store" title="Branch Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -92,10 +93,18 @@ const onFormReset = () => {
           <v-row dense>
             <v-col cols="12">
               <v-text-field
-                v-model="formData.user_role"
-                label="Role Name"
+                v-model="formData.name"
+                label="Name"
                 :rules="[requiredValidator]"
               ></v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <v-textarea
+                v-model="formData.address"
+                label="Address"
+                :rules="[requiredValidator]"
+              ></v-textarea>
             </v-col>
           </v-row>
         </v-card-text>
@@ -115,7 +124,7 @@ const onFormReset = () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            {{ isUpdate ? 'Update Role' : 'Add Role' }}
+            {{ isUpdate ? 'Update Branch' : 'Add Branch' }}
           </v-btn>
         </v-card-actions>
       </v-form>

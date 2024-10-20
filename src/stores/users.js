@@ -15,7 +15,7 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   // Retrieve Users
-  async function getUsers({ page, itemsPerPage }) {
+  async function getUsersTable({ page, itemsPerPage }) {
     const {
       data: { users }
     } = await supabaseAdmin.auth.admin.listUsers({
@@ -55,5 +55,5 @@ export const useUsersStore = defineStore('users', () => {
     return await supabaseAdmin.auth.admin.deleteUser(id)
   }
 
-  return { usersTable, $reset, getUsers, addUser, updateUser, deleteUser }
+  return { usersTable, $reset, getUsersTable, addUser, updateUser, deleteUser }
 })

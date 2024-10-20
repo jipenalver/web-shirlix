@@ -1,10 +1,10 @@
 <script setup>
-import { useUsersStore } from '@/stores/users'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import UsersFormDialog from './UsersFormDialog.vue'
+import ExpensesFormDialog from './ExpensesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { tableHeaders } from './expensesTableUtils'
 import { formActionDefault } from '@/utils/supabase'
-import { tableHeaders } from './usersTableUtils'
+import { useExpensesStore } from '@/stores/expenses'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
 
@@ -12,7 +12,7 @@ import { ref } from 'vue'
 const date = useDate()
 
 // Use Pinia Store
-const usersStore = useUsersStore()
+const expensesStore = useExpensesStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -20,6 +20,10 @@ const tableOptions = ref({
   itemsPerPage: 10,
   sortBy: [],
   isLoading: false
+})
+const tableFilters = ref({
+  search: '',
+  branch: null
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -31,9 +35,7 @@ const formAction = ref({
 
 // Trigger Update Btn
 const onUpdate = (item) => {
-  const { id, email, phone, user_metadata } = item
-
-  itemData.value = { id, email, phone, ...user_metadata }
+  itemData.value = item
   isDialogVisible.value = true
 }
 
@@ -54,7 +56,7 @@ const onConfirmDelete = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { error } = await usersStore.deleteUser(deleteId.value)
+  const { error } = await expensesStore.deleteExpenditure(deleteId.value)
 
   // Turn off processing
   formAction.value.formProcess = false
@@ -68,18 +70,28 @@ const onConfirmDelete = async () => {
   }
 
   // Add Success Message
-  formAction.value.formSuccessMessage = 'Successfully Deleted User.'
+  formAction.value.formSuccessMessage = 'Successfully Deleted Expenditue.'
 
   // Retrieve Data
-  onLoadItems(tableOptions.value)
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
+
+// Retrieve Data based on Search
+const onSearchItems = () => {
+  if (
+    tableFilters.value.search?.length >= 3 ||
+    tableFilters.value.search?.length == 0 ||
+    tableFilters.value.search === null
+  )
+    onLoadItems(tableOptions.value, tableFilters.value)
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { search: '' }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await usersStore.getUsersTable({ page, itemsPerPage, sortBy })
+  await expensesStore.getExpensesTable({ page, itemsPerPage, sortBy }, tableFilters)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -101,23 +113,35 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="usersStore.usersTable"
-        :items-length="usersStore.usersTable.length"
+        :items="expensesStore.expensesTable"
+        :items-length="expensesStore.expensesTable.length"
         @update:options="onLoadItems"
       >
         <template #top>
           <v-row dense>
             <v-spacer></v-spacer>
 
+            <v-col cols="12" md="4">
+              <v-text-field
+                v-model="tableFilters.search"
+                density="compact"
+                prepend-inner-icon="mdi-magnify"
+                placeholder="Search"
+                clearable
+                @click:clear="onSearchItems"
+                @input="onSearchItems"
+              ></v-text-field>
+            </v-col>
+
             <v-col cols="12" md="2">
               <v-btn
                 class="my-1"
-                prepend-icon="mdi-account-plus"
+                prepend-icon="mdi-plus"
                 color="deep-orange-lighten-1"
                 block
                 @click="onAdd"
               >
-                Add User
+                Add Amount
               </v-btn>
             </v-col>
           </v-row>
@@ -125,18 +149,14 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <v-divider class="my-5"></v-divider>
         </template>
 
-        <template #item.lastname="{ item }">
+        <template #item.name="{ item }">
           <span class="font-weight-bold">
-            {{ item.user_metadata.lastname }}, {{ item.user_metadata.firstname }}
+            {{ item.name }}
           </span>
         </template>
 
-        <template #item.phone="{ item }">
-          {{ item.user_metadata.phone }}
-        </template>
-
-        <template #item.user_role="{ item }">
-          {{ item.user_metadata.user_role }}
+        <template #item.branches="{ item }">
+          {{ item.branches.name }}
         </template>
 
         <template #item.created_at="{ item }">
@@ -149,18 +169,12 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <div class="d-flex align-center justify-center">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil" size="large"></v-icon>
-              <v-tooltip activator="parent" location="top">Edit User</v-tooltip>
+              <v-tooltip activator="parent" location="top">Edit Expenditue</v-tooltip>
             </v-btn>
 
-            <v-btn
-              variant="text"
-              density="comfortable"
-              :disabled="item.user_metadata.is_admin"
-              @click="onDelete(item.id)"
-              icon
-            >
+            <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
               <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
-              <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
+              <v-tooltip activator="parent" location="top">Delete Expenditue</v-tooltip>
             </v-btn>
           </div>
         </template>
@@ -168,16 +182,17 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
     </v-col>
   </v-row>
 
-  <UsersFormDialog
+  <ExpensesFormDialog
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
     :table-options="tableOptions"
-  ></UsersFormDialog>
+    :table-filters="tableFilters"
+  ></ExpensesFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
     title="Confirm Delete"
-    text="Are you sure you want to delete user?"
+    text="Are you sure you want to delete expenditure?"
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>
