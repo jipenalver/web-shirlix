@@ -2,6 +2,7 @@
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import ExpensesFormDialog from './ExpensesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { tableHeaders } from './expensesTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useExpensesStore } from '@/stores/expenses'
 import { useDate } from 'vuetify'
@@ -9,42 +10,6 @@ import { ref } from 'vue'
 
 // Utilize
 const date = useDate()
-
-// Table Headers
-const tableHeaders = [
-  {
-    title: 'Name',
-    key: 'name',
-    align: 'start'
-  },
-  {
-    title: 'Amount',
-    key: 'amount',
-    align: 'start'
-  },
-  {
-    title: 'Description',
-    key: 'description',
-    align: 'start'
-  },
-  {
-    title: 'Branch',
-    key: 'branches',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Added Date',
-    key: 'created_at',
-    align: 'center'
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    sortable: false,
-    align: 'center'
-  }
-]
 
 // Use Pinia Store
 const expensesStore = useExpensesStore()

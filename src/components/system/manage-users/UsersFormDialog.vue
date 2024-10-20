@@ -64,7 +64,7 @@ const onSubmit = async () => {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Added User.'
 
-    await usersStore.getUsers(props.tableOptions)
+    await usersStore.getUsersTable(props.tableOptions)
 
     // Form Reset and Close Dialog
     setTimeout(() => {

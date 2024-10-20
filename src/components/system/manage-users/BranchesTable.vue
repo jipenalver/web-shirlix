@@ -1,39 +1,15 @@
 <script setup>
+import { useBranchesStore } from '@/stores/branches'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import BranchesFormDialog from './BranchesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { useDate } from 'vuetify'
-import { useBranchesStore } from '@/stores/branches'
-import { ref } from 'vue'
 import { formActionDefault } from '@/utils/supabase'
+import { tableHeaders } from './branchesTableUtils'
+import { useDate } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize
 const date = useDate()
-
-// Table Headers
-const tableHeaders = [
-  {
-    title: 'Name',
-    key: 'name',
-    align: 'start'
-  },
-  {
-    title: 'Address',
-    key: 'address',
-    align: 'start'
-  },
-  {
-    title: 'Added Date',
-    key: 'created_at',
-    align: 'center'
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    sortable: false,
-    align: 'center'
-  }
-]
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -114,7 +90,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await branchesStore.getBranches({ page, itemsPerPage, sortBy }, tableFilters)
+  await branchesStore.getBranchesTable({ page, itemsPerPage, sortBy }, tableFilters)
 
   // Trigger Loading
   tableOptions.value.isLoading = false

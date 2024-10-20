@@ -56,7 +56,7 @@ const onSubmit = async () => {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Added Branch.'
 
-    await branchesStore.getBranches(props.tableOptions, props.tableFilters)
+    await branchesStore.getBranchesTable(props.tableOptions, props.tableFilters)
 
     // Form Reset and Close Dialog
     setTimeout(() => {

@@ -4,51 +4,12 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import UsersFormDialog from './UsersFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { formActionDefault } from '@/utils/supabase'
+import { tableHeaders } from './usersTableUtils'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
 
 // Utilize
 const date = useDate()
-
-// Table Headers
-const tableHeaders = [
-  {
-    title: 'Email',
-    key: 'email',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Fullname',
-    key: 'lastname',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Phone',
-    key: 'phone',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Role',
-    key: 'user_role',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Registered Date',
-    key: 'created_at',
-    sortable: false,
-    align: 'center'
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    sortable: false,
-    align: 'center'
-  }
-]
 
 // Use Pinia Store
 const usersStore = useUsersStore()
@@ -118,7 +79,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await usersStore.getUsers({ page, itemsPerPage, sortBy })
+  await usersStore.getUsersTable({ page, itemsPerPage, sortBy })
 
   // Trigger Loading
   tableOptions.value.isLoading = false
