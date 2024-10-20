@@ -4,7 +4,7 @@ import { useUsersStore } from '@/stores/users'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { emailValidator, passwordValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions'])
 
@@ -86,6 +86,11 @@ const onFormReset = () => {
   formData.value = { ...formDataDefault }
   emit('update:isDialogVisible', false)
 }
+
+// Load Functions during component rendering
+onMounted(async () => {
+  if (userRolesStore.userRoles.length == 0) await userRolesStore.getUserRoles()
+})
 </script>
 
 <template>
@@ -127,6 +132,7 @@ const onFormReset = () => {
                 item-title="user_role"
                 item-value="user_role"
                 clearable
+                :rules="[requiredValidator]"
               ></v-autocomplete>
             </v-col>
 

@@ -29,7 +29,8 @@ const tableHeaders = [
   },
   {
     title: 'Branch',
-    key: 'branch',
+    key: 'branches',
+    sortable: false,
     align: 'start'
   },
   {
@@ -125,7 +126,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await expensesStore.getExpenses({ page, itemsPerPage, sortBy }, tableFilters)
+  await expensesStore.getExpensesTable({ page, itemsPerPage, sortBy }, tableFilters)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -170,7 +171,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
             <v-col cols="12" md="2">
               <v-btn
                 class="my-1"
-                prepend-icon="mdi-account-plus"
+                prepend-icon="mdi-plus"
                 color="deep-orange-lighten-1"
                 block
                 @click="onAdd"
@@ -187,6 +188,10 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
           <span class="font-weight-bold">
             {{ item.name }}
           </span>
+        </template>
+
+        <template #item.branches="{ item }">
+          {{ item.branches.name }}
         </template>
 
         <template #item.created_at="{ item }">

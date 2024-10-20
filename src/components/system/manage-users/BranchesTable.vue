@@ -159,7 +159,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
             <v-col cols="12" md="2">
               <v-btn
                 class="my-1"
-                prepend-icon="mdi-account-plus"
+                prepend-icon="mdi-plus"
                 color="deep-orange-lighten-1"
                 block
                 @click="onAdd"

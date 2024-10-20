@@ -1,12 +1,11 @@
 <script setup>
+import { useUsersStore } from '@/stores/users'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import UsersFormDialog from './UsersFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { useDate } from 'vuetify'
-import { useUsersStore } from '@/stores/users'
-import { onMounted, ref } from 'vue'
 import { formActionDefault } from '@/utils/supabase'
-import { useUserRolesStore } from '@/stores/userRoles'
+import { useDate } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize
 const date = useDate()
@@ -52,7 +51,6 @@ const tableHeaders = [
 ]
 
 // Use Pinia Store
-const userRolesStore = useUserRolesStore()
 const usersStore = useUsersStore()
 
 // Load Variables
@@ -125,11 +123,6 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
-
-// Load Functions during component rendering
-onMounted(async () => {
-  if (userRolesStore.userRoles.length == 0) await userRolesStore.getUserRoles()
-})
 </script>
 
 <template>

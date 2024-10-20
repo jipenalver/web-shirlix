@@ -15,7 +15,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   }
 
   // Retrieve Expenses
-  async function getExpenses({ page, itemsPerPage, sortBy }, { search }) {
+  async function getExpensesTable({ page, itemsPerPage, sortBy }, { search }) {
     // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(
       page,
@@ -30,7 +30,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     // Query Supabase with pagination and sorting
     const { data } = await supabase
       .from('expenses')
-      .select()
+      .select('*, branches( name )')
       .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
@@ -57,7 +57,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   return {
     expensesTable,
     $reset,
-    getExpenses,
+    getExpensesTable,
     addExpenditure,
     updateExpenditure,
     deleteExpenditure

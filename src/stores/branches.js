@@ -5,6 +5,7 @@ import { supabase, tablePagination } from '@/utils/supabase'
 export const useBranchesStore = defineStore('branches', () => {
   // States
   const branchesTable = ref([])
+  const branches = ref([])
 
   // Getters
   // const doubleCount = computed(() => count.value * 2)
@@ -12,10 +13,11 @@ export const useBranchesStore = defineStore('branches', () => {
   // Reset State Action
   function $reset() {
     branchesTable.value = []
+    branches.value = []
   }
 
   // Retrieve Branches
-  async function getBranches({ page, itemsPerPage, sortBy }, { search }) {
+  async function getBranchesTable({ page, itemsPerPage, sortBy }, { search }) {
     // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(
       page,
@@ -39,6 +41,15 @@ export const useBranchesStore = defineStore('branches', () => {
     branchesTable.value = data
   }
 
+  // Retrieve Branches
+  async function getBranches() {
+    // Query Supabase with pagination and sorting
+    const { data } = await supabase.from('branches').select().order('name', { ascending: true })
+
+    // Set the retrieved data to state
+    branches.value = data
+  }
+
   // Add Branches
   async function addBranch(formData) {
     return await supabase.from('branches').insert([formData]).select()
@@ -54,5 +65,14 @@ export const useBranchesStore = defineStore('branches', () => {
     return await supabase.from('branches').delete().eq('id', id)
   }
 
-  return { branchesTable, $reset, getBranches, addBranch, updateBranch, deleteBranch }
+  return {
+    branchesTable,
+    branches,
+    $reset,
+    getBranchesTable,
+    getBranches,
+    addBranch,
+    updateBranch,
+    deleteBranch
+  }
 })
