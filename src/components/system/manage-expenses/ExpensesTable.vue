@@ -1,11 +1,11 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import BranchesFormDialog from './BranchesFormDialog.vue'
+import BranchesFormDialog from '@/components/system/manage-users/BranchesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { useDate } from 'vuetify'
-import { useBranchesStore } from '@/stores/branches'
-import { ref } from 'vue'
 import { formActionDefault } from '@/utils/supabase'
+import { useExpensesStore } from '@/stores/expenses'
+import { useDate } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize
 const date = useDate()
@@ -18,8 +18,18 @@ const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Address',
-    key: 'address',
+    title: 'Amount',
+    key: 'amount',
+    align: 'start'
+  },
+  {
+    title: 'Description',
+    key: 'description',
+    align: 'start'
+  },
+  {
+    title: 'Branch',
+    key: 'branch',
     align: 'start'
   },
   {
@@ -36,7 +46,7 @@ const tableHeaders = [
 ]
 
 // Use Pinia Store
-const branchesStore = useBranchesStore()
+const expensesStore = useExpensesStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -46,7 +56,8 @@ const tableOptions = ref({
   isLoading: false
 })
 const tableFilters = ref({
-  search: ''
+  search: '',
+  branch: null
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -79,7 +90,7 @@ const onConfirmDelete = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { error } = await branchesStore.deleteBranch(deleteId.value)
+  const { error } = await expensesStore.deleteExpenditure(deleteId.value)
 
   // Turn off processing
   formAction.value.formProcess = false
@@ -93,7 +104,7 @@ const onConfirmDelete = async () => {
   }
 
   // Add Success Message
-  formAction.value.formSuccessMessage = 'Successfully Deleted Branch.'
+  formAction.value.formSuccessMessage = 'Successfully Deleted Expenditue.'
 
   // Retrieve Data
   onLoadItems(tableOptions.value, tableFilters.value)
@@ -114,7 +125,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await branchesStore.getBranches({ page, itemsPerPage, sortBy }, tableFilters)
+  await expensesStore.getExpenses({ page, itemsPerPage, sortBy }, tableFilters)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -136,8 +147,8 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="branchesStore.branchesTable"
-        :items-length="branchesStore.branchesTable.length"
+        :items="expensesStore.expensesTable"
+        :items-length="expensesStore.expensesTable.length"
         @update:options="onLoadItems"
       >
         <template #top>
@@ -164,7 +175,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
                 block
                 @click="onAdd"
               >
-                Add Branch
+                Add Amount
               </v-btn>
             </v-col>
           </v-row>
@@ -188,12 +199,12 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
           <div class="d-flex align-center justify-center">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil" size="large"></v-icon>
-              <v-tooltip activator="parent" location="top">Edit Branch</v-tooltip>
+              <v-tooltip activator="parent" location="top">Edit Expenditue</v-tooltip>
             </v-btn>
 
             <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
               <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
-              <v-tooltip activator="parent" location="top">Delete Branch</v-tooltip>
+              <v-tooltip activator="parent" location="top">Delete Expenditue</v-tooltip>
             </v-btn>
           </div>
         </template>
@@ -211,7 +222,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
     title="Confirm Delete"
-    text="Are you sure you want to delete branch?"
+    text="Are you sure you want to delete expenditure?"
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>

@@ -1,4 +1,5 @@
 <script setup>
+import ExpensesTable from '@/components/system/manage-expenses/ExpensesTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -34,7 +35,9 @@ const isDrawerVisible = ref(true)
         </v-card>
 
         <v-card>
-          <v-card-text> </v-card-text>
+          <v-card-text>
+            <ExpensesTable></ExpensesTable>
+          </v-card-text>
         </v-card>
       </v-container>
     </template>
