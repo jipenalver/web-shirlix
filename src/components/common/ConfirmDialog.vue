@@ -7,10 +7,14 @@ const onConfirm = () => {
   emit('update:isDialogVisible', false)
   emit('confirm')
 }
+
+const onClose = () => {
+  emit('update:isDialogVisible', false)
+}
 </script>
 
 <template>
-  <v-dialog max-width="400" :model-value="props.isDialogVisible" persistent>
+  <v-dialog max-width="400" :model-value="props.isDialogVisible" @update:model-value="onClose">
     <v-card prepend-icon="mdi-map-marker" :title="props.title">
       <v-card-text>
         {{ props.text }}
@@ -21,9 +25,7 @@ const onConfirm = () => {
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <v-btn prepend-icon="mdi-thumb-down" @click="emit('update:isDialogVisible', false)">
-          Disagree
-        </v-btn>
+        <v-btn prepend-icon="mdi-thumb-down" @click="onClose"> Disagree </v-btn>
 
         <v-btn
           prepend-icon="mdi-thumb-up"
