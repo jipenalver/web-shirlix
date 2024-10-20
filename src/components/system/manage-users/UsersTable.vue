@@ -112,11 +112,11 @@ const onConfirmDelete = async () => {
   formAction.value.formSuccessMessage = 'Successfully Deleted User.'
 
   // Retrieve Data
-  await usersStore.getUsers(tableOptions.value)
+  onLoadItems(tableOptions.value)
 }
 
 // Load Tables Data
-const loadItems = async ({ page, itemsPerPage, sortBy }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
@@ -149,7 +149,7 @@ onMounted(async () => {
         :headers="tableHeaders"
         :items="usersStore.usersTable"
         :items-length="usersStore.usersTable.length"
-        @update:options="loadItems"
+        @update:options="onLoadItems"
       >
         <template #top>
           <v-row dense>

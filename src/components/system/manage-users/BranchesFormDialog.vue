@@ -1,16 +1,16 @@
 <script setup>
-import { useUsersStore } from '@/stores/users'
+import { useBranchesStore } from '@/stores/branches'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions'])
+const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Use Pinia Store
-const usersStore = useUsersStore()
+const branchesStore = useBranchesStore()
 
 // Load Variables
 const formDataDefault = {
@@ -42,8 +42,8 @@ const onSubmit = async () => {
 
   // Check if isUpdate is true, then do update, if false do add
   const { data, error } = isUpdate.value
-    ? await usersStore.updateUser(formData.value)
-    : await usersStore.addUser(formData.value)
+    ? await branchesStore.updateBranch(formData.value)
+    : await branchesStore.addBranch(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -56,7 +56,7 @@ const onSubmit = async () => {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Added Branch.'
 
-    await usersStore.getUsers(props.tableOptions)
+    await branchesStore.getBranches(props.tableOptions, props.tableFilters)
 
     // Form Reset and Close Dialog
     setTimeout(() => {
@@ -82,7 +82,7 @@ const onFormReset = () => {
 
 <template>
   <v-dialog max-width="600" :model-value="props.isDialogVisible" persistent>
-    <v-card prepend-icon="mdi-account" title="Branch Information">
+    <v-card prepend-icon="mdi-store" title="Branch Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"

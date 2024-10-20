@@ -24,13 +24,14 @@ export const useBranchesStore = defineStore('branches', () => {
       'name',
       true
     )
+    // Handle Search if null turn to empty string
+    search = search || ''
 
     // Query Supabase with pagination and sorting
     const { data } = await supabase
       .from('branches')
       .select()
-      .ilike('name', '%' + search + '%')
-      .ilike('address', '%' + search + '%')
+      .or('name.ilike.%' + search + '%, address.ilike.%' + search + '%')
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
 

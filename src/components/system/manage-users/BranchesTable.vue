@@ -15,19 +15,16 @@ const tableHeaders = [
   {
     title: 'Name',
     key: 'name',
-    sortable: false,
     align: 'start'
   },
   {
     title: 'Address',
     key: 'address',
-    sortable: false,
     align: 'start'
   },
   {
     title: 'Added Date',
     key: 'created_at',
-    sortable: false,
     align: 'center'
   },
   {
@@ -99,15 +96,25 @@ const onConfirmDelete = async () => {
   formAction.value.formSuccessMessage = 'Successfully Deleted Branch.'
 
   // Retrieve Data
-  await branchesStore.getBranches(tableOptions.value, tableFilters.value)
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
+
+// Retrieve Data based on Search
+const onSearchItems = () => {
+  if (
+    tableFilters.value.search?.length >= 3 ||
+    tableFilters.value.search?.length == 0 ||
+    tableFilters.value.search === null
+  )
+    onLoadItems(tableOptions.value, tableFilters.value)
 }
 
 // Load Tables Data
-const loadItems = async ({ page, itemsPerPage, sortBy }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { search: '' }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await branchesStore.getBranches({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await branchesStore.getBranches({ page, itemsPerPage, sortBy }, tableFilters)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -131,7 +138,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
         :headers="tableHeaders"
         :items="branchesStore.branchesTable"
         :items-length="branchesStore.branchesTable.length"
-        @update:options="loadItems"
+        @update:options="onLoadItems"
       >
         <template #top>
           <v-row dense>
@@ -144,6 +151,8 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
                 prepend-inner-icon="mdi-magnify"
                 placeholder="Search"
                 clearable
+                @click:clear="onSearchItems"
+                @input="onSearchItems"
               ></v-text-field>
             </v-col>
 
@@ -163,18 +172,10 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
           <v-divider class="my-5"></v-divider>
         </template>
 
-        <template #item.lastname="{ item }">
+        <template #item.name="{ item }">
           <span class="font-weight-bold">
-            {{ item.user_metadata.lastname }}, {{ item.user_metadata.firstname }}
+            {{ item.name }}
           </span>
-        </template>
-
-        <template #item.phone="{ item }">
-          {{ item.user_metadata.phone }}
-        </template>
-
-        <template #item.user_role="{ item }">
-          {{ item.user_metadata.user_role }}
         </template>
 
         <template #item.created_at="{ item }">
@@ -190,13 +191,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
               <v-tooltip activator="parent" location="top">Edit Branch</v-tooltip>
             </v-btn>
 
-            <v-btn
-              variant="text"
-              density="comfortable"
-              :disabled="item.user_metadata.is_admin"
-              @click="onDelete(item.id)"
-              icon
-            >
+            <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
               <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
               <v-tooltip activator="parent" location="top">Delete Branch</v-tooltip>
             </v-btn>
@@ -210,6 +205,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
     :table-options="tableOptions"
+    :table-filters="tableFilters"
   ></BranchesFormDialog>
 
   <ConfirmDialog
