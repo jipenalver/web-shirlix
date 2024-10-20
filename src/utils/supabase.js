@@ -38,7 +38,7 @@ export const formActionDefault = {
   formSuccessMessage: ''
 }
 
-// 👉 Supabase Pagination
+// 👉 Table Pagination
 export const tablePagination = (
   page,
   itemsPerPage,
