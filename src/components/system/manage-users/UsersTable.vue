@@ -111,8 +111,8 @@ const onConfirmDelete = async () => {
   // Add Success Message
   formAction.value.formSuccessMessage = 'Successfully Deleted User.'
 
-  // Retrieve Users
-  await usersStore.getUsers(tableOptions)
+  // Retrieve Data
+  await usersStore.getUsers(tableOptions.value)
 }
 
 // Load Tables Data
@@ -120,7 +120,6 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  // Load Users
   await usersStore.getUsers({ page, itemsPerPage, sortBy })
 
   // Trigger Loading

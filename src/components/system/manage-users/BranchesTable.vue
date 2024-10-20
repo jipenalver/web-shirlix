@@ -1,9 +1,9 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import UsersFormDialog from './UsersFormDialog.vue'
+import BranchesFormDialog from './BranchesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useDate } from 'vuetify'
-import { useUsersStore } from '@/stores/users'
+import { useBranchesStore } from '@/stores/branches'
 import { ref } from 'vue'
 import { formActionDefault } from '@/utils/supabase'
 
@@ -25,7 +25,7 @@ const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Created Date',
+    title: 'Added Date',
     key: 'created_at',
     sortable: false,
     align: 'center'
@@ -39,7 +39,7 @@ const tableHeaders = [
 ]
 
 // Use Pinia Store
-const usersStore = useUsersStore()
+const branchesStore = useBranchesStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -47,6 +47,9 @@ const tableOptions = ref({
   itemsPerPage: 10,
   sortBy: [],
   isLoading: false
+})
+const tableFilters = ref({
+  search: ''
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -58,9 +61,7 @@ const formAction = ref({
 
 // Trigger Update Btn
 const onUpdate = (item) => {
-  const { id, email, phone, user_metadata } = item
-
-  itemData.value = { id, email, phone, ...user_metadata }
+  itemData.value = item
   isDialogVisible.value = true
 }
 
@@ -81,7 +82,7 @@ const onConfirmDelete = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { error } = await usersStore.deleteUser(deleteId.value)
+  const { error } = await branchesStore.deleteBranch(deleteId.value)
 
   // Turn off processing
   formAction.value.formProcess = false
@@ -97,8 +98,8 @@ const onConfirmDelete = async () => {
   // Add Success Message
   formAction.value.formSuccessMessage = 'Successfully Deleted Branch.'
 
-  // Retrieve Branches
-  await usersStore.getUsers(tableOptions)
+  // Retrieve Data
+  await branchesStore.getBranches(tableOptions.value, tableFilters.value)
 }
 
 // Load Tables Data
@@ -106,8 +107,7 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  // Load Branches
-  await usersStore.getUsers({ page, itemsPerPage, sortBy })
+  await branchesStore.getBranches({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -129,13 +129,23 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="usersStore.usersTable"
-        :items-length="usersStore.usersTable.length"
+        :items="branchesStore.branchesTable"
+        :items-length="branchesStore.branchesTable.length"
         @update:options="loadItems"
       >
         <template #top>
           <v-row dense>
             <v-spacer></v-spacer>
+
+            <v-col cols="12" md="4">
+              <v-text-field
+                v-model="tableFilters.search"
+                density="compact"
+                prepend-inner-icon="mdi-magnify"
+                placeholder="Search"
+                clearable
+              ></v-text-field>
+            </v-col>
 
             <v-col cols="12" md="2">
               <v-btn
@@ -196,11 +206,11 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
     </v-col>
   </v-row>
 
-  <UsersFormDialog
+  <BranchesFormDialog
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
     :table-options="tableOptions"
-  ></UsersFormDialog>
+  ></BranchesFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"

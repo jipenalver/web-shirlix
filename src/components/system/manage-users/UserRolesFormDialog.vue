@@ -55,7 +55,6 @@ const onSubmit = async () => {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Added User Role.'
 
-    // Retrieve User Roles
     await userRolesStore.getUserRoles()
 
     // Form Reset and Close Dialog
@@ -106,7 +105,7 @@ const onFormReset = () => {
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
 
-          <v-btn text="Close" variant="plain" @click="onFormReset"></v-btn>
+          <v-btn text="Close" variant="plain" prepend-icon="mdi-close" @click="onFormReset"></v-btn>
 
           <v-btn
             prepend-icon="mdi-pencil"

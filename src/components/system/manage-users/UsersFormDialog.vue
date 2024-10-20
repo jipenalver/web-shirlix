@@ -1,10 +1,10 @@
 <script setup>
+import { useUserRolesStore } from '@/stores/userRoles'
 import { useUsersStore } from '@/stores/users'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { emailValidator, passwordValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
-import { useUserRolesStore } from '@/stores/userRoles'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions'])
 
@@ -64,7 +64,6 @@ const onSubmit = async () => {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Added User.'
 
-    // Retrieve Users
     await usersStore.getUsers(props.tableOptions)
 
     // Form Reset and Close Dialog
@@ -169,7 +168,7 @@ const onFormReset = () => {
         <v-card-actions class="pa-4">
           <v-spacer></v-spacer>
 
-          <v-btn text="Close" variant="plain" @click="onFormReset"></v-btn>
+          <v-btn text="Close" variant="plain" prepend-icon="mdi-close" @click="onFormReset"></v-btn>
 
           <v-btn
             prepend-icon="mdi-pencil"

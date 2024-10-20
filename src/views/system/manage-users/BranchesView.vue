@@ -1,4 +1,5 @@
 <script setup>
+import BranchesTable from '@/components/system/manage-users/BranchesTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -29,12 +30,16 @@ const isDrawerVisible = ref(true)
           </template>
 
           <template #subtitle>
-            <p class="ms-4 text-wrap">Manage company branches and set name and address.</p>
+            <p class="ms-4 text-wrap">
+              Manage branch locations and configure their names and addresses.
+            </p>
           </template>
         </v-card>
 
         <v-card>
-          <v-card-text> </v-card-text>
+          <v-card-text>
+            <BranchesTable></BranchesTable>
+          </v-card-text>
         </v-card>
       </v-container>
     </template>
