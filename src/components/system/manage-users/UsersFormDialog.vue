@@ -1,4 +1,5 @@
 <script setup>
+import { useBranchesStore } from '@/stores/branches'
 import { useUserRolesStore } from '@/stores/userRoles'
 import { useUsersStore } from '@/stores/users'
 import AlertNotification from '@/components/common/AlertNotification.vue'
@@ -11,6 +12,7 @@ const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions'])
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Use Pinia Store
+const branchesStore = useBranchesStore()
 const userRolesStore = useUserRolesStore()
 const usersStore = useUsersStore()
 
@@ -22,6 +24,7 @@ const formDataDefault = {
   middlename: '',
   lastname: '',
   phone: '',
+  branch: null,
   user_role: null
 }
 const formData = ref({
@@ -90,6 +93,7 @@ const onFormReset = () => {
 // Load Functions during component rendering
 onMounted(async () => {
   if (userRolesStore.userRoles.length == 0) await userRolesStore.getUserRoles()
+  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
 })
 </script>
 
@@ -124,13 +128,25 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12">
+            <v-col cols="12" md="6">
               <v-autocomplete
                 v-model="formData.user_role"
                 label="User Role"
                 :items="userRolesStore.userRoles"
                 item-title="user_role"
                 item-value="user_role"
+                clearable
+                :rules="[requiredValidator]"
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <v-autocomplete
+                v-model="formData.branch"
+                label="Branch"
+                :items="branchesStore.branches"
+                item-title="name"
+                item-value="name"
                 clearable
                 :rules="[requiredValidator]"
               ></v-autocomplete>

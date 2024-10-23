@@ -135,6 +135,10 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           {{ item.user_metadata.phone }}
         </template>
 
+        <template #item.branch="{ item }">
+          {{ item.user_metadata.branch }}
+        </template>
+
         <template #item.user_role="{ item }">
           {{ item.user_metadata.user_role }}
         </template>

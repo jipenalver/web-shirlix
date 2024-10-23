@@ -19,6 +19,12 @@ export const tableHeaders = [
     align: 'start'
   },
   {
+    title: 'Branch',
+    key: 'branch',
+    sortable: false,
+    align: 'start'
+  },
+  {
     title: 'Role',
     key: 'user_role',
     sortable: false,
