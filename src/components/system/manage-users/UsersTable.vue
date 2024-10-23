@@ -8,7 +8,7 @@ import { tableHeaders } from './usersTableUtils'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
 
-// Utilize
+// Utilize pre-defined vue functions
 const date = useDate()
 
 // Use Pinia Store

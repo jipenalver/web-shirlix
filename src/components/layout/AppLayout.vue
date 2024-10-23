@@ -8,7 +8,7 @@ const props = defineProps(['isWithAppBarNavIcon'])
 
 const emit = defineEmits(['isDrawerVisible'])
 
-// Utilize predefined vue functions
+// Utilize pre-defined vue functions
 const { mobile } = useDisplay()
 
 // Load Variables

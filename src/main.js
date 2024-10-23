@@ -9,6 +9,7 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { VDateInput } from 'vuetify/labs/VDateInput'
 
 // ApexCharts
 import VueApexCharts from 'vue3-apexcharts'
@@ -22,7 +23,10 @@ const vuetify = createVuetify({
   icons: {
     defaultSet: 'mdi'
   },
-  components,
+  components: {
+    ...components,
+    VDateInput
+  },
   directives
 })
 

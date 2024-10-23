@@ -8,7 +8,7 @@ import { useExpensesStore } from '@/stores/expenses'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
 
-// Utilize
+// Utilize pre-defined vue functions
 const date = useDate()
 
 // Use Pinia Store
@@ -159,9 +159,9 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
           {{ item.branches.name }}
         </template>
 
-        <template #item.created_at="{ item }">
+        <template #item.spent_at="{ item }">
           <span class="font-weight-bold">
-            {{ date.format(item.created_at, 'fullDateTime') }}
+            {{ item.spent_at ? date.format(item.spent_at, 'fullDate') : '' }}
           </span>
         </template>
 
