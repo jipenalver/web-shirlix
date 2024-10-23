@@ -11,9 +11,6 @@ export const useExpensesStore = defineStore('expenses', () => {
   // States
   const expensesTable = ref([])
 
-  // Getters
-  // const doubleCount = computed(() => count.value * 2)
-
   // Reset State Action
   function $reset() {
     expensesTable.value = []
@@ -26,7 +23,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       page,
       itemsPerPage,
       sortBy,
-      'name', // Default Column
+      'name', // Default Column to be sorted
       true // true = Ascending, false = Descending
     )
     // Handle Search if null turn to empty string

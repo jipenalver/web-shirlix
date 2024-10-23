@@ -6,9 +6,6 @@ export const useUsersStore = defineStore('users', () => {
   // States
   const usersTable = ref([])
 
-  // Getters
-  // const doubleCount = computed(() => count.value * 2)
-
   // Reset State Action
   function $reset() {
     usersTable.value = []
