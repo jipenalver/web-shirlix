@@ -8,7 +8,7 @@ import { tableHeaders } from './usersTableUtils'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
 
-// Utilize
+// Utilize pre-defined vue functions
 const date = useDate()
 
 // Use Pinia Store
@@ -133,6 +133,10 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 
         <template #item.phone="{ item }">
           {{ item.user_metadata.phone }}
+        </template>
+
+        <template #item.branch="{ item }">
+          {{ item.user_metadata.branch }}
         </template>
 
         <template #item.user_role="{ item }">

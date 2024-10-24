@@ -12,7 +12,7 @@ import { ref, watch } from 'vue'
 
 const props = defineProps(['isDrawerVisible'])
 
-// Utilize predefined vue functions
+// Utilize pre-defined vue functions
 const { mobile } = useDisplay()
 
 // Load Variables

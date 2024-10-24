@@ -21,6 +21,7 @@ const formDataDefault = {
   name: '',
   description: '',
   amount: 0,
+  spent_at: new Date(),
   branch_id: null,
   user_id: authStore.userData.id
 }
@@ -38,7 +39,9 @@ watch(
   () => props.itemData,
   (propsItemData) => {
     isUpdate.value = propsItemData ? true : false
-    formData.value = propsItemData ? { ...propsItemData } : { ...formDataDefault }
+    formData.value = propsItemData
+      ? { ...propsItemData, spent_at: new Date(propsItemData.spent_at) }
+      : { ...formDataDefault }
   }
 )
 
@@ -140,6 +143,15 @@ onMounted(async () => {
                 clearable
                 :rules="[requiredValidator]"
               ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12">
+              <v-date-input
+                v-model="formData.spent_at"
+                label="Date Spent"
+                :rules="[requiredValidator]"
+                hide-actions
+              ></v-date-input>
             </v-col>
           </v-row>
         </v-card-text>

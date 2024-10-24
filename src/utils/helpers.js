@@ -6,3 +6,16 @@ export const getAvatarText = (name) => {
 
   return initials.join('')
 }
+
+// 👉 Fix v-date-input datetime shift issue
+export const dateShiftFix = (vueDate, formData, dateColumns = []) => {
+  dateColumns.forEach((dateColumn) => {
+    if (formData[dateColumn])
+      formData = {
+        ...formData,
+        [dateColumn]: vueDate.addDays(formData[dateColumn], 1) // Add 1 day to the date field
+      }
+  })
+
+  return formData
+}

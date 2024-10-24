@@ -7,24 +7,21 @@ export const useBranchesStore = defineStore('branches', () => {
   const branchesTable = ref([])
   const branches = ref([])
 
-  // Getters
-  // const doubleCount = computed(() => count.value * 2)
-
   // Reset State Action
   function $reset() {
     branchesTable.value = []
     branches.value = []
   }
 
-  // Retrieve Branches
+  // Retrieve Branches Table
   async function getBranchesTable({ page, itemsPerPage, sortBy }, { search }) {
     // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(
       page,
       itemsPerPage,
       sortBy,
-      'name',
-      true
+      'name', // Default Column to be sorted
+      true // true = Ascending, false = Descending
     )
     // Handle Search if null turn to empty string
     search = search || ''

@@ -22,8 +22,8 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Added Date',
-    key: 'created_at',
+    title: 'Date Spent',
+    key: 'spent_at',
     align: 'center'
   },
   {

@@ -1,13 +1,15 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination } from '@/utils/supabase'
+import { dateShiftFix } from '@/utils/helpers'
+import { useDate } from 'vuetify'
 
 export const useExpensesStore = defineStore('expenses', () => {
+  // Utilize pre-defined vue functions
+  const date = useDate()
+
   // States
   const expensesTable = ref([])
-
-  // Getters
-  // const doubleCount = computed(() => count.value * 2)
 
   // Reset State Action
   function $reset() {
@@ -21,7 +23,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       page,
       itemsPerPage,
       sortBy,
-      'name', // Default Column
+      'name', // Default Column to be sorted
       true // true = Ascending, false = Descending
     )
     // Handle Search if null turn to empty string
@@ -46,7 +48,10 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   // Update Expenses
   async function updateExpenditure(formData) {
-    return await supabase.from('expenses').update(formData).eq('id', formData.id).select()
+    // eslint-disable-next-line no-unused-vars
+    const { branches, ...data } = dateShiftFix(date, formData, ['spent_at'])
+
+    return await supabase.from('expenses').update(data).eq('id', formData.id).select()
   }
 
   // Delete Expenses
