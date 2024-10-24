@@ -1,25 +1,11 @@
 <script setup>
+import SalesWidget from '@/components/system/dashboard/SalesWidget.vue'
+import ExpensesWidget from '@/components/system/dashboard/ExpensesWidget.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
 
 const isDrawerVisible = ref(true)
-
-const options = {
-  chart: {
-    id: 'vuechart-example'
-  },
-  xaxis: {
-    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-  }
-}
-
-const series = [
-  {
-    name: 'series-1',
-    data: [30, 40, 45, 50, 49, 60, 70, 91]
-  }
-]
 </script>
 
 <template>
@@ -50,12 +36,14 @@ const series = [
         </v-card>
 
         <v-row>
+          <v-col cols="12"> </v-col>
+
           <v-col cols="12" lg="6">
-            <v-card title="Sample Line Graph">
-              <v-card-text>
-                <apexchart width="100%" type="line" :options="options" :series="series"></apexchart>
-              </v-card-text>
-            </v-card>
+            <SalesWidget></SalesWidget>
+          </v-col>
+
+          <v-col cols="12" lg="6">
+            <ExpensesWidget></ExpensesWidget>
           </v-col>
         </v-row>
       </v-container>
