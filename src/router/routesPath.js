@@ -8,6 +8,7 @@ import UserRolesView from '@/views/system/manage-users/UserRolesView.vue'
 import UsersView from '@/views/system/manage-users/UsersView.vue'
 import BranchesView from '@/views/system/manage-users/BranchesView.vue'
 import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
+import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 
 // 👉 Routes
 export const routesPath = [
@@ -67,9 +68,17 @@ export const routesPath = [
   //   component: SamplePageView
   // },
   {
-    path: '/manage/expenses',
-    name: 'manage-expenses',
+    path: '/expenses',
+    name: 'expenses',
     component: ExpensesView,
+    meta: { requiresAuth: true }
+  },
+
+  // Reports Page
+  {
+    path: '/reports/expenses',
+    name: 'reports-expenses',
+    component: ExpensesReportView,
     meta: { requiresAuth: true }
   },
 

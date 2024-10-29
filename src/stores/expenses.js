@@ -10,13 +10,14 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   // States
   const expensesTable = ref([])
+  const expensesReport = ref([])
 
   // Reset State Action
   function $reset() {
     expensesTable.value = []
   }
 
-  // Retrieve Expenses
+  // Retrieve Expenses Table
   async function getExpensesTable({ page, itemsPerPage, sortBy }, { search }) {
     // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(
@@ -41,6 +42,30 @@ export const useExpensesStore = defineStore('expenses', () => {
     expensesTable.value = data
   }
 
+  // Retrieve Expenses Report
+  async function getExpensesReport({ page, itemsPerPage, sortBy }, { search }) {
+    // Handle Pagination
+    const { column, order } = tablePagination(
+      page,
+      itemsPerPage,
+      sortBy,
+      'name', // Default Column to be sorted
+      true // true = Ascending, false = Descending
+    )
+    // Handle Search if null turn to empty string
+    search = search || ''
+
+    // Query Supabase with pagination and sorting
+    const { data } = await supabase
+      .from('expenses')
+      .select('*, branches( name )')
+      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
+      .order(column, { ascending: order })
+
+    // Set the retrieved data to state
+    expensesReport.value = data
+  }
+
   // Add Expenses
   async function addExpenditure(formData) {
     return await supabase.from('expenses').insert([formData]).select()
@@ -61,8 +86,10 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   return {
     expensesTable,
+    expensesReport,
     $reset,
     getExpensesTable,
+    getExpensesReport,
     addExpenditure,
     updateExpenditure,
     deleteExpenditure
