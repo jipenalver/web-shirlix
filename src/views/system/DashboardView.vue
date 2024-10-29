@@ -1,10 +1,12 @@
 <script setup>
+import WelcomeWidget from '@/components/system/dashboard/WelcomeWidget.vue'
 import SalesWidget from '@/components/system/dashboard/SalesWidget.vue'
 import ExpensesWidget from '@/components/system/dashboard/ExpensesWidget.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
 
+// Load Variables
 const isDrawerVisible = ref(true)
 </script>
 
@@ -36,7 +38,9 @@ const isDrawerVisible = ref(true)
         </v-card>
 
         <v-row>
-          <v-col cols="12"> </v-col>
+          <v-col cols="12">
+            <WelcomeWidget></WelcomeWidget>
+          </v-col>
 
           <v-col cols="12" lg="6">
             <SalesWidget></SalesWidget>
