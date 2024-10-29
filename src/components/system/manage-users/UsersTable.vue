@@ -113,7 +113,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               <v-btn
                 class="my-1"
                 prepend-icon="mdi-account-plus"
-                color="deep-orange-lighten-1"
+                color="red-darken-4"
                 block
                 @click="onAdd"
               >
@@ -163,7 +163,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               @click="onDelete(item.id)"
               icon
             >
-              <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
+              <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
               <v-tooltip activator="parent" location="top">Delete User</v-tooltip>
             </v-btn>
           </div>

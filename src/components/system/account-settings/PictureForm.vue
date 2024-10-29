@@ -83,7 +83,7 @@ const onFormSubmit = () => {
         <v-img
           width="55%"
           class="mx-auto rounded-circle"
-          color="deep-orange-lighten-1"
+          color="red-darken-4"
           aspect-ratio="1"
           :src="imgPreview"
           alt="Profile Picture Preview"
@@ -109,7 +109,7 @@ const onFormSubmit = () => {
         <v-btn
           class="mt-2"
           type="submit"
-          color="deep-orange-lighten-1"
+          color="red-darken-4"
           prepend-icon="mdi-image-edit"
           :disabled="formAction.formProcess"
           :loading="formAction.formProcess"
