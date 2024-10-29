@@ -40,17 +40,23 @@ export const formActionDefault = {
 
 // 👉 Table Pagination
 export const tablePagination = (
-  page,
-  itemsPerPage,
-  sortBy,
-  defaultColumn = '',
+  { page, itemsPerPage, sortBy },
+  defaultColumn = 'id',
   isAscending = true
 ) => {
-  const rangeStart = (page - 1) * itemsPerPage
-  const rangeEnd = rangeStart + itemsPerPage - 1
   const [column, order] = sortBy[0]
     ? [sortBy[0].key, sortBy[0].order === 'asc']
     : [defaultColumn, isAscending]
+
+  if (itemsPerPage === -1) {
+    const rangeStart = 0
+    const rangeEnd = 999999999999999
+
+    return { rangeStart, rangeEnd, column, order }
+  }
+
+  const rangeStart = (page - 1) * itemsPerPage
+  const rangeEnd = rangeStart + itemsPerPage - 1
 
   return { rangeStart, rangeEnd, column, order }
 }

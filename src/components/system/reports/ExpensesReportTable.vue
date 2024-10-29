@@ -3,8 +3,9 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { tableHeaders } from './expensesReportTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useExpensesStore } from '@/stores/expenses'
+import { generateCSV } from '@/utils/helpers'
 import { useDate } from 'vuetify'
-import { ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const date = useDate()
@@ -43,10 +44,22 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
   tableOptions.value.isLoading = true
 
   await expensesStore.getExpensesReport({ page, itemsPerPage, sortBy }, tableFilters)
+  await expensesStore.getExpensesCSV({ page, itemsPerPage, sortBy }, tableFilters)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
+
+// Generate CSV
+const onGenerate = () => {
+  const filename = new Date().toISOString() + '-expenditures-report'
+
+  generateCSV(filename, expensesStore.expensesCSV)
+}
+
+onUnmounted(() => {
+  expensesStore.$reset()
+})
 </script>
 
 <template>
@@ -85,7 +98,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
 
             <v-divider></v-divider>
 
-            <v-col cols="12" md="8"></v-col>
+            <v-col cols="12" md="6"></v-col>
 
             <v-col cols="12" md="4">
               <v-text-field
@@ -97,6 +110,19 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
                 @click:clear="onSearchItems"
                 @input="onSearchItems"
               ></v-text-field>
+            </v-col>
+
+            <v-col cols="12" md="2">
+              <v-btn
+                :disabled="expensesStore.expensesCSV.length == 0"
+                class="my-1"
+                prepend-icon="mdi-file-delimited"
+                color="red-darken-4"
+                block
+                @click="onGenerate"
+              >
+                Generate CSV
+              </v-btn>
             </v-col>
           </v-row>
 
