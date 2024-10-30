@@ -11,19 +11,17 @@ export const useExpensesStore = defineStore('expenses', () => {
   // States
   const expensesTable = ref([])
   const expensesReport = ref([])
-  const expensesCSV = ref([])
 
   // Reset State Action
   function $reset() {
     expensesTable.value = []
     expensesReport.value = []
-    expensesCSV.value = []
   }
 
   // Retrieve Expenses Table
   async function getExpensesTable(tableOptions, { search }) {
     // Handle Pagination
-    const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted // true = Ascending, false = Descending
+    const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     // Handle Search if null turn to empty string
     search = search || ''
 
@@ -42,7 +40,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   // Retrieve Expenses Report
   async function getExpensesReport(tableOptions, { search }) {
     // Handle Pagination
-    const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted // true = Ascending, false = Descending
+    const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     // Handle Search if null turn to empty string
     search = search || ''
 
@@ -55,25 +53,6 @@ export const useExpensesStore = defineStore('expenses', () => {
 
     // Set the retrieved data to state
     expensesReport.value = data
-  }
-
-  // Retrieve Expenses Report
-  async function getExpensesCSV(tableOptions, { search }) {
-    // Handle Pagination
-    const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted // true = Ascending, false = Descending
-    // Handle Search if null turn to empty string
-    search = search || ''
-
-    // Query Supabase with sorting
-    const { data } = await supabase
-      .from('expenses')
-      .select('*, branches( name )')
-      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
-      .order(column, { ascending: order })
-      .csv()
-
-    // Set the retrieved data to state
-    expensesCSV.value = data
   }
 
   // Add Expenses
@@ -97,11 +76,9 @@ export const useExpensesStore = defineStore('expenses', () => {
   return {
     expensesTable,
     expensesReport,
-    expensesCSV,
     $reset,
     getExpensesTable,
     getExpensesReport,
-    getExpensesCSV,
     addExpenditure,
     updateExpenditure,
     deleteExpenditure

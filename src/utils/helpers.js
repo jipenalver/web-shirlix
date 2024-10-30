@@ -38,3 +38,8 @@ export const generateCSV = (filename, csvData) => {
 
   URL.revokeObjectURL(url)
 }
+
+// 👉 CSV Text Trimming
+export const generateCSVTrim = (string) => {
+  return string.replace(/,/g, ' ').replace(/\s+/g, ' ')
+}

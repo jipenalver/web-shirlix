@@ -1,9 +1,7 @@
 <script setup>
-import AlertNotification from '@/components/common/AlertNotification.vue'
 import { tableHeaders } from './expensesReportTableUtils'
-import { formActionDefault } from '@/utils/supabase'
 import { useExpensesStore } from '@/stores/expenses'
-import { generateCSV } from '@/utils/helpers'
+import { generateCSV, generateCSVTrim } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onUnmounted, ref } from 'vue'
 
@@ -24,9 +22,6 @@ const tableFilters = ref({
   search: '',
   spent_at: null
 })
-const formAction = ref({
-  ...formActionDefault
-})
 
 // Retrieve Data based on Search
 const onSearchItems = () => {
@@ -44,30 +39,47 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
   tableOptions.value.isLoading = true
 
   await expensesStore.getExpensesReport({ page, itemsPerPage, sortBy }, tableFilters)
-  await expensesStore.getExpensesCSV({ page, itemsPerPage, sortBy }, tableFilters)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
+}
+
+// CSV Data
+const csvData = () => {
+  // Get the headers from utils
+  const headers = tableHeaders.map((header) => header.title).join(',')
+
+  // Get the reports data and map it to be used as csv data
+  const rows = expensesStore.expensesReport.map((data) => {
+    const spent_at = data.spent_at ? generateCSVTrim(date.format(data.spent_at, 'fullDate')) : ''
+
+    return [
+      generateCSVTrim(data.name),
+      data.amount,
+      generateCSVTrim(data.description),
+      generateCSVTrim(data.branches.name),
+      spent_at
+    ].join(',')
+  })
+
+  // Combine headers and csv data
+  return [headers, ...rows].join('\n')
 }
 
 // Generate CSV
 const onGenerate = () => {
   const filename = new Date().toISOString() + '-expenditures-report'
 
-  generateCSV(filename, expensesStore.expensesCSV)
+  generateCSV(filename, csvData())
 }
 
+// If Component is Unloaded
 onUnmounted(() => {
   expensesStore.$reset()
 })
 </script>
 
 <template>
-  <AlertNotification
-    :form-success-message="formAction.formSuccessMessage"
-    :form-error-message="formAction.formErrorMessage"
-  ></AlertNotification>
-
   <v-row>
     <v-col cols="12">
       <!-- eslint-disable vue/valid-v-slot -->
@@ -98,7 +110,7 @@ onUnmounted(() => {
 
             <v-divider></v-divider>
 
-            <v-col cols="12" md="6"></v-col>
+            <v-col cols="12" md="5"></v-col>
 
             <v-col cols="12" md="4">
               <v-text-field
@@ -112,9 +124,9 @@ onUnmounted(() => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="3">
               <v-btn
-                :disabled="expensesStore.expensesCSV.length == 0"
+                :disabled="expensesStore.expensesReport.length == 0"
                 class="my-1"
                 prepend-icon="mdi-file-delimited"
                 color="red-darken-4"

@@ -4,6 +4,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
 
+// Load Variables
 const isDrawerVisible = ref(true)
 </script>
 
