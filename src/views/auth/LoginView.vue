@@ -31,7 +31,7 @@ const { mobile } = useDisplay()
 
                 <v-divider class="my-5"></v-divider>
 
-                <h4 class="text-center">
+                <h4 class="text-center" v-if="false">
                   Don't have account?
                   <RouterLink class="text-red-darken-4 font-weight-black" to="/register">
                     Click here to Register

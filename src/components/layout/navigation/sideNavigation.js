@@ -27,5 +27,5 @@ export const menuItemsNav5 = [
   ['Balance Sheet', 'mdi-scale-balance', '', ''],
   ['Gross Revenue & Net Profit', 'mdi-cash-100', '', ''],
   ['Sales', 'mdi-sale', '', ''],
-  ['Expenses', 'mdi-cash-multiple', 'Generate Reports', '/reports/expenses']
+  ['Expenses', 'mdi-cash-multiple', 'Generate CSV', '/reports/expenses']
 ]
