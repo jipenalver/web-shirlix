@@ -7,8 +7,8 @@ export const getAvatarText = (name) => {
   return initials.join('')
 }
 
-// 👉 Fix v-date-input datetime shift issue
-export const dateShiftFix = (vueDate, formData, dateColumns = []) => {
+// 👉 Fix v-date-input datetime shift issue for form
+export const dateShiftFixForm = (vueDate, formData, dateColumns = []) => {
   dateColumns.forEach((dateColumn) => {
     if (formData[dateColumn])
       formData = {
@@ -18,6 +18,11 @@ export const dateShiftFix = (vueDate, formData, dateColumns = []) => {
   })
 
   return formData
+}
+
+// 👉 Fix v-date-input datetime shift issue for value
+export const dateShiftFixValue = (vueDate, date) => {
+  return vueDate.addDays(date, 1)
 }
 
 // 👉 Generate CSV
