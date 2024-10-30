@@ -19,19 +19,26 @@ export const useExpensesStore = defineStore('expenses', () => {
   }
 
   // Retrieve Expenses Table
-  async function getExpensesTable(tableOptions, { search }) {
+  async function getExpensesTable(tableOptions, { search, branch_id }) {
     // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     // Handle Search if null turn to empty string
     search = search || ''
 
     // Query Supabase with pagination and sorting
-    const { data } = await supabase
+    let query = supabase
       .from('expenses')
       .select('*, branches( name )')
       .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
+
+    if (branch_id) {
+      query = query.eq('branch_id', branch_id)
+    }
+
+    // Execute the query
+    const { data } = await query
 
     // Set the retrieved data to state
     expensesTable.value = data

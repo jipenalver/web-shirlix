@@ -4,14 +4,16 @@ import ExpensesFormDialog from './ExpensesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { tableHeaders } from './expensesTableUtils'
 import { formActionDefault } from '@/utils/supabase'
+import { useBranchesStore } from '@/stores/branches'
 import { useExpensesStore } from '@/stores/expenses'
 import { useDate } from 'vuetify'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const date = useDate()
 
 // Use Pinia Store
+const branchesStore = useBranchesStore()
 const expensesStore = useExpensesStore()
 
 // Load Variables
@@ -23,7 +25,7 @@ const tableOptions = ref({
 })
 const tableFilters = ref({
   search: '',
-  branch: null
+  branch_id: null
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -76,6 +78,11 @@ const onConfirmDelete = async () => {
   onLoadItems(tableOptions.value, tableFilters.value)
 }
 
+// Retrieve Data based on Filter
+const onFilterItems = () => {
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
+
 // Retrieve Data based on Search
 const onSearchItems = () => {
   if (
@@ -96,6 +103,11 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
+
+// Load Functions during component rendering
+onMounted(async () => {
+  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
+})
 </script>
 
 <template>
@@ -120,6 +132,19 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
         <template #top>
           <v-row dense>
             <v-spacer></v-spacer>
+
+            <v-col cols="12" md="3">
+              <v-autocomplete
+                v-model="tableFilters.branch_id"
+                :items="branchesStore.branches"
+                density="compact"
+                label="Branch"
+                item-title="name"
+                item-value="id"
+                clearable
+                @update:model-value="onFilterItems"
+              ></v-autocomplete>
+            </v-col>
 
             <v-col cols="12" md="4">
               <v-text-field
