@@ -104,7 +104,7 @@ const onFormSubmit = () => {
     <v-btn
       class="mt-2"
       type="submit"
-      color="deep-orange-lighten-1"
+      color="red-darken-4"
       prepend-icon="mdi-account-box-edit-outline"
       :disabled="formAction.formProcess"
       :loading="formAction.formProcess"

@@ -1,6 +1,6 @@
 <script setup>
-import { isAuthenticated } from '@/utils/supabase'
 import ProfileHeaderNavigation from './ProfileHeaderNavigation.vue'
+import { isAuthenticated } from '@/utils/supabase'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -35,11 +35,7 @@ onMounted(() => {
 <template>
   <v-responsive>
     <v-app :theme="theme">
-      <v-app-bar
-        class="px-3"
-        :color="theme === 'light' ? 'grey-lighten-1' : 'grey-darken-4'"
-        border
-      >
+      <v-app-bar class="px-3" :color="theme === 'light' ? 'red-lighten-2' : 'red-darken-4'" border>
         <v-app-bar-nav-icon
           v-if="props.isWithAppBarNavIcon"
           icon="mdi-menu"
@@ -70,7 +66,7 @@ onMounted(() => {
       <v-footer
         class="font-weight-bold"
         :class="mobile ? 'text-caption' : ''"
-        :color="theme === 'light' ? 'grey-lighten-1' : 'grey-darken-4'"
+        :color="theme === 'light' ? 'red-lighten-2' : 'red-darken-4'"
         border
         app
       >

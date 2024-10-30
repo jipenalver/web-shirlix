@@ -50,7 +50,7 @@ const isDrawerVisible = ref(true)
                 <v-img
                   width="50%"
                   class="mx-auto rounded-circle"
-                  color="deep-orange-lighten-1"
+                  color="red-darken-4"
                   aspect-ratio="1"
                   :src="authStore.userData.image_url || '/images/img-profile.png'"
                   alt="Profile Picture"

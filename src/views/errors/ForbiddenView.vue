@@ -32,14 +32,14 @@ onMounted(() => {
       <v-container>
         <v-row>
           <v-col class="mx-auto mt-16 text-center" cols="12" lg="4">
-            <h1 class="text-h1 font-weight-black text-deep-orange-lighten-1">403</h1>
+            <h1 class="text-h1 font-weight-black text-red-darken-4">403</h1>
             <h2 class="text-h2 font-weight-black mb-2">Forbidden</h2>
 
             <p class="text-subtitle-1 font-weight-bold mb-4">
               You dont have permission to access this page.
             </p>
 
-            <v-btn class="mt-2" color="deep-orange-lighten-1" prepend-icon="mdi-home" to="/">
+            <v-btn class="mt-2" color="red-darken-4" prepend-icon="mdi-home" to="/">
               Back to {{ isLoggedIn ? 'Dashboard' : 'Homepage' }}
             </v-btn>
           </v-col>

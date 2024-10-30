@@ -165,7 +165,7 @@ onMounted(async () => {
 
           <v-btn
             prepend-icon="mdi-pencil"
-            color="deep-orange-lighten-1"
+            color="red-darken-4"
             type="submit"
             variant="elevated"
             :disabled="formAction.formProcess"

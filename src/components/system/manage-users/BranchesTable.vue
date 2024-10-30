@@ -133,13 +133,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
             </v-col>
 
             <v-col cols="12" md="2">
-              <v-btn
-                class="my-1"
-                prepend-icon="mdi-plus"
-                color="deep-orange-lighten-1"
-                block
-                @click="onAdd"
-              >
+              <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
                 Add Branch
               </v-btn>
             </v-col>
@@ -168,7 +162,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
             </v-btn>
 
             <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
-              <v-icon icon="mdi-trash-can" color="deep-orange-lighten-1"></v-icon>
+              <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
               <v-tooltip activator="parent" location="top">Delete Branch</v-tooltip>
             </v-btn>
           </div>

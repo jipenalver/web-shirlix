@@ -18,10 +18,10 @@ const { mobile } = useDisplay()
                 <v-img
                   class="mx-auto"
                   src="/images/logo-shop.png"
-                  :width="mobile ? '75%' : '25%'"
+                  :width="mobile ? '75%' : '65%'"
                 ></v-img>
-                <h3 class="font-weight-black">Shirlix Meatshop</h3>
-                <p class="font-weight-bold">Registration</p>
+
+                <h3 class="font-weight-black mt-5">Registration</h3>
               </v-card-title>
 
               <v-card-text class="pt-4">
@@ -33,7 +33,7 @@ const { mobile } = useDisplay()
 
                 <h4 class="text-center">
                   Already have account?
-                  <RouterLink class="text-deep-orange-lighten-1 font-weight-black" to="/">
+                  <RouterLink class="text-red-darken-4 font-weight-black" to="/">
                     Click here to Login
                   </RouterLink>
                 </h4>

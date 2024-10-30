@@ -1,5 +1,5 @@
 import LoginView from '@/views/auth/LoginView.vue'
-import RegisterView from '@/views/auth/RegisterView.vue'
+// import RegisterView from '@/views/auth/RegisterView.vue'
 import DashboardView from '@/views/system/DashboardView.vue'
 import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
@@ -8,6 +8,7 @@ import UserRolesView from '@/views/system/manage-users/UserRolesView.vue'
 import UsersView from '@/views/system/manage-users/UsersView.vue'
 import BranchesView from '@/views/system/manage-users/BranchesView.vue'
 import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
+import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 
 // 👉 Routes
 export const routesPath = [
@@ -22,12 +23,12 @@ export const routesPath = [
     component: LoginView,
     meta: { requiresAuth: false }
   },
-  {
-    path: '/register',
-    name: 'register',
-    component: RegisterView,
-    meta: { requiresAuth: false }
-  },
+  // {
+  //   path: '/register',
+  //   name: 'register',
+  //   component: RegisterView,
+  //   meta: { requiresAuth: false }
+  // },
 
   // System Pages
   {
@@ -42,6 +43,8 @@ export const routesPath = [
     component: AccountSettingsView,
     meta: { requiresAuth: true }
   },
+
+  // Admin Pages
   {
     path: '/manage/user/roles',
     name: 'manage-user-roles',
@@ -67,9 +70,17 @@ export const routesPath = [
   //   component: SamplePageView
   // },
   {
-    path: '/manage/expenses',
-    name: 'manage-expenses',
+    path: '/expenses',
+    name: 'expenses',
     component: ExpensesView,
+    meta: { requiresAuth: true }
+  },
+
+  // Reports Page
+  {
+    path: '/reports/expenses',
+    name: 'reports-expenses',
+    component: ExpensesReportView,
     meta: { requiresAuth: true }
   },
 

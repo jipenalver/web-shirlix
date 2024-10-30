@@ -10,35 +10,68 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   // States
   const expensesTable = ref([])
+  const expensesReport = ref([])
 
   // Reset State Action
   function $reset() {
     expensesTable.value = []
+    expensesReport.value = []
   }
 
-  // Retrieve Expenses
-  async function getExpensesTable({ page, itemsPerPage, sortBy }, { search }) {
+  // Retrieve Expenses Table
+  async function getExpensesTable(tableOptions, { search, branch_id }) {
     // Handle Pagination
-    const { rangeStart, rangeEnd, column, order } = tablePagination(
-      page,
-      itemsPerPage,
-      sortBy,
-      'name', // Default Column to be sorted
-      true // true = Ascending, false = Descending
-    )
+    const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     // Handle Search if null turn to empty string
     search = search || ''
 
     // Query Supabase with pagination and sorting
-    const { data } = await supabase
+    let query = supabase
       .from('expenses')
       .select('*, branches( name )')
       .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
 
+    if (branch_id) {
+      query = query.eq('branch_id', branch_id)
+    }
+
+    // Execute the query
+    const { data } = await query
+
     // Set the retrieved data to state
     expensesTable.value = data
+  }
+
+  // Retrieve Expenses Report
+  async function getExpensesReport(tableOptions, { search, branch_id, spent_at }) {
+    // Handle Pagination
+    const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
+    // Handle Search if null turn to empty string
+    search = search || ''
+
+    let query = supabase
+      .from('expenses')
+      .select('*, branches( name )')
+      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
+      .order(column, { ascending: order })
+
+    if (branch_id) {
+      query = query.eq('branch_id', branch_id)
+    }
+
+    if (spent_at) {
+      query = query
+        .gte('spent_at', spent_at[0].toISOString()) // Greater than or equal to `from` date
+        .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
+    }
+
+    // Execute the query
+    const { data } = await query
+
+    // Set the retrieved data to state
+    expensesReport.value = data
   }
 
   // Add Expenses
@@ -61,8 +94,10 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   return {
     expensesTable,
+    expensesReport,
     $reset,
     getExpensesTable,
+    getExpensesReport,
     addExpenditure,
     updateExpenditure,
     deleteExpenditure

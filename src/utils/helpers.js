@@ -19,3 +19,27 @@ export const dateShiftFix = (vueDate, formData, dateColumns = []) => {
 
   return formData
 }
+
+// 👉 Generate CSV
+export const generateCSV = (filename, csvData) => {
+  const blob = new Blob([csvData], { type: 'text/csv; charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+
+  const link = document.createElement('a')
+
+  link.href = url
+  link.setAttribute('download', `${filename}.csv`)
+
+  document.body.appendChild(link)
+  link.click()
+
+  document.body.removeChild(link)
+  link.remove()
+
+  URL.revokeObjectURL(url)
+}
+
+// 👉 CSV Text Trimming
+export const generateCSVTrim = (string) => {
+  return string.replace(/,/g, ' ').replace(/\s+/g, ' ')
+}
