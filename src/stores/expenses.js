@@ -38,18 +38,30 @@ export const useExpensesStore = defineStore('expenses', () => {
   }
 
   // Retrieve Expenses Report
-  async function getExpensesReport(tableOptions, { search }) {
+  async function getExpensesReport(tableOptions, { search, branch_id, spent_at }) {
     // Handle Pagination
     const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     // Handle Search if null turn to empty string
     search = search || ''
 
-    // Query Supabase with sorting
-    const { data } = await supabase
+    let query = supabase
       .from('expenses')
       .select('*, branches( name )')
       .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
       .order(column, { ascending: order })
+
+    if (branch_id) {
+      query = query.eq('branch_id', branch_id)
+    }
+
+    if (spent_at) {
+      query = query
+        .gte('spent_at', spent_at[0].toISOString()) // Greater than or equal to `from` date
+        .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
+    }
+
+    // Execute the query
+    const { data } = await query
 
     // Set the retrieved data to state
     expensesReport.value = data

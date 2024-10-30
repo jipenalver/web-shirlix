@@ -1,14 +1,16 @@
 <script setup>
 import { tableHeaders } from './expensesReportTableUtils'
 import { useExpensesStore } from '@/stores/expenses'
+import { useBranchesStore } from '@/stores/branches'
 import { generateCSV, generateCSVTrim } from '@/utils/helpers'
 import { useDate } from 'vuetify'
-import { onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const date = useDate()
 
 // Use Pinia Store
+const branchesStore = useBranchesStore()
 const expensesStore = useExpensesStore()
 
 // Load Variables
@@ -20,8 +22,21 @@ const tableOptions = ref({
 })
 const tableFilters = ref({
   search: '',
+  branch_id: null,
   spent_at: null
 })
+
+// Retrieve Data based on Date
+const onFilterDate = (isCleared = false) => {
+  if (isCleared) tableFilters.value.spent_at = null
+
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
+
+// Retrieve Data based on Filter
+const onFilterItems = () => {
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
 
 // Retrieve Data based on Search
 const onSearchItems = () => {
@@ -49,16 +64,14 @@ const csvData = () => {
   // Get the headers from utils
   const headers = tableHeaders.map((header) => header.title).join(',')
 
-  // Get the reports data and map it to be used as csv data
+  // Get the reports data and map it to be used as csv data, follow the headers arrangement
   const rows = expensesStore.expensesReport.map((data) => {
-    const spent_at = data.spent_at ? generateCSVTrim(date.format(data.spent_at, 'fullDate')) : ''
-
     return [
       generateCSVTrim(data.name),
       data.amount,
       generateCSVTrim(data.description),
       generateCSVTrim(data.branches.name),
-      spent_at
+      data.spent_at ? generateCSVTrim(date.format(data.spent_at, 'fullDate')) : ''
     ].join(',')
   })
 
@@ -76,6 +89,11 @@ const onGenerate = () => {
 // If Component is Unloaded
 onUnmounted(() => {
   expensesStore.$reset()
+})
+
+// Load Functions during component rendering
+onMounted(async () => {
+  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
 })
 </script>
 
@@ -95,22 +113,37 @@ onUnmounted(() => {
         hide-default-footer
       >
         <template #top>
-          <v-row dense>
-            <v-col cols="12" md="8"></v-col>
+          <v-row>
+            <v-col cols="12" md="6">
+              <v-autocomplete
+                v-model="tableFilters.branch_id"
+                :items="branchesStore.branches"
+                density="compact"
+                label="Branch"
+                item-title="name"
+                item-value="id"
+                clearable
+                @update:model-value="onFilterItems"
+              ></v-autocomplete>
+            </v-col>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" md="6">
               <v-date-input
                 v-model="tableFilters.spent_at"
                 density="compact"
                 label="Date Spent"
                 multiple="range"
-                hide-actions
+                clearable
+                @click:clear="onFilterDate(true)"
+                @update:model-value="onFilterDate(false)"
               ></v-date-input>
             </v-col>
+          </v-row>
 
-            <v-divider></v-divider>
+          <v-divider class="mb-5"></v-divider>
 
-            <v-col cols="12" md="5"></v-col>
+          <v-row>
+            <v-spacer></v-spacer>
 
             <v-col cols="12" md="4">
               <v-text-field
