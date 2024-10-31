@@ -9,7 +9,7 @@ const props = defineProps(['isWithAppBarNavIcon'])
 const emit = defineEmits(['isDrawerVisible'])
 
 // Utilize pre-defined vue functions
-const { mobile } = useDisplay()
+const { xs, sm, mobile } = useDisplay()
 
 // Load Variables
 const isLoggedIn = ref(false)
@@ -43,6 +43,10 @@ onMounted(() => {
           @click="emit('isDrawerVisible')"
         >
         </v-app-bar-nav-icon>
+
+        <v-app-bar-title>
+          <v-img src="/images/logo-shop.png" :width="xs ? '100%' : sm ? '40%' : '14%'"></v-img>
+        </v-app-bar-title>
 
         <v-spacer></v-spacer>
 
