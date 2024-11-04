@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { supabase, tablePagination } from '@/utils/supabase'
+import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 
@@ -22,8 +22,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function getExpensesTable(tableOptions, { search, branch_id }) {
     // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
-    // Handle Search if null turn to empty string
-    search = search || ''
+    search = tableSearch(search) // Handle Search if null turn to empty string
 
     // Query Supabase with pagination and sorting
     let query = supabase
@@ -48,8 +47,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   async function getExpensesReport(tableOptions, { search, branch_id, spent_at }) {
     // Handle Pagination
     const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
-    // Handle Search if null turn to empty string
-    search = search || ''
+    search = tableSearch(search) // Handle Search if null turn to empty string
 
     let query = supabase
       .from('expenses')
