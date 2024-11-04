@@ -76,7 +76,7 @@ watch(props, () => {
           ></v-list-item>
         </template>
 
-        <template v-if="title === 'Expense Management'">
+        <template v-if="title === 'Expenses Management'">
           <v-list-item
             v-for="([title, icon, subtitle, to], i) in menuItemsNav4"
             :key="i"
