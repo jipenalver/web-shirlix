@@ -20,7 +20,6 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   // Retrieve Expenses Table
   async function getExpensesTable(tableOptions, { search, branch_id }) {
-    // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 
@@ -45,7 +44,6 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   // Retrieve Expenses Report
   async function getExpensesReport(tableOptions, { search, branch_id, spent_at }) {
-    // Handle Pagination
     const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 

@@ -15,7 +15,6 @@ export const useBranchesStore = defineStore('branches', () => {
 
   // Retrieve Branches Table
   async function getBranchesTable(tableOptions, { search }) {
-    // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 

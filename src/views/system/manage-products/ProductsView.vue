@@ -1,4 +1,5 @@
 <script setup>
+import ProductsTable from '@/components/system/manage-products/ProductsTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -35,7 +36,9 @@ const isDrawerVisible = ref(true)
         </v-card>
 
         <v-card>
-          <v-card-text> </v-card-text>
+          <v-card-text>
+            <ProductsTable></ProductsTable>
+          </v-card-text>
         </v-card>
       </v-container>
     </template>
