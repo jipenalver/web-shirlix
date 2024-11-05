@@ -3,6 +3,7 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { useAuthUserStore } from '@/stores/authUser'
 import { formActionDefault } from '@/utils/supabase.js'
 import { imageValidator, requiredValidator } from '@/utils/validators'
+import { fileExtract } from '@/utils/helpers'
 import { ref } from 'vue'
 
 // Use Pinia Store
@@ -22,20 +23,12 @@ const refVForm = ref()
 const imgPreview = ref(authStore.userData.image_url || '/images/img-profile.png')
 
 // Function to handle file change and show image preview
-const onPreview = (event) => {
-  const fileReader = new FileReader()
-  const { files } = event.target
-  if (files && files.length) {
-    fileReader.readAsDataURL(files[0])
-    fileReader.onload = () => {
-      if (typeof fileReader.result === 'string') {
-        // Update formData
-        formData.value.image = files[0]
-        // Update imgPreview state
-        imgPreview.value = fileReader.result
-      }
-    }
-  }
+const onPreview = async (event) => {
+  const { fileObject, fileUrl } = await fileExtract(event)
+  // Update formData
+  formData.value.image = fileObject
+  // Update imgPreview state
+  imgPreview.value = fileUrl
 }
 
 // Function to reset preview if file-input clear is clicked

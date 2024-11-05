@@ -60,3 +60,8 @@ export const tablePagination = (
 
   return { rangeStart, rangeEnd, column, order }
 }
+
+// 👉 Handle Search if null turn to empty string
+export const tableSearch = (search) => {
+  return (search ||= '')
+}

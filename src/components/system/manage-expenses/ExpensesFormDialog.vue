@@ -37,10 +37,10 @@ const isUpdate = ref(false)
 // Monitor itemData if it has data
 watch(
   () => props.itemData,
-  (propsItemData) => {
-    isUpdate.value = propsItemData ? true : false
-    formData.value = propsItemData
-      ? { ...propsItemData, spent_at: new Date(propsItemData.spent_at) }
+  () => {
+    isUpdate.value = props.itemData ? true : false
+    formData.value = props.itemData
+      ? { ...props.itemData, spent_at: new Date(props.itemData.spent_at) }
       : { ...formDataDefault }
   }
 )
@@ -85,7 +85,6 @@ const onFormSubmit = () => {
 // Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
-  formData.value = { ...formDataDefault }
   emit('update:isDialogVisible', false)
 }
 

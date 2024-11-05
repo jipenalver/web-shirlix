@@ -1,5 +1,5 @@
 <script setup>
-import ExpensesTable from '@/components/system/manage-expenses/ExpensesTable.vue'
+import ProductsTable from '@/components/system/manage-products/ProductsTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -22,22 +22,22 @@ const isDrawerVisible = ref(true)
         <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['Expenses Management', 'Expenditures']">
+              <v-breadcrumbs :items="['Products Management', 'Products']">
                 <template #prepend>
-                  <v-icon icon="mdi-cash-remove" size="small" class="me-1"></v-icon>
+                  <v-icon icon="mdi-information-box" size="small" class="me-1"></v-icon>
                 </template>
               </v-breadcrumbs>
             </span>
           </template>
 
           <template #subtitle>
-            <p class="ms-4 text-wrap">Tally and manage expenditures.</p>
+            <p class="ms-4 text-wrap">Add and Manage Products.</p>
           </template>
         </v-card>
 
         <v-card>
           <v-card-text>
-            <ExpensesTable></ExpensesTable>
+            <ProductsTable></ProductsTable>
           </v-card-text>
         </v-card>
       </v-container>

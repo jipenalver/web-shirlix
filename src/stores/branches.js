@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { supabase, tablePagination } from '@/utils/supabase'
+import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 
 export const useBranchesStore = defineStore('branches', () => {
   // States
@@ -15,10 +15,8 @@ export const useBranchesStore = defineStore('branches', () => {
 
   // Retrieve Branches Table
   async function getBranchesTable(tableOptions, { search }) {
-    // Handle Pagination
     const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
-    // Handle Search if null turn to empty string
-    search = search || ''
+    search = tableSearch(search) // Handle Search if null turn to empty string
 
     // Query Supabase with pagination and sorting
     const { data } = await supabase

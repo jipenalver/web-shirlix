@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { supabase, tablePagination } from '@/utils/supabase'
-import { dateShiftFix } from '@/utils/helpers'
+import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
+import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 
 export const useExpensesStore = defineStore('expenses', () => {
@@ -19,11 +19,9 @@ export const useExpensesStore = defineStore('expenses', () => {
   }
 
   // Retrieve Expenses Table
-  async function getExpensesTable(tableOptions, { search, branch_id }) {
-    // Handle Pagination
+  async function getExpensesTable(tableOptions, { search, branch_id, spent_at }) {
     const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
-    // Handle Search if null turn to empty string
-    search = search || ''
+    search = tableSearch(search) // Handle Search if null turn to empty string
 
     // Query Supabase with pagination and sorting
     let query = supabase
@@ -37,6 +35,16 @@ export const useExpensesStore = defineStore('expenses', () => {
       query = query.eq('branch_id', branch_id)
     }
 
+    if (spent_at) {
+      if (spent_at.length === 1)
+        query = query.eq('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString())
+      else {
+        query = query
+          .gte('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString()) // Greater than or equal to `from` date
+          .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
+      }
+    }
+
     // Execute the query
     const { data } = await query
 
@@ -46,10 +54,8 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   // Retrieve Expenses Report
   async function getExpensesReport(tableOptions, { search, branch_id, spent_at }) {
-    // Handle Pagination
     const { column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
-    // Handle Search if null turn to empty string
-    search = search || ''
+    search = tableSearch(search) // Handle Search if null turn to empty string
 
     let query = supabase
       .from('expenses')
@@ -62,9 +68,13 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
 
     if (spent_at) {
-      query = query
-        .gte('spent_at', spent_at[0].toISOString()) // Greater than or equal to `from` date
-        .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
+      if (spent_at.length === 1)
+        query = query.eq('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString())
+      else {
+        query = query
+          .gte('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString()) // Greater than or equal to `from` date
+          .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
+      }
     }
 
     // Execute the query
@@ -82,7 +92,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   // Update Expenses
   async function updateExpenditure(formData) {
     // eslint-disable-next-line no-unused-vars
-    const { branches, ...data } = dateShiftFix(date, formData, ['spent_at'])
+    const { branches, ...data } = dateShiftFixForm(date, formData, ['spent_at'])
 
     return await supabase.from('expenses').update(data).eq('id', formData.id).select()
   }

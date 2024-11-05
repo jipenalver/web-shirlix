@@ -1,20 +1,26 @@
 <script setup>
-import { useUserRolesStore } from '@/stores/userRoles'
+import { useAuthUserStore } from '@/stores/authUser'
+import { useProductsStore } from '@/stores/products'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator } from '@/utils/validators'
+import { requiredValidator, imageValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
+import { fileExtract } from '@/utils/helpers'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData'])
+const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Use Pinia Store
-const userRolesStore = useUserRolesStore()
+const productsStore = useProductsStore()
+const authStore = useAuthUserStore()
 
 // Load Variables
 const formDataDefault = {
-  user_role: ''
+  name: '',
+  description: '',
+  image: null,
+  user_id: authStore.userData.id
 }
 const formData = ref({
   ...formDataDefault
@@ -24,6 +30,7 @@ const formAction = ref({
 })
 const refVForm = ref()
 const isUpdate = ref(false)
+const imgPreview = ref('/images/img-profile.png')
 
 // Monitor itemData if it has data
 watch(
@@ -34,6 +41,20 @@ watch(
   }
 )
 
+// Function to handle file change and show image preview
+const onPreview = async (event) => {
+  const { fileObject, fileUrl } = await fileExtract(event)
+  // Update formData
+  formData.value.image = fileObject
+  // Update imgPreview state
+  imgPreview.value = fileUrl
+}
+
+// Function to reset preview if file-input clear is clicked
+const onPreviewReset = () => {
+  imgPreview.value = '/images/img-profile.png'
+}
+
 // Submit Functionality
 const onSubmit = async () => {
   // Reset Form Action utils
@@ -41,8 +62,8 @@ const onSubmit = async () => {
 
   // Check if isUpdate is true, then do update, if false do add
   const { data, error } = isUpdate.value
-    ? await userRolesStore.updateUserRole(formData.value)
-    : await userRolesStore.addUserRole(formData.value)
+    ? await productsStore.updateProduct(formData.value)
+    : await productsStore.addProduct(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -53,9 +74,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added User Role.'
+    formAction.value.formSuccessMessage = 'Successfully Added Product.'
 
-    await userRolesStore.getUserRoles()
+    await productsStore.getProductsTable(props.tableOptions, props.tableFilters)
 
     // Form Reset and Close Dialog
     setTimeout(() => {
@@ -79,8 +100,8 @@ const onFormReset = () => {
 </script>
 
 <template>
-  <v-dialog max-width="600" :model-value="props.isDialogVisible" persistent>
-    <v-card prepend-icon="mdi-tag" title="User Role">
+  <v-dialog max-width="800" :model-value="props.isDialogVisible" persistent>
+    <v-card prepend-icon="mdi-information-box" title="Product Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -91,10 +112,46 @@ const onFormReset = () => {
           <v-row dense>
             <v-col cols="12">
               <v-text-field
-                v-model="formData.user_role"
-                label="Role Name"
+                v-model="formData.name"
+                label="Name"
                 :rules="[requiredValidator]"
               ></v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <v-textarea
+                v-model="formData.description"
+                label="Description"
+                :rules="[requiredValidator]"
+              ></v-textarea>
+            </v-col>
+
+            <v-col cols="12" md="4">
+              <v-img
+                width="55%"
+                class="mx-auto rounded-circle"
+                color="red-darken-4"
+                aspect-ratio="1"
+                :src="imgPreview"
+                alt="Product Picture Preview"
+                cover
+              >
+              </v-img>
+            </v-col>
+
+            <v-col cols="12" md="8">
+              <v-file-input
+                class="mt-5"
+                :rules="[imageValidator]"
+                accept="image/png, image/jpeg, image/bmp"
+                label="Browse Product Picture"
+                placeholder="Browse Product Picture"
+                prepend-icon="mdi-camera"
+                show-size
+                chips
+                @change="onPreview"
+                @click:clear="onPreviewReset"
+              ></v-file-input>
             </v-col>
           </v-row>
         </v-card-text>
@@ -114,7 +171,7 @@ const onFormReset = () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            {{ isUpdate ? 'Update Role' : 'Add Role' }}
+            {{ isUpdate ? 'Update Product' : 'Add Product' }}
           </v-btn>
         </v-card-actions>
       </v-form>
