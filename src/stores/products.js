@@ -31,14 +31,19 @@ export const useProductsStore = defineStore('products', () => {
     const { data } = await query
 
     // Separate query to get the total count without range
-    const { count } = await supabase
-      .from('products')
-      .select('*', { count: 'exact', head: true })
-      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
+    const { count } = await getProductsCount(search)
 
     // Set the retrieved data to state
     productsTable.value = data
     productsTotal.value = count
+  }
+
+  // Count Products
+  async function getProductsCount(search = '') {
+    return await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
   }
 
   // Add Products
@@ -89,6 +94,7 @@ export const useProductsStore = defineStore('products', () => {
     productsTotal,
     $reset,
     getProductsTable,
+    getProductsCount,
     addProduct,
     updateProduct,
     deleteProduct,

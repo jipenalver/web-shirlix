@@ -11,11 +11,13 @@ export const useExpensesStore = defineStore('expenses', () => {
   // States
   const expensesTable = ref([])
   const expensesReport = ref([])
+  const expensesTotal = ref(0)
 
   // Reset State Action
   function $reset() {
     expensesTable.value = []
     expensesReport.value = []
+    expensesTotal.value = 0
   }
 
   // Retrieve Expenses Table
@@ -48,8 +50,12 @@ export const useExpensesStore = defineStore('expenses', () => {
     // Execute the query
     const { data } = await query
 
+    // Separate query to get the total count without range
+    const { count } = await getExpensesCount(search)
+
     // Set the retrieved data to state
     expensesTable.value = data
+    expensesTotal.value = count
   }
 
   // Retrieve Expenses Report
@@ -84,6 +90,14 @@ export const useExpensesStore = defineStore('expenses', () => {
     expensesReport.value = data
   }
 
+  // Count Expenses
+  async function getExpensesCount(search = '') {
+    return await supabase
+      .from('expenses')
+      .select('*', { count: 'exact', head: true })
+      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
+  }
+
   // Add Expenses
   async function addExpenditure(formData) {
     return await supabase.from('expenses').insert([formData]).select()
@@ -105,6 +119,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   return {
     expensesTable,
     expensesReport,
+    expensesTotal,
     $reset,
     getExpensesTable,
     getExpensesReport,

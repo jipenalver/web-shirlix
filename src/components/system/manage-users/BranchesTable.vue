@@ -113,7 +113,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
         :items="branchesStore.branchesTable"
-        :items-length="branchesStore.branchesTable.length"
+        :items-length="branchesStore.branchesTotal"
         @update:options="onLoadItems"
       >
         <template #top>

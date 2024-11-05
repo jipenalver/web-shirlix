@@ -134,7 +134,7 @@ onMounted(async () => {
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
         :items="expensesStore.expensesTable"
-        :items-length="expensesStore.expensesTable.length"
+        :items-length="expensesStore.expensesTotal"
         @update:options="onLoadItems"
       >
         <template #top>

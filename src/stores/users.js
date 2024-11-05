@@ -5,16 +5,18 @@ import { supabaseAdmin } from '@/utils/supabase'
 export const useUsersStore = defineStore('users', () => {
   // States
   const usersTable = ref([])
+  const usersTotal = ref(0)
 
   // Reset State Action
   function $reset() {
     usersTable.value = []
+    usersTotal.value = 0
   }
 
   // Retrieve Users
   async function getUsersTable({ page, itemsPerPage }) {
     const {
-      data: { users }
+      data: { users, total }
     } = await supabaseAdmin.auth.admin.listUsers({
       page: page,
       perPage: itemsPerPage
@@ -22,6 +24,7 @@ export const useUsersStore = defineStore('users', () => {
 
     // Set the retrieved data to state
     usersTable.value = users
+    usersTotal.value = total
   }
 
   // Add User
@@ -52,5 +55,5 @@ export const useUsersStore = defineStore('users', () => {
     return await supabaseAdmin.auth.admin.deleteUser(id)
   }
 
-  return { usersTable, $reset, getUsersTable, addUser, updateUser, deleteUser }
+  return { usersTable, usersTotal, $reset, getUsersTable, addUser, updateUser, deleteUser }
 })
