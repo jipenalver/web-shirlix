@@ -35,8 +35,8 @@ export const useProductsStore = defineStore('products', () => {
   // Add Products
   async function addProduct(formData) {
     if (formData.image) {
-      const image_url = this.updateProductImage(formData.image, formData.name)
-      formData.image_url = image_url
+      formData.image_url = await this.updateProductImage(formData.image, formData.name)
+      delete formData.image
     }
 
     return await supabase.from('products').insert([formData]).select()
@@ -45,8 +45,8 @@ export const useProductsStore = defineStore('products', () => {
   // Update Products
   async function updateProduct(formData) {
     if (formData.image) {
-      const image_url = this.updateProductImage(formData.image, formData.name)
-      formData.image_url = image_url
+      formData.image_url = await this.updateProductImage(formData.image, formData.name)
+      delete formData.image
     }
 
     return await supabase.from('products').update(formData).eq('id', formData.id).select()
@@ -58,9 +58,8 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   // Update Product Image
-  // eslint-disable-next-line no-unused-vars
   async function updateProductImage(file, filename) {
-    // Upload the file with the user ID and file extension
+    // Upload the file with the file name and file extension
     const { data } = await supabase.storage
       .from('shirlix')
       .upload('products/' + getSlugText(filename) + '.png', file, {
@@ -72,7 +71,6 @@ export const useProductsStore = defineStore('products', () => {
     if (data) {
       // Retrieve Image Public Url
       const { data: imageData } = supabase.storage.from('shirlix').getPublicUrl(data.path)
-
       return imageData.publicUrl
     }
   }
@@ -83,6 +81,7 @@ export const useProductsStore = defineStore('products', () => {
     getProductsTable,
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    updateProductImage
   }
 })

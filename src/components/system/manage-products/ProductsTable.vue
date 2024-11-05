@@ -5,6 +5,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { tableHeaders } from './productsTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useProductsStore } from '@/stores/products'
+import { getAvatarText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
 
@@ -143,9 +144,30 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
         </template>
 
         <template #item.name="{ item }">
-          <span class="font-weight-bold">
-            {{ item.name }}
-          </span>
+          <div class="d-flex align-center" style="height: 100px">
+            <div class="me-2" style="width: 65px">
+              <v-img
+                v-if="item.image_url"
+                class="rounded-circle"
+                color="red-darken-4"
+                aspect-ratio="1"
+                :src="item.image_url"
+                alt="Product Picture"
+                cover
+              >
+              </v-img>
+
+              <v-avatar v-else color="red-darken-4" size="x-large">
+                <span class="text-h5">
+                  {{ getAvatarText(item.name) }}
+                </span>
+              </v-avatar>
+            </div>
+
+            <span class="font-weight-bold">
+              {{ item.name }}
+            </span>
+          </div>
         </template>
 
         <template #item.created_at="{ item }">

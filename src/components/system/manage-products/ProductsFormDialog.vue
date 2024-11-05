@@ -35,9 +35,9 @@ const imgPreview = ref('/images/img-profile.png')
 // Monitor itemData if it has data
 watch(
   () => props.itemData,
-  (propsItemData) => {
-    isUpdate.value = propsItemData ? true : false
-    formData.value = propsItemData ? { ...propsItemData } : { ...formDataDefault }
+  () => {
+    isUpdate.value = props.itemData ? true : false
+    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
   }
 )
 
@@ -95,14 +95,13 @@ const onFormSubmit = () => {
 // Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
-  formData.value = { ...formDataDefault }
   emit('update:isDialogVisible', false)
 }
 </script>
 
 <template>
   <v-dialog max-width="800" :model-value="props.isDialogVisible" persistent>
-    <v-card prepend-icon="mdi-cash-remove" title="Product Information">
+    <v-card prepend-icon="mdi-information-box" title="Product Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -134,7 +133,7 @@ const onFormReset = () => {
                 color="red-darken-4"
                 aspect-ratio="1"
                 :src="imgPreview"
-                alt="Profile Picture Preview"
+                alt="Product Picture Preview"
                 cover
               >
               </v-img>
