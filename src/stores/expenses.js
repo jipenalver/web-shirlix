@@ -19,7 +19,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   }
 
   // Retrieve Expenses Table
-  async function getExpensesTable(tableOptions, { search, branch_id }) {
+  async function getExpensesTable(tableOptions, { search, branch_id, spent_at }) {
     const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'name') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 
@@ -33,6 +33,16 @@ export const useExpensesStore = defineStore('expenses', () => {
 
     if (branch_id) {
       query = query.eq('branch_id', branch_id)
+    }
+
+    if (spent_at) {
+      if (spent_at.length === 1)
+        query = query.eq('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString())
+      else {
+        query = query
+          .gte('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString()) // Greater than or equal to `from` date
+          .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
+      }
     }
 
     // Execute the query

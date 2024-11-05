@@ -86,11 +86,11 @@ const onSearchItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { search: '' }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await branchesStore.getBranchesTable({ page, itemsPerPage, sortBy }, tableFilters)
+  await branchesStore.getBranchesTable({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false

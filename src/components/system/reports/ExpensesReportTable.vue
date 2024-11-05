@@ -49,11 +49,11 @@ const onSearchItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { search: '' }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await expensesStore.getExpensesReport({ page, itemsPerPage, sortBy }, tableFilters)
+  await expensesStore.getExpensesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false

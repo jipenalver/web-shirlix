@@ -25,7 +25,8 @@ const tableOptions = ref({
 })
 const tableFilters = ref({
   search: '',
-  branch_id: null
+  branch_id: null,
+  spent_at: [new Date()]
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -78,6 +79,13 @@ const onConfirmDelete = async () => {
   onLoadItems(tableOptions.value, tableFilters.value)
 }
 
+// Retrieve Data based on Date
+const onFilterDate = (isCleared = false) => {
+  if (isCleared) tableFilters.value.spent_at = null
+
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
+
 // Retrieve Data based on Filter
 const onFilterItems = () => {
   onLoadItems(tableOptions.value, tableFilters.value)
@@ -94,11 +102,11 @@ const onSearchItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { search: '' }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await expensesStore.getExpensesTable({ page, itemsPerPage, sortBy }, tableFilters)
+  await expensesStore.getExpensesTable({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -130,10 +138,8 @@ onMounted(async () => {
         @update:options="onLoadItems"
       >
         <template #top>
-          <v-row dense>
-            <v-spacer></v-spacer>
-
-            <v-col cols="12" md="3">
+          <v-row>
+            <v-col cols="12" md="6">
               <v-autocomplete
                 v-model="tableFilters.branch_id"
                 :items="branchesStore.branches"
@@ -145,6 +151,24 @@ onMounted(async () => {
                 @update:model-value="onFilterItems"
               ></v-autocomplete>
             </v-col>
+
+            <v-col cols="12" md="6">
+              <v-date-input
+                v-model="tableFilters.spent_at"
+                density="compact"
+                label="Date Spent"
+                multiple="range"
+                clearable
+                @click:clear="onFilterDate(true)"
+                @update:model-value="onFilterDate(false)"
+              ></v-date-input>
+            </v-col>
+          </v-row>
+
+          <v-divider class="mb-5"></v-divider>
+
+          <v-row dense>
+            <v-spacer></v-spacer>
 
             <v-col cols="12" md="4">
               <v-text-field
