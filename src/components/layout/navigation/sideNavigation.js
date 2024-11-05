@@ -17,15 +17,15 @@ export const menuItemsNav2 = [
   ['Product Information', 'mdi-information-box', 'Add and Manage Products', '/products']
 ]
 export const menuItemsNav3 = [
-  ['Stock In', 'mdi-tray-arrow-down', '', ''],
-  ['Stock Out', 'mdi-tray-arrow-up', '', '']
+  ['Purchases', 'mdi-tray-arrow-down', '', ''],
+  ['Sales', 'mdi-tray-arrow-up', '', '']
 ]
 export const menuItemsNav4 = [
   ['Expenditures', 'mdi-cash-remove', 'Tally and Manage Expenses', '/expenses']
 ]
 export const menuItemsNav5 = [
   ['Balance Sheet', 'mdi-scale-balance', '', ''],
-  ['Gross Revenue & Net Profit', 'mdi-cash-100', '', ''],
+  ['Purchases', 'mdi-cash-plus', '', ''],
   ['Sales', 'mdi-sale', '', ''],
   ['Expenses', 'mdi-cash-multiple', 'Generate CSV', '/reports/expenses']
 ]
