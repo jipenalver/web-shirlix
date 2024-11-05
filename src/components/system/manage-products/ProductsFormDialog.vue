@@ -30,7 +30,7 @@ const formAction = ref({
 })
 const refVForm = ref()
 const isUpdate = ref(false)
-const imgPreview = ref('/images/img-profile.png')
+const imgPreview = ref('/images/img-product.png')
 
 // Monitor itemData if it has data
 watch(
@@ -52,7 +52,7 @@ const onPreview = async (event) => {
 
 // Function to reset preview if file-input clear is clicked
 const onPreviewReset = () => {
-  imgPreview.value = '/images/img-profile.png'
+  imgPreview.value = '/images/img-product.png'
 }
 
 // Submit Functionality

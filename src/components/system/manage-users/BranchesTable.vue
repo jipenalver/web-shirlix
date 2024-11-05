@@ -113,7 +113,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
         :items="branchesStore.branchesTable"
-        :items-length="branchesStore.branchesTable.length"
+        :items-length="branchesStore.branchesTotal"
         @update:options="onLoadItems"
       >
         <template #top>
@@ -132,7 +132,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
                 Add Branch
               </v-btn>
