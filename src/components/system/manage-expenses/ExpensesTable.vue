@@ -182,7 +182,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
                 Add Amount
               </v-btn>

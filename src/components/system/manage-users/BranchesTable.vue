@@ -132,7 +132,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
                 Add Branch
               </v-btn>

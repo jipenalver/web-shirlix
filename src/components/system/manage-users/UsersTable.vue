@@ -109,7 +109,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <v-row dense>
             <v-spacer></v-spacer>
 
-            <v-col cols="12" md="2">
+            <v-col cols="12" md="3">
               <v-btn
                 class="my-1"
                 prepend-icon="mdi-account-plus"
