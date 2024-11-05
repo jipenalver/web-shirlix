@@ -56,7 +56,7 @@ const onConfirmDelete = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { error } = await productsStore.deleteExpenditure(deleteId.value)
+  const { error } = await productsStore.deleteProduct(deleteId.value)
 
   // Turn off processing
   formAction.value.formProcess = false
