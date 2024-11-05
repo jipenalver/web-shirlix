@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
+import { getSlugText } from '@/utils/helpers'
 
 export const useProductsStore = defineStore('products', () => {
   // States
@@ -33,17 +34,47 @@ export const useProductsStore = defineStore('products', () => {
 
   // Add Products
   async function addProduct(formData) {
+    if (formData.image) {
+      const image_url = this.updateProductImage(formData.image, formData.name)
+      formData.image_url = image_url
+    }
+
     return await supabase.from('products').insert([formData]).select()
   }
 
   // Update Products
   async function updateProduct(formData) {
+    if (formData.image) {
+      const image_url = this.updateProductImage(formData.image, formData.name)
+      formData.image_url = image_url
+    }
+
     return await supabase.from('products').update(formData).eq('id', formData.id).select()
   }
 
   // Delete Products
   async function deleteProduct(id) {
     return await supabase.from('products').delete().eq('id', id)
+  }
+
+  // Update Product Image
+  // eslint-disable-next-line no-unused-vars
+  async function updateProductImage(file, filename) {
+    // Upload the file with the user ID and file extension
+    const { data } = await supabase.storage
+      .from('shirlix')
+      .upload('products/' + getSlugText(filename) + '.png', file, {
+        cacheControl: '3600',
+        upsert: true
+      })
+
+    // If no error set data to userData state with the image_url
+    if (data) {
+      // Retrieve Image Public Url
+      const { data: imageData } = supabase.storage.from('shirlix').getPublicUrl(data.path)
+
+      return imageData.publicUrl
+    }
   }
 
   return {

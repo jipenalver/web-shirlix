@@ -7,7 +7,7 @@ export const tableHeaders = [
   },
   {
     title: 'Description',
-    key: 'amount',
+    key: 'description',
     align: 'start'
   },
   {

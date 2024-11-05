@@ -15,7 +15,7 @@ const onClose = () => {
 
 <template>
   <v-dialog max-width="400" :model-value="props.isDialogVisible" @update:model-value="onClose">
-    <v-card prepend-icon="mdi-map-marker" :title="props.title">
+    <v-card prepend-icon="mdi-information" :title="props.title">
       <v-card-text>
         {{ props.text }}
       </v-card-text>

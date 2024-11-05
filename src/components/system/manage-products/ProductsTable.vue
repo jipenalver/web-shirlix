@@ -1,6 +1,6 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-// import ProductsFormDialog from './ProductsFormDialog.vue'
+import ProductsFormDialog from './ProductsFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { tableHeaders } from './productsTableUtils'
 import { formActionDefault } from '@/utils/supabase'
@@ -170,6 +170,13 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, tableFilters = { sear
       </v-data-table-server>
     </v-col>
   </v-row>
+
+  <ProductsFormDialog
+    v-model:is-dialog-visible="isDialogVisible"
+    :item-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
+  ></ProductsFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"

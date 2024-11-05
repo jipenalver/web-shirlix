@@ -7,6 +7,68 @@ export const getAvatarText = (name) => {
   return initials.join('')
 }
 
+// 👉 Slug Name
+export const getSlugText = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 23)
+}
+
+// 👉 File Extraction of Object, for 1 File/Image
+export const fileExtract = (event) => {
+  return new Promise((resolve, reject) => {
+    const { files } = event.target
+
+    if (!files || !files.length) return reject(new Error('No files selected'))
+
+    const fileReader = new FileReader()
+    fileReader.readAsDataURL(files[0])
+
+    fileReader.onload = () => {
+      if (typeof fileReader.result === 'string')
+        resolve({ fileObject: files[0], fileUrl: fileReader.result })
+      else reject(new Error('Failed to read file as Data URL'))
+    }
+
+    fileReader.onerror = () => reject(new Error('Error reading file'))
+  })
+}
+
+// 👉 File Extraction of Object, for Multiple Files/Images
+export const filesExtract = (event) => {
+  return new Promise((resolve, reject) => {
+    const { files } = event.target
+
+    if (!files || !files.length) return reject(new Error('No files selected'))
+
+    const fileObjects = Array.from(files)
+    const fileReaders = fileObjects.map((file) => {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL(file)
+
+        fileReader.onload = () => {
+          if (typeof fileReader.result === 'string')
+            resolve({ fileObject: file, fileUrl: fileReader.result })
+          else reject(new Error('Failed to read file as Data URL'))
+        }
+
+        fileReader.onerror = () => reject(new Error('Error reading file'))
+      })
+    })
+
+    Promise.all(fileReaders)
+      .then((results) => {
+        const fileUrls = results.map((result) => result.fileUrl)
+        resolve({ fileObjects, fileUrls })
+      })
+      .catch((error) => reject(error))
+  })
+}
+
 // 👉 Fix v-date-input datetime shift issue for form
 export const dateShiftFixForm = (vueDate, formData, dateColumns = []) => {
   dateColumns.forEach((dateColumn) => {
