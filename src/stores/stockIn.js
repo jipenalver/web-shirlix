@@ -1,8 +1,13 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
+import { dateShiftFixForm } from '@/utils/helpers'
+import { useDate } from 'vuetify'
 
 export const useStockInStore = defineStore('stockIn', () => {
+  // Utilize pre-defined vue functions
+  const date = useDate()
+
   // States
   const stockInTable = ref([])
   const stockInTotal = ref(0)
@@ -21,7 +26,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     // Query Supabase with pagination and sorting
     let query = supabase
       .from('stock_ins')
-      .select('*, branches( name ), products( name, image_url )')
+      .select('*, branches( name ), products( name, image_url, description )')
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
 
@@ -64,7 +69,10 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   // Update StockIn
   async function updateStockIn(formData) {
-    return await supabase.from('stock_ins').update(formData).eq('id', formData.id).select()
+    // eslint-disable-next-line no-unused-vars
+    const { branches, products, ...data } = dateShiftFixForm(date, formData, ['purchased_at'])
+
+    return await supabase.from('stock_ins').update(data).eq('id', formData.id).select()
   }
 
   // Delete StockIn
@@ -77,7 +85,6 @@ export const useStockInStore = defineStore('stockIn', () => {
     stockInTotal,
     $reset,
     getStockInTable,
-    getStockInCount,
     addStockIn,
     updateStockIn,
     deleteStockIn

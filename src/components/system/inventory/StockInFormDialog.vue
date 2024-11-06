@@ -1,24 +1,36 @@
 <script setup>
 import { useAuthUserStore } from '@/stores/authUser'
+import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
+import { useStockInStore } from '@/stores/stockIn'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
+// Utilize pre-defined vue functions
+const { md } = useDisplay()
+
 // Use Pinia Store
 const productsStore = useProductsStore()
+const branchesStore = useBranchesStore()
+const stockInStore = useStockInStore()
 const authStore = useAuthUserStore()
 
 // Load Variables
 const formDataDefault = {
-  name: '',
-  description: '',
-  image: null,
+  supplier: '',
+  remarks: '',
+  price: 0,
+  qty: 1,
+  purchased_at: new Date(),
+  branch_id: null,
+  product_id: null,
   user_id: authStore.userData.id
 }
 const formData = ref({
@@ -29,6 +41,7 @@ const formAction = ref({
 })
 const refVForm = ref()
 const isUpdate = ref(false)
+const imgPreview = ref('/images/img-product.png')
 
 // Monitor itemData if it has data
 watch(
@@ -36,18 +49,30 @@ watch(
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    imgPreview.value = isUpdate.value
+      ? props.itemData.products.image_url
+      : '/images/img-product.png'
   }
 )
+
+// Function to handle file change and show image preview
+const onPreview = async (value) => {
+  // Update imgPreview state
+  imgPreview.value = value ? value.image_url : '/images/img-product.png'
+}
 
 // Submit Functionality
 const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
+  const { id } = formData.value.product_id
+  formData.value.product_id = id
+
   // Check if isUpdate is true, then do update, if false do add
   const { data, error } = isUpdate.value
-    ? await productsStore.updateProduct(formData.value)
-    : await productsStore.addProduct(formData.value)
+    ? await stockInStore.updateStockIn(formData.value)
+    : await stockInStore.addStockIn(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -60,7 +85,7 @@ const onSubmit = async () => {
     // Add Success Message
     formAction.value.formSuccessMessage = 'Successfully Added Stock.'
 
-    await productsStore.getProductsTable(props.tableOptions, props.tableFilters)
+    await stockInStore.getStockInTable(props.tableOptions, props.tableFilters)
 
     // Form Reset and Close Dialog
     setTimeout(() => {
@@ -81,10 +106,21 @@ const onFormReset = () => {
   formAction.value = { ...formActionDefault }
   emit('update:isDialogVisible', false)
 }
+
+// Load Functions during component rendering
+onMounted(async () => {
+  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
+  if (productsStore.products.length == 0) await productsStore.getProducts()
+})
 </script>
 
 <template>
-  <v-dialog max-width="800" :model-value="props.isDialogVisible" persistent>
+  <v-dialog
+    :max-width="md ? undefined : '800'"
+    :model-value="props.isDialogVisible"
+    :fullscreen="md"
+    persistent
+  >
     <v-card prepend-icon="mdi-information-box" title="Stock Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
@@ -94,20 +130,82 @@ const onFormReset = () => {
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
-            <v-col cols="12">
+            <v-col cols="12" md="4">
+              <v-img
+                width="55%"
+                class="mx-auto rounded-circle"
+                color="red-darken-4"
+                aspect-ratio="1"
+                :src="imgPreview"
+                alt="Product Picture Preview"
+                cover
+              >
+              </v-img>
+            </v-col>
+
+            <v-col cols="12" md="8" class="d-flex align-center">
+              <v-autocomplete
+                v-model="formData.product_id"
+                label="Product"
+                :items="productsStore.products"
+                item-title="name"
+                item-value="id"
+                return-object
+                clearable
+                @update:model-value="onPreview"
+                :rules="[requiredValidator]"
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <v-autocomplete
+                v-model="formData.branch_id"
+                label="Branch"
+                :items="branchesStore.branches"
+                item-title="name"
+                item-value="id"
+                clearable
+                :rules="[requiredValidator]"
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <v-date-input
+                v-model="formData.purchased_at"
+                label="Date Purchased"
+                :rules="[requiredValidator]"
+                hide-actions
+              ></v-date-input>
+            </v-col>
+
+            <v-col cols="12" md="6">
               <v-text-field
-                v-model="formData.name"
-                label="Name"
+                v-model="formData.qty"
+                prefix="kg"
+                label="Quantity"
+                type="number"
+                min="1"
+                :rules="[requiredValidator]"
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model="formData.price"
+                prefix="Php"
+                label="Price"
+                type="number"
+                min="0"
                 :rules="[requiredValidator]"
               ></v-text-field>
             </v-col>
 
             <v-col cols="12">
-              <v-textarea
-                v-model="formData.description"
-                label="Description"
-                :rules="[requiredValidator]"
-              ></v-textarea>
+              <v-text-field v-model="formData.supplier" label="Supplier Name"></v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <v-textarea v-model="formData.remarks" label="Remarks" rows="2"></v-textarea>
             </v-col>
           </v-row>
         </v-card-text>

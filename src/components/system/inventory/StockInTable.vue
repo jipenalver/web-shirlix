@@ -164,9 +164,12 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               </v-avatar>
             </div>
 
-            <span class="font-weight-bold">
-              {{ item.products.name }}
-            </span>
+            <div>
+              <span class="font-weight-bold">
+                {{ item.products.name }}
+              </span>
+              <p class="text-caption">{{ item.products.description }}</p>
+            </div>
           </div>
         </template>
 

@@ -46,7 +46,6 @@ export const useBranchesStore = defineStore('branches', () => {
 
   // Retrieve Branches
   async function getBranches() {
-    // Query Supabase with pagination and sorting
     const { data } = await supabase.from('branches').select().order('name', { ascending: true })
 
     // Set the retrieved data to state
