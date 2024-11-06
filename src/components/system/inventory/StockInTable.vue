@@ -281,7 +281,7 @@ onMounted(async () => {
         <template #item.actions="{ item }">
           <div class="d-flex align-center justify-center">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
-              <v-icon icon="mdi-pencil" size="large"></v-icon>
+              <v-icon icon="mdi-pencil"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Stock</v-tooltip>
             </v-btn>
 

@@ -18,6 +18,7 @@ export const menuItemsNav2 = [
 ]
 export const menuItemsNav3 = [
   ['Stock In', 'mdi-tray-arrow-down', 'Add Stocks on Products', '/inventory/stockin'],
+  ['Stock Weight', 'mdi-weight-kilogram', 'Track Weight of Products', '/inventory/weight'],
   ['Sales', 'mdi-tray-arrow-up', 'Sell Products', '/inventory/sales']
 ]
 export const menuItemsNav4 = [
