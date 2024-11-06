@@ -17,6 +17,25 @@ export const getSlugText = (name) => {
     .slice(0, 23)
 }
 
+// 👉 Money Format Text
+export const getMoneyText = (value) => {
+  if (isNaN(value)) return '₱0.00'
+
+  return new Intl.NumberFormat('en-PH', {
+    style: 'currency',
+    currency: 'PHP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value)
+}
+
+// 👉 Pad String Left
+export const getPadLeftText = (value, length = 4, char = '0') => {
+  value = String(value)
+  if (value.length >= length) return value
+  return char.repeat(length - value.length) + value
+}
+
 // 👉 File Extraction of Object, for 1 File/Image
 export const fileExtract = (event) => {
   return new Promise((resolve, reject) => {

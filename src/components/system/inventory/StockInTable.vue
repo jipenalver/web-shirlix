@@ -1,12 +1,13 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import ExpensesFormDialog from './ExpensesFormDialog.vue'
+import StockInFormDialog from './StockInFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { tableHeaders } from './expensesTableUtils'
+import { tableHeaders } from './stockInTableUtils'
 import { formActionDefault } from '@/utils/supabase'
+import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
-import { useExpensesStore } from '@/stores/expenses'
-import { getMoneyText } from '@/utils/helpers'
+import { useProductsStore } from '@/stores/products'
+import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
 
@@ -14,8 +15,9 @@ import { onMounted, ref } from 'vue'
 const date = useDate()
 
 // Use Pinia Store
+const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
-const expensesStore = useExpensesStore()
+const stockInStore = useStockInStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -27,7 +29,8 @@ const tableOptions = ref({
 const tableFilters = ref({
   search: '',
   branch_id: null,
-  spent_at: [new Date(date.format(new Date(), 'fullDate'))]
+  product_id: null,
+  purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -60,7 +63,7 @@ const onConfirmDelete = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { error } = await expensesStore.deleteExpenditure(deleteId.value)
+  const { error } = await stockInStore.deleteStockIn(deleteId.value)
 
   // Turn off processing
   formAction.value.formProcess = false
@@ -74,7 +77,7 @@ const onConfirmDelete = async () => {
   }
 
   // Add Success Message
-  formAction.value.formSuccessMessage = 'Successfully Deleted Expenditue.'
+  formAction.value.formSuccessMessage = 'Successfully Deleted Stock.'
 
   // Retrieve Data
   onLoadItems(tableOptions.value, tableFilters.value)
@@ -82,7 +85,7 @@ const onConfirmDelete = async () => {
 
 // Retrieve Data based on Date
 const onFilterDate = (isCleared = false) => {
-  if (isCleared) tableFilters.value.spent_at = null
+  if (isCleared) tableFilters.value.purchased_at = null
 
   onLoadItems(tableOptions.value, tableFilters.value)
 }
@@ -95,7 +98,7 @@ const onFilterItems = () => {
 // Retrieve Data based on Search
 const onSearchItems = () => {
   if (
-    tableFilters.value.search?.length >= 3 ||
+    tableFilters.value.search?.length >= 4 ||
     tableFilters.value.search?.length == 0 ||
     tableFilters.value.search === null
   )
@@ -107,7 +110,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await expensesStore.getExpensesTable({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await stockInStore.getStockInTable({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -116,6 +119,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
+  if (productsStore.products.length == 0) await productsStore.getProducts()
 })
 </script>
 
@@ -134,13 +138,26 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="expensesStore.expensesTable"
-        :items-length="expensesStore.expensesTotal"
+        :items="stockInStore.stockInTable"
+        :items-length="stockInStore.stockInTotal"
         @update:options="onLoadItems"
       >
         <template #top>
           <v-row dense>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
+              <v-autocomplete
+                v-model="tableFilters.product_id"
+                :items="productsStore.products"
+                density="compact"
+                label="Product"
+                item-title="name"
+                item-value="id"
+                clearable
+                @update:model-value="onFilterItems"
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" md="4">
               <v-autocomplete
                 v-model="tableFilters.branch_id"
                 :items="branchesStore.branches"
@@ -153,11 +170,11 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <v-date-input
-                v-model="tableFilters.spent_at"
+                v-model="tableFilters.purchased_at"
                 density="compact"
-                label="Date Spent"
+                label="Date Purchased"
                 multiple="range"
                 clearable
                 @click:clear="onFilterDate(true)"
@@ -185,7 +202,7 @@ onMounted(async () => {
 
             <v-col cols="12" md="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
-                Add Amount
+                Add Stock
               </v-btn>
             </v-col>
           </v-row>
@@ -193,36 +210,84 @@ onMounted(async () => {
           <v-divider class="my-5"></v-divider>
         </template>
 
-        <template #item.name="{ item }">
+        <template #item.id="{ item }">
           <span class="font-weight-bold">
-            {{ item.name }}
+            {{ getPadLeftText(item.id) }}
           </span>
         </template>
 
-        <template #item.amount="{ item }">
-          {{ getMoneyText(item.amount) }}
+        <template #item.products="{ item }">
+          <div class="d-flex align-center" style="height: 100px">
+            <div class="me-2" style="width: 65px">
+              <v-img
+                v-if="item.products.image_url"
+                class="rounded-circle"
+                color="red-darken-4"
+                aspect-ratio="1"
+                :src="item.products.image_url"
+                alt="Product Picture"
+                cover
+              >
+              </v-img>
+
+              <v-avatar v-else color="red-darken-4" size="x-large">
+                <span class="text-h5">
+                  {{ getAvatarText(item.products.name) }}
+                </span>
+              </v-avatar>
+            </div>
+
+            <div>
+              <span class="font-weight-bold">
+                {{ item.products.name }}
+              </span>
+              <p class="text-caption">{{ item.products.description }}</p>
+            </div>
+          </div>
         </template>
 
-        <template #item.branches="{ item }">
-          {{ item.branches.name }}
-        </template>
-
-        <template #item.spent_at="{ item }">
+        <template #item.qty="{ item }">
           <span class="font-weight-bold">
-            {{ item.spent_at ? date.format(item.spent_at, 'fullDate') : '' }}
+            {{ item.qty + ' ' + item.qty_metric }}
           </span>
+        </template>
+
+        <template #item.price="{ item }">
+          {{ getMoneyText(item.price) }}
+        </template>
+
+        <template #item.purchased_at="{ item }">
+          <span class="font-weight-bold">
+            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
+          </span>
+        </template>
+
+        <template #item.status="{ item }">
+          <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
+            {{ item.is_reweighed ? 'Reweighed' : 'For Re-Weighing' }}
+
+            <v-tooltip activator="parent" location="top">
+              <span class="font-weight-bold">Added Date:</span>
+              {{ date.format(item.created_at, 'fullDateTime') }} <br />
+              <span class="font-weight-bold">Expiration Date:</span>
+              {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }} <br />
+              <span class="font-weight-bold">Branch:</span> {{ item.branches.name }} <br />
+              <span class="font-weight-bold">Supplier:</span> {{ item.supplier }} <br />
+              <span class="font-weight-bold">Remarks:</span> {{ item.remarks }} <br />
+            </v-tooltip>
+          </v-chip>
         </template>
 
         <template #item.actions="{ item }">
           <div class="d-flex align-center justify-center">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil"></v-icon>
-              <v-tooltip activator="parent" location="top">Edit Expenditue</v-tooltip>
+              <v-tooltip activator="parent" location="top">Edit Stock</v-tooltip>
             </v-btn>
 
             <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
               <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
-              <v-tooltip activator="parent" location="top">Delete Expenditue</v-tooltip>
+              <v-tooltip activator="parent" location="top">Delete Stock</v-tooltip>
             </v-btn>
           </div>
         </template>
@@ -230,17 +295,17 @@ onMounted(async () => {
     </v-col>
   </v-row>
 
-  <ExpensesFormDialog
+  <StockInFormDialog
     v-model:is-dialog-visible="isDialogVisible"
     :item-data="itemData"
     :table-options="tableOptions"
     :table-filters="tableFilters"
-  ></ExpensesFormDialog>
+  ></StockInFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
     title="Confirm Delete"
-    text="Are you sure you want to delete expenditure?"
+    text="Are you sure you want to delete stock?"
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>

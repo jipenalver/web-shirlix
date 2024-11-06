@@ -6,11 +6,13 @@ import { getSlugText } from '@/utils/helpers'
 export const useProductsStore = defineStore('products', () => {
   // States
   const productsTable = ref([])
+  const products = ref([])
   const productsTotal = ref(0)
 
   // Reset State Action
   function $reset() {
     productsTable.value = []
+    products.value = []
     productsTotal.value = 0
   }
 
@@ -31,7 +33,7 @@ export const useProductsStore = defineStore('products', () => {
     const { data } = await query
 
     // Separate query to get the total count without range
-    const { count } = await getProductsCount(search)
+    const { count } = await getProductsCount({ search })
 
     // Set the retrieved data to state
     productsTable.value = data
@@ -39,11 +41,19 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   // Count Products
-  async function getProductsCount(search = '') {
+  async function getProductsCount({ search }) {
     return await supabase
       .from('products')
       .select('*', { count: 'exact', head: true })
       .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
+  }
+
+  // Retrieve Products
+  async function getProducts() {
+    const { data } = await supabase.from('products').select().order('name', { ascending: true })
+
+    // Set the retrieved data to state
+    products.value = data
   }
 
   // Add Products
@@ -91,10 +101,11 @@ export const useProductsStore = defineStore('products', () => {
 
   return {
     productsTable,
+    products,
     productsTotal,
     $reset,
     getProductsTable,
-    getProductsCount,
+    getProducts,
     addProduct,
     updateProduct,
     deleteProduct,

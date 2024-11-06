@@ -29,7 +29,7 @@ export const useBranchesStore = defineStore('branches', () => {
       .range(rangeStart, rangeEnd)
 
     // Separate query to get the total count without range
-    const { count } = await getBranchesCount(search)
+    const { count } = await getBranchesCount({ search })
 
     // Set the retrieved data to state
     branchesTable.value = data
@@ -37,7 +37,7 @@ export const useBranchesStore = defineStore('branches', () => {
   }
 
   // Count Branches
-  async function getBranchesCount(search = '') {
+  async function getBranchesCount({ search }) {
     return await supabase
       .from('branches')
       .select('*', { count: 'exact', head: true })
@@ -46,7 +46,6 @@ export const useBranchesStore = defineStore('branches', () => {
 
   // Retrieve Branches
   async function getBranches() {
-    // Query Supabase with pagination and sorting
     const { data } = await supabase.from('branches').select().order('name', { ascending: true })
 
     // Set the retrieved data to state

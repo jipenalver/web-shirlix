@@ -25,7 +25,7 @@ const onClose = () => {
       <v-card-actions>
         <v-spacer></v-spacer>
 
-        <v-btn prepend-icon="mdi-thumb-down" @click="onClose"> Disagree </v-btn>
+        <v-btn prepend-icon="mdi-thumb-down" @click="onClose"> Cancel </v-btn>
 
         <v-btn
           prepend-icon="mdi-thumb-up"
@@ -33,7 +33,7 @@ const onClose = () => {
           variant="elevated"
           @click="onConfirm"
         >
-          Agree
+          Confirm
         </v-btn>
       </v-card-actions>
     </v-card>

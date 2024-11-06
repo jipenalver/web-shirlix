@@ -81,12 +81,12 @@ onMounted(async () => {
           <v-spacer></v-spacer>
 
           <div class="d-flex flex-wrap ga-2">
-            <v-btn icon color="red-darken-4" density="comfortable" @click="onUpdate(item)">
+            <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-tag-edit"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Role</v-tooltip>
             </v-btn>
-            <v-btn icon color="red-darken-4" density="comfortable" @click="onDelete(item.id)">
-              <v-icon icon="mdi-tag-remove"> </v-icon>
+            <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
+              <v-icon icon="mdi-tag-remove" color="red-darken-4"> </v-icon>
               <v-tooltip activator="parent" location="top">Delete Role</v-tooltip>
             </v-btn>
           </div>

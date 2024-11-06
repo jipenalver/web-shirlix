@@ -10,9 +10,11 @@ import BranchesView from '@/views/system/manage-users/BranchesView.vue'
 import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
 import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 import ProductsView from '@/views/system/manage-products/ProductsView.vue'
+import StockInView from '@/views/system/inventory/StockInView.vue'
+import SalesView from '@/views/system/inventory/SalesView.vue'
 
 // 👉 Routes
-export const routesPath = [
+export const routes = [
   // Auth Pages
   {
     path: '/',
@@ -64,18 +66,30 @@ export const routesPath = [
     component: BranchesView,
     meta: { requiresAuth: true, requiresAdmin: true }
   },
-  // Add More Pages Here
-  // {
-  //   path: '/system/sample-page',
-  //   name: 'sample-page',
-  //   component: SamplePageView
-  // },
+
+  // Products
   {
     path: '/products',
     name: 'products',
     component: ProductsView,
     meta: { requiresAuth: true }
   },
+
+  // Inventory
+  {
+    path: '/inventory/stockin',
+    name: 'inventory-stockin',
+    component: StockInView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/inventory/sales',
+    name: 'inventory-sales',
+    component: SalesView,
+    meta: { requiresAuth: true }
+  },
+
+  // Expenses
   {
     path: '/expenses',
     name: 'expenses',

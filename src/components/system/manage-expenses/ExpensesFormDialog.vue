@@ -114,11 +114,7 @@ onMounted(async () => {
             </v-col>
 
             <v-col cols="12">
-              <v-textarea
-                v-model="formData.description"
-                label="Description"
-                :rules="[requiredValidator]"
-              ></v-textarea>
+              <v-textarea v-model="formData.description" label="Description" rows="2"></v-textarea>
             </v-col>
 
             <v-col cols="12" md="6">

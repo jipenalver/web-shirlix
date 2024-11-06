@@ -17,9 +17,14 @@ const { mobile } = useDisplay()
 
 // Load Variables
 const isDrawerVisible = ref(props.isDrawerVisible)
-watch(props, () => {
-  isDrawerVisible.value = props.isDrawerVisible
-})
+
+// Watch props if it changes
+watch(
+  () => props.isDrawerVisible,
+  () => {
+    isDrawerVisible.value = props.isDrawerVisible
+  }
+)
 </script>
 
 <template>
