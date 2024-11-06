@@ -1,10 +1,10 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-// import ProductsFormDialog from './ProductsFormDialog.vue'
+// import StockInFormDialog from './StockInFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { tableHeaders } from './stockInTableUtils'
 import { formActionDefault } from '@/utils/supabase'
-import { useProductsStore } from '@/stores/products'
+import { useStockInStore } from '@/stores/stockIn'
 import { getAvatarText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
@@ -13,7 +13,7 @@ import { ref } from 'vue'
 const date = useDate()
 
 // Use Pinia Store
-const productsStore = useProductsStore()
+const stockInStore = useStockInStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -56,7 +56,7 @@ const onConfirmDelete = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { error } = await productsStore.deleteProduct(deleteId.value)
+  const { error } = await stockInStore.deleteStockIn(deleteId.value)
 
   // Turn off processing
   formAction.value.formProcess = false
@@ -70,7 +70,7 @@ const onConfirmDelete = async () => {
   }
 
   // Add Success Message
-  formAction.value.formSuccessMessage = 'Successfully Deleted Product.'
+  formAction.value.formSuccessMessage = 'Successfully Deleted Stock.'
 
   // Retrieve Data
   onLoadItems(tableOptions.value, tableFilters.value)
@@ -91,7 +91,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await productsStore.getProductsTable({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await stockInStore.getStockInTable({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -113,8 +113,8 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="productsStore.productsTable"
-        :items-length="productsStore.productsTotal"
+        :items="stockInStore.stockInTable"
+        :items-length="stockInStore.stockInTotal"
         @update:options="onLoadItems"
       >
         <template #top>
@@ -135,7 +135,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 
             <v-col cols="12" md="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
-                Add Product
+                Add Stock
               </v-btn>
             </v-col>
           </v-row>
@@ -143,15 +143,15 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <v-divider class="my-5"></v-divider>
         </template>
 
-        <template #item.name="{ item }">
+        <template #item.products="{ item }">
           <div class="d-flex align-center" style="height: 100px">
             <div class="me-2" style="width: 65px">
               <v-img
-                v-if="item.image_url"
+                v-if="item.products.image_url"
                 class="rounded-circle"
                 color="red-darken-4"
                 aspect-ratio="1"
-                :src="item.image_url"
+                :src="item.products.image_url"
                 alt="Product Picture"
                 cover
               >
@@ -159,20 +159,20 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 
               <v-avatar v-else color="red-darken-4" size="x-large">
                 <span class="text-h5">
-                  {{ getAvatarText(item.name) }}
+                  {{ getAvatarText(item.products.name) }}
                 </span>
               </v-avatar>
             </div>
 
             <span class="font-weight-bold">
-              {{ item.name }}
+              {{ item.products.name }}
             </span>
           </div>
         </template>
 
-        <template #item.created_at="{ item }">
+        <template #item.purchased_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.created_at ? date.format(item.created_at, 'fullDate') : '' }}
+            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDateTime') : '' }}
           </span>
         </template>
 
@@ -180,12 +180,12 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <div class="d-flex align-center justify-center">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil" size="large"></v-icon>
-              <v-tooltip activator="parent" location="top">Edit Product</v-tooltip>
+              <v-tooltip activator="parent" location="top">Edit Stock</v-tooltip>
             </v-btn>
 
             <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
               <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
-              <v-tooltip activator="parent" location="top">Delete Product</v-tooltip>
+              <v-tooltip activator="parent" location="top">Delete Stock</v-tooltip>
             </v-btn>
           </div>
         </template>
@@ -196,7 +196,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"
     title="Confirm Delete"
-    text="Are you sure you want to delete product?"
+    text="Are you sure you want to delete stock?"
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>

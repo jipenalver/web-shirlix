@@ -204,7 +204,7 @@ onMounted(async () => {
 
         <template #item.spent_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.spent_at ? date.format(item.spent_at, 'fullDate') : '' }}
+            {{ item.spent_at ? date.format(item.spent_at, 'fullDateTime') : '' }}
           </span>
         </template>
 

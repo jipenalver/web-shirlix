@@ -2,7 +2,7 @@
 export const tableHeaders = [
   {
     title: 'Product',
-    key: 'product',
+    key: 'products',
     align: 'start'
   },
   {
@@ -22,7 +22,7 @@ export const tableHeaders = [
   },
   {
     title: 'Purchase Date',
-    key: 'purchase_at',
+    key: 'purchased_at',
     align: 'center'
   },
   {
