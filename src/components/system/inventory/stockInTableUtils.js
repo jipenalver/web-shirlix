@@ -21,6 +21,11 @@ export const tableHeaders = [
     align: 'start'
   },
   {
+    title: 'Branch',
+    key: 'branches',
+    align: 'start'
+  },
+  {
     title: 'Purchase Date',
     key: 'purchased_at',
     align: 'center'

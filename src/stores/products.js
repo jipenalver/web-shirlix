@@ -33,7 +33,7 @@ export const useProductsStore = defineStore('products', () => {
     const { data } = await query
 
     // Separate query to get the total count without range
-    const { count } = await getProductsCount(search)
+    const { count } = await getProductsCount({ search })
 
     // Set the retrieved data to state
     productsTable.value = data
@@ -41,7 +41,7 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   // Count Products
-  async function getProductsCount(search = '') {
+  async function getProductsCount({ search }) {
     return await supabase
       .from('products')
       .select('*', { count: 'exact', head: true })

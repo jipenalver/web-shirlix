@@ -48,7 +48,9 @@ watch(
   () => props.itemData,
   () => {
     isUpdate.value = props.itemData ? true : false
-    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    formData.value = props.itemData
+      ? { ...props.itemData, purchased_at: new Date(props.itemData.purchased_at) }
+      : { ...formDataDefault }
     imgPreview.value = isUpdate.value
       ? props.itemData.products.image_url
       : '/images/img-product.png'

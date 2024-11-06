@@ -5,14 +5,18 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { tableHeaders } from './stockInTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useStockInStore } from '@/stores/stockIn'
+import { useBranchesStore } from '@/stores/branches'
+import { useProductsStore } from '@/stores/products'
 import { getAvatarText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const date = useDate()
 
 // Use Pinia Store
+const productsStore = useProductsStore()
+const branchesStore = useBranchesStore()
 const stockInStore = useStockInStore()
 
 // Load Variables
@@ -23,7 +27,10 @@ const tableOptions = ref({
   isLoading: false
 })
 const tableFilters = ref({
-  search: ''
+  search: '',
+  branch_id: null,
+  product_id: null,
+  purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -76,6 +83,18 @@ const onConfirmDelete = async () => {
   onLoadItems(tableOptions.value, tableFilters.value)
 }
 
+// Retrieve Data based on Date
+const onFilterDate = (isCleared = false) => {
+  if (isCleared) tableFilters.value.purchased_at = null
+
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
+
+// Retrieve Data based on Filter
+const onFilterItems = () => {
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
+
 // Retrieve Data based on Search
 const onSearchItems = () => {
   if (
@@ -96,6 +115,12 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
+
+// Load Functions during component rendering
+onMounted(async () => {
+  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
+  if (productsStore.products.length == 0) await productsStore.getProducts()
+})
 </script>
 
 <template>
@@ -118,6 +143,48 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         @update:options="onLoadItems"
       >
         <template #top>
+          <v-row dense>
+            <v-col cols="12" md="4">
+              <v-autocomplete
+                v-model="tableFilters.product_id"
+                :items="productsStore.products"
+                density="compact"
+                label="Product"
+                item-title="name"
+                item-value="id"
+                clearable
+                @update:model-value="onFilterItems"
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" md="4">
+              <v-autocomplete
+                v-model="tableFilters.branch_id"
+                :items="branchesStore.branches"
+                density="compact"
+                label="Branch"
+                item-title="name"
+                item-value="id"
+                clearable
+                @update:model-value="onFilterItems"
+              ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" md="4">
+              <v-date-input
+                v-model="tableFilters.purchased_at"
+                density="compact"
+                label="Date Purchased"
+                multiple="range"
+                clearable
+                @click:clear="onFilterDate(true)"
+                @update:model-value="onFilterDate(false)"
+              ></v-date-input>
+            </v-col>
+          </v-row>
+
+          <v-divider class="mb-5"></v-divider>
+
           <v-row dense>
             <v-spacer></v-spacer>
 
@@ -171,6 +238,10 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               <p class="text-caption">{{ item.products.description }}</p>
             </div>
           </div>
+        </template>
+
+        <template #item.branches="{ item }">
+          {{ item.branches.name }}
         </template>
 
         <template #item.purchased_at="{ item }">

@@ -26,7 +26,7 @@ const tableOptions = ref({
 const tableFilters = ref({
   search: '',
   branch_id: null,
-  spent_at: [date.format(new Date(), 'fullDate')]
+  spent_at: [new Date(date.format(new Date(), 'fullDate'))]
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -138,7 +138,7 @@ onMounted(async () => {
         @update:options="onLoadItems"
       >
         <template #top>
-          <v-row>
+          <v-row dense>
             <v-col cols="12" md="6">
               <v-autocomplete
                 v-model="tableFilters.branch_id"

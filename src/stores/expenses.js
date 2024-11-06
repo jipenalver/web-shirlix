@@ -29,29 +29,16 @@ export const useExpensesStore = defineStore('expenses', () => {
     let query = supabase
       .from('expenses')
       .select('*, branches( name )')
-      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
 
-    if (branch_id) {
-      query = query.eq('branch_id', branch_id)
-    }
-
-    if (spent_at) {
-      if (spent_at.length === 1)
-        query = query.eq('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString())
-      else {
-        query = query
-          .gte('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString()) // Greater than or equal to `from` date
-          .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
-      }
-    }
+    query = getExpensesFilter(query, { search, branch_id, spent_at })
 
     // Execute the query
     const { data } = await query
 
     // Separate query to get the total count without range
-    const { count } = await getExpensesCount(search)
+    const { count } = await getExpensesCount({ search, branch_id, spent_at })
 
     // Set the retrieved data to state
     expensesTable.value = data
@@ -66,12 +53,31 @@ export const useExpensesStore = defineStore('expenses', () => {
     let query = supabase
       .from('expenses')
       .select('*, branches( name )')
-      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
       .order(column, { ascending: order })
 
-    if (branch_id) {
-      query = query.eq('branch_id', branch_id)
-    }
+    query = getExpensesFilter(query, { search, branch_id, spent_at })
+
+    // Execute the query
+    const { data } = await query
+
+    // Set the retrieved data to state
+    expensesReport.value = data
+  }
+
+  // Count Expenses
+  async function getExpensesCount({ search, branch_id, spent_at }) {
+    let query = supabase.from('expenses').select('*', { count: 'exact', head: true })
+
+    query = getExpensesFilter(query, { search, branch_id, spent_at })
+
+    return await query
+  }
+
+  // Filter Expenses
+  function getExpensesFilter(query, { search, branch_id, spent_at }) {
+    if (search) query = query.or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
+
+    if (branch_id) query = query.eq('branch_id', branch_id)
 
     if (spent_at) {
       if (spent_at.length === 1)
@@ -83,19 +89,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       }
     }
 
-    // Execute the query
-    const { data } = await query
-
-    // Set the retrieved data to state
-    expensesReport.value = data
-  }
-
-  // Count Expenses
-  async function getExpensesCount(search = '') {
-    return await supabase
-      .from('expenses')
-      .select('*', { count: 'exact', head: true })
-      .or('name.ilike.%' + search + '%, description.ilike.%' + search + '%')
+    return query
   }
 
   // Add Expenses

@@ -113,7 +113,7 @@ onMounted(async () => {
         hide-default-footer
       >
         <template #top>
-          <v-row>
+          <v-row dense>
             <v-col cols="12" md="6">
               <v-autocomplete
                 v-model="tableFilters.branch_id"
@@ -142,7 +142,7 @@ onMounted(async () => {
 
           <v-divider class="mb-5"></v-divider>
 
-          <v-row>
+          <v-row dense>
             <v-spacer></v-spacer>
 
             <v-col cols="12" md="4">
