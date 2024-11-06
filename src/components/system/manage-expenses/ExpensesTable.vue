@@ -6,6 +6,7 @@ import { tableHeaders } from './expensesTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useBranchesStore } from '@/stores/branches'
 import { useExpensesStore } from '@/stores/expenses'
+import { getMoneyText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
 
@@ -196,6 +197,10 @@ onMounted(async () => {
           <span class="font-weight-bold">
             {{ item.name }}
           </span>
+        </template>
+
+        <template #item.amount="{ item }">
+          {{ getMoneyText(item.amount) }}
         </template>
 
         <template #item.branches="{ item }">

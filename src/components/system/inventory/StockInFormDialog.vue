@@ -1,5 +1,4 @@
 <script setup>
-import { useAuthUserStore } from '@/stores/authUser'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
@@ -14,13 +13,12 @@ const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'table
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Utilize pre-defined vue functions
-const { md } = useDisplay()
+const { md, mobile } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
 const stockInStore = useStockInStore()
-const authStore = useAuthUserStore()
 
 // Load Variables
 const formDataDefault = {
@@ -28,10 +26,11 @@ const formDataDefault = {
   remarks: '',
   price: 0,
   qty: 1,
+  qty_metric: 'kg',
   purchased_at: new Date(),
+  expired_at: null,
   branch_id: null,
-  product_id: null,
-  user_id: authStore.userData.id
+  product_id: null
 }
 const formData = ref({
   ...formDataDefault
@@ -118,9 +117,9 @@ onMounted(async () => {
 
 <template>
   <v-dialog
-    :max-width="md ? undefined : '800'"
+    :max-width="md || mobile ? undefined : '800'"
     :model-value="props.isDialogVisible"
-    :fullscreen="md"
+    :fullscreen="md || mobile"
     persistent
   >
     <v-card prepend-icon="mdi-information-box" title="Stock Information">
@@ -172,23 +171,30 @@ onMounted(async () => {
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-date-input
-                v-model="formData.purchased_at"
-                label="Date Purchased"
+              <v-text-field
+                v-model="formData.supplier"
+                label="Supplier Name"
                 :rules="[requiredValidator]"
-                hide-actions
-              ></v-date-input>
+              ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="9" md="4">
               <v-text-field
                 v-model="formData.qty"
-                prefix="kg"
                 label="Quantity"
                 type="number"
                 min="1"
                 :rules="[requiredValidator]"
               ></v-text-field>
+            </v-col>
+
+            <v-col cols="3" md="2">
+              <v-select
+                v-model="formData.qty_metric"
+                label="Metric"
+                :items="['kg', 'grams', 'L', 'ml', 'm', 'cm', 'pieces']"
+                :rules="[requiredValidator]"
+              ></v-select>
             </v-col>
 
             <v-col cols="12" md="6">
@@ -202,8 +208,22 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12">
-              <v-text-field v-model="formData.supplier" label="Supplier Name"></v-text-field>
+            <v-col cols="12" md="6">
+              <v-date-input
+                v-model="formData.purchased_at"
+                label="Purchased Date"
+                :rules="[requiredValidator]"
+                hide-actions
+              ></v-date-input>
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <v-date-input
+                v-model="formData.expired_at"
+                label="Expiration Date"
+                clearable
+                hide-actions
+              ></v-date-input>
             </v-col>
 
             <v-col cols="12">

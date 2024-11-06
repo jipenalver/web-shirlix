@@ -11,7 +11,7 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Date Added',
+    title: 'Added Date',
     key: 'created_at',
     align: 'center'
   },

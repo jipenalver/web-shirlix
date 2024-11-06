@@ -1,6 +1,11 @@
 // Table Headers
 export const tableHeaders = [
   {
+    title: 'ID',
+    key: 'id',
+    align: 'start'
+  },
+  {
     title: 'Product',
     key: 'products',
     align: 'start'
@@ -16,18 +21,13 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Supplier',
-    key: 'supplier',
-    align: 'start'
-  },
-  {
-    title: 'Branch',
-    key: 'branches',
-    align: 'start'
-  },
-  {
-    title: 'Purchase Date',
+    title: 'Purchased Date',
     key: 'purchased_at',
+    align: 'start'
+  },
+  {
+    title: 'Status',
+    key: 'status',
     align: 'center'
   },
   {

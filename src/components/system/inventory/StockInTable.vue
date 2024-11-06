@@ -7,7 +7,7 @@ import { formActionDefault } from '@/utils/supabase'
 import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
-import { getAvatarText } from '@/utils/helpers'
+import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
 
@@ -98,7 +98,7 @@ const onFilterItems = () => {
 // Retrieve Data based on Search
 const onSearchItems = () => {
   if (
-    tableFilters.value.search?.length >= 3 ||
+    tableFilters.value.search?.length >= 4 ||
     tableFilters.value.search?.length == 0 ||
     tableFilters.value.search === null
   )
@@ -210,6 +210,12 @@ onMounted(async () => {
           <v-divider class="my-5"></v-divider>
         </template>
 
+        <template #item.id="{ item }">
+          <span class="font-weight-bold">
+            {{ getPadLeftText(item.id) }}
+          </span>
+        </template>
+
         <template #item.products="{ item }">
           <div class="d-flex align-center" style="height: 100px">
             <div class="me-2" style="width: 65px">
@@ -240,14 +246,36 @@ onMounted(async () => {
           </div>
         </template>
 
-        <template #item.branches="{ item }">
-          {{ item.branches.name }}
+        <template #item.qty="{ item }">
+          <span class="font-weight-bold">
+            {{ item.qty + ' ' + item.qty_metric }}
+          </span>
+        </template>
+
+        <template #item.price="{ item }">
+          {{ getMoneyText(item.price) }}
         </template>
 
         <template #item.purchased_at="{ item }">
           <span class="font-weight-bold">
             {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
           </span>
+        </template>
+
+        <template #item.status="{ item }">
+          <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
+            {{ item.is_reweighed ? 'Reweighed' : 'For Re-Weighing' }}
+
+            <v-tooltip activator="parent" location="top">
+              <span class="font-weight-bold">Added Date:</span>
+              {{ date.format(item.created_at, 'fullDateTime') }} <br />
+              <span class="font-weight-bold">Expiration Date:</span>
+              {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }} <br />
+              <span class="font-weight-bold">Branch:</span> {{ item.branches.name }} <br />
+              <span class="font-weight-bold">Supplier:</span> {{ item.supplier }} <br />
+              <span class="font-weight-bold">Remarks:</span> {{ item.remarks }} <br />
+            </v-tooltip>
+          </v-chip>
         </template>
 
         <template #item.actions="{ item }">
