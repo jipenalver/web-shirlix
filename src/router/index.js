@@ -1,11 +1,11 @@
 import { useAuthUserStore } from '@/stores/authUser'
 import { isAuthenticated } from '@/utils/supabase'
 import { createRouter, createWebHistory } from 'vue-router'
-import { routesPath } from './routesPath'
+import { routes } from './routesPath'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: routesPath
+  routes
 })
 
 router.beforeEach(async (to) => {

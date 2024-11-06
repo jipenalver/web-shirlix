@@ -14,7 +14,7 @@ import StockInView from '@/views/system/inventory/StockInView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
 
 // 👉 Routes
-export const routesPath = [
+export const routes = [
   // Auth Pages
   {
     path: '/',
