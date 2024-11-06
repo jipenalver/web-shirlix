@@ -71,7 +71,7 @@ const csvData = () => {
       data.amount,
       generateCSVTrim(data.description),
       generateCSVTrim(data.branches.name),
-      data.spent_at ? generateCSVTrim(date.format(data.spent_at, 'fullDateTime')) : ''
+      data.spent_at ? generateCSVTrim(date.format(data.spent_at, 'fullDate')) : ''
     ].join(',')
   })
 
@@ -186,7 +186,7 @@ onMounted(async () => {
 
         <template #item.spent_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.spent_at ? date.format(item.spent_at, 'fullDateTime') : '' }}
+            {{ item.spent_at ? date.format(item.spent_at, 'fullDate') : '' }}
           </span>
         </template>
       </v-data-table-server>

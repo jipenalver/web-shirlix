@@ -1,6 +1,6 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-// import StockInFormDialog from './StockInFormDialog.vue'
+import StockInFormDialog from './StockInFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { tableHeaders } from './stockInTableUtils'
 import { formActionDefault } from '@/utils/supabase'
@@ -172,7 +172,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 
         <template #item.purchased_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDateTime') : '' }}
+            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
           </span>
         </template>
 
@@ -192,6 +192,13 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
       </v-data-table-server>
     </v-col>
   </v-row>
+
+  <StockInFormDialog
+    v-model:is-dialog-visible="isDialogVisible"
+    :item-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
+  ></StockInFormDialog>
 
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDeleteDialog"

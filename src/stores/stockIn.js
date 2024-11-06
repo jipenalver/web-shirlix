@@ -22,9 +22,14 @@ export const useStockInStore = defineStore('stockIn', () => {
     let query = supabase
       .from('stock_ins')
       .select('*, branches( name ), products( name, image_url )')
-      .or(`supplier.ilike.%${search}%, remarks.ilike.%${search}%`)
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
+
+    if (search) {
+      query = query
+        .or('name.ilike.%' + search + '%', { referencedTable: 'products' })
+        .or('supplier.ilike.%' + search + '%')
+    }
 
     // Execute the query
     const { data } = await query
@@ -39,10 +44,17 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   // Count StockIn
   async function getStockInCount(search = '') {
-    return await supabase
+    let query = supabase
       .from('stock_ins')
-      .select('*', { count: 'exact', head: true })
-      .or(`supplier.ilike.%${search}%, remarks.ilike.%${search}%`)
+      .select('*, branches( name ), products( name )', { count: 'exact', head: true })
+
+    if (search) {
+      query = query
+        .or('name.ilike.%' + search + '%', { referencedTable: 'products' })
+        .or('supplier.ilike.%' + search + '%')
+    }
+
+    return await query
   }
 
   // Add StockIn

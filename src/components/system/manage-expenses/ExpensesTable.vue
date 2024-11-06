@@ -26,7 +26,7 @@ const tableOptions = ref({
 const tableFilters = ref({
   search: '',
   branch_id: null,
-  spent_at: [new Date()]
+  spent_at: [date.format(new Date(), 'fullDate')]
 })
 const isDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
@@ -204,7 +204,7 @@ onMounted(async () => {
 
         <template #item.spent_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.spent_at ? date.format(item.spent_at, 'fullDateTime') : '' }}
+            {{ item.spent_at ? date.format(item.spent_at, 'fullDate') : '' }}
           </span>
         </template>
 
