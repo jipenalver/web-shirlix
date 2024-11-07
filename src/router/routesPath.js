@@ -11,6 +11,7 @@ import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
 import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 import ProductsView from '@/views/system/manage-products/ProductsView.vue'
 import StockInView from '@/views/system/inventory/StockInView.vue'
+import StockWeightView from '@/views/system/inventory/StockWeightView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
 
 // 👉 Routes
@@ -80,6 +81,12 @@ export const routes = [
     path: '/inventory/stockin',
     name: 'inventory-stockin',
     component: StockInView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/inventory/weight',
+    name: 'inventory-weight',
+    component: StockWeightView,
     meta: { requiresAuth: true }
   },
   {
