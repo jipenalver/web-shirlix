@@ -1,4 +1,5 @@
 <script setup>
+import MapWidget from '@/components/system/dashboard/MapWidget.vue'
 import WelcomeWidget from '@/components/system/dashboard/WelcomeWidget.vue'
 import SalesWidget from '@/components/system/dashboard/SalesWidget.vue'
 import ExpensesWidget from '@/components/system/dashboard/ExpensesWidget.vue'
@@ -40,6 +41,10 @@ const isDrawerVisible = ref(true)
         <v-row>
           <v-col cols="12">
             <WelcomeWidget></WelcomeWidget>
+          </v-col>
+
+          <v-col cols="12">
+            <MapWidget></MapWidget>
           </v-col>
 
           <v-col cols="12" lg="6">
