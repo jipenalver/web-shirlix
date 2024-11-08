@@ -1,8 +1,7 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import StockInFormDialog from './StockInFormDialog.vue'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { tableHeaders } from './stockInTableUtils'
+import { tableHeaders } from './stockWeightTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
@@ -33,9 +32,7 @@ const tableFilters = ref({
   purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
 })
 const isDialogVisible = ref(false)
-const isConfirmDeleteDialog = ref(false)
 const itemData = ref(null)
-const deleteId = ref('')
 const formAction = ref({
   ...formActionDefault
 })
@@ -50,37 +47,6 @@ const onUpdate = (item) => {
 const onAdd = () => {
   itemData.value = null
   isDialogVisible.value = true
-}
-
-// Trigger Delete Btn
-const onDelete = (id) => {
-  deleteId.value = id
-  isConfirmDeleteDialog.value = true
-}
-
-// Confirm Delete
-const onConfirmDelete = async () => {
-  // Reset Form Action utils
-  formAction.value = { ...formActionDefault, formProcess: true }
-
-  const { error } = await stockInStore.deleteStockIn(deleteId.value)
-
-  // Turn off processing
-  formAction.value.formProcess = false
-
-  if (error) {
-    // Add Error Message and Status Code
-    formAction.value.formErrorMessage = error.message
-    formAction.value.formStatus = error.status
-
-    return
-  }
-
-  // Add Success Message
-  formAction.value.formSuccessMessage = 'Successfully Deleted Stock.'
-
-  // Retrieve Data
-  onLoadItems(tableOptions.value, tableFilters.value)
 }
 
 // Retrieve Data based on Date
@@ -256,18 +222,6 @@ onMounted(async () => {
           </span>
         </template>
 
-        <template #item.purchased_at="{ item }">
-          <span class="font-weight-bold">
-            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
-          </span>
-        </template>
-
-        <template #item.expired_at="{ item }">
-          <span class="font-weight-bold">
-            {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
-          </span>
-        </template>
-
         <template #item.status="{ item }">
           <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
             {{ item.is_reweighed ? 'Reweighed' : 'For Re-Weighing' }}
@@ -275,6 +229,10 @@ onMounted(async () => {
             <v-tooltip activator="parent" location="top">
               <span class="font-weight-bold">Added Date:</span>
               {{ date.format(item.created_at, 'fullDateTime') }} <br />
+              <span class="font-weight-bold">Purchased Date:</span>
+              {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }} <br />
+              <span class="font-weight-bold">Expiration Date:</span>
+              {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }} <br />
               <span class="font-weight-bold">Branch:</span> {{ item.branches.name }} <br />
               <span class="font-weight-bold">Supplier:</span> {{ item.supplier }} <br />
               <span class="font-weight-bold">Remarks:</span> {{ item.remarks }} <br />
@@ -288,11 +246,6 @@ onMounted(async () => {
               <v-icon icon="mdi-pencil"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Stock</v-tooltip>
             </v-btn>
-
-            <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
-              <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
-              <v-tooltip activator="parent" location="top">Delete Stock</v-tooltip>
-            </v-btn>
           </div>
         </template>
       </v-data-table-server>
@@ -305,13 +258,6 @@ onMounted(async () => {
     :table-options="tableOptions"
     :table-filters="tableFilters"
   ></StockInFormDialog>
-
-  <ConfirmDialog
-    v-model:is-dialog-visible="isConfirmDeleteDialog"
-    title="Confirm Delete"
-    text="Are you sure you want to delete stock?"
-    @confirm="onConfirmDelete"
-  ></ConfirmDialog>
 </template>
 
 <style scoped>

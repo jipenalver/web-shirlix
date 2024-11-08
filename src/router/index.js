@@ -1,7 +1,7 @@
 import { useAuthUserStore } from '@/stores/authUser'
 import { isAuthenticated } from '@/utils/supabase'
 import { createRouter, createWebHistory } from 'vue-router'
-import { routes } from './routesPath'
+import { routes } from './routes'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,19 +40,11 @@ router.beforeEach(async (to) => {
 
     // Get the user role
     const isAdmin = authStore.userData.is_admin
-    // remove this comment if not need; Boolean Approach
-    // const isCashier = userMetadata.is_cashier
-    // remove this comment if not need; String Approach
-    // const isCashier = userMetadata.role === 'Cashier'
 
     // Restrict access to admin-only routes
     if (!isAdmin && to.meta.requiresAdmin) {
       return { name: 'forbidden' }
     }
-    // Add conditions here if needed; create boolean meta for cashier
-    // if(!isCashier && to.meta.requiresCashier)) {
-
-    // }
   }
 })
 

@@ -144,11 +144,11 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         </template>
 
         <template #item.name="{ item }">
-          <div class="d-flex align-center" style="height: 100px">
-            <div class="me-2" style="width: 65px">
+          <div class="d-flex align-center td-first">
+            <div class="me-2">
               <v-img
                 v-if="item.image_url"
-                class="rounded-circle"
+                class="rounded-circle td-first-img"
                 color="red-darken-4"
                 aspect-ratio="1"
                 :src="item.image_url"
@@ -207,3 +207,14 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>
+
+<style scoped>
+.td-first {
+  height: 100px;
+  min-width: 200px;
+}
+
+.td-first-img {
+  width: 65px;
+}
+</style>

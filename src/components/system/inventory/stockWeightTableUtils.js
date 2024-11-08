@@ -16,15 +16,14 @@ export const tableHeaders = [
     key: 'qty',
     align: 'start'
   },
-
   {
-    title: 'Purchased Date',
-    key: 'purchased_at',
+    title: 'Reweighed Weight',
+    key: 'qty_reweighed',
     align: 'start'
   },
   {
-    title: 'Expired Date',
-    key: 'expired_at',
+    title: 'Weight Loss',
+    key: 'weight_loss',
     align: 'start'
   },
 

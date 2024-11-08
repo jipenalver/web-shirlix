@@ -1,4 +1,5 @@
 <script setup>
+import StockWeightTable from '@/components/system/inventory/StockWeightTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -35,7 +36,9 @@ const isDrawerVisible = ref(true)
         </v-card>
 
         <v-card>
-          <v-card-text> </v-card-text>
+          <v-card-text>
+            <StockWeightTable></StockWeightTable>
+          </v-card-text>
         </v-card>
       </v-container>
     </template>
