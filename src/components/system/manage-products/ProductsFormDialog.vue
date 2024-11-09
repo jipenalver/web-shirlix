@@ -6,10 +6,14 @@ import { requiredValidator, imageValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { fileExtract } from '@/utils/helpers'
 import { ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
+
+// Utilize pre-defined vue functions
+const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
@@ -100,7 +104,12 @@ const onFormReset = () => {
 </script>
 
 <template>
-  <v-dialog max-width="800" :model-value="props.isDialogVisible" persistent>
+  <v-dialog
+    :max-width="mdAndDown ? undefined : '800'"
+    :model-value="props.isDialogVisible"
+    :fullscreen="mdAndDown"
+    persistent
+  >
     <v-card prepend-icon="mdi-information-box" title="Product Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
@@ -126,7 +135,7 @@ const onFormReset = () => {
               ></v-textarea>
             </v-col>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="6" md="4">
               <v-img
                 width="55%"
                 class="mx-auto rounded-circle"
@@ -139,7 +148,7 @@ const onFormReset = () => {
               </v-img>
             </v-col>
 
-            <v-col cols="12" md="8">
+            <v-col cols="12" sm="6" md="8">
               <v-file-input
                 class="mt-5"
                 :rules="[imageValidator]"
