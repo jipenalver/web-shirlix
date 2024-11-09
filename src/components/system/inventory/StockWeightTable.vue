@@ -1,6 +1,6 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import StockInFormDialog from './StockInFormDialog.vue'
+// import StockInFormDialog from './StockInFormDialog.vue'
 import { tableHeaders } from './stockWeightTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useStockInStore } from '@/stores/stockIn'
@@ -40,12 +40,6 @@ const formAction = ref({
 // Trigger Update Btn
 const onUpdate = (item) => {
   itemData.value = item
-  isDialogVisible.value = true
-}
-
-// Trigger Add Btn
-const onAdd = () => {
-  itemData.value = null
   isDialogVisible.value = true
 }
 
@@ -165,12 +159,6 @@ onMounted(async () => {
                 @input="onSearchItems"
               ></v-text-field>
             </v-col>
-
-            <v-col cols="12" md="3">
-              <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
-                Add Stock
-              </v-btn>
-            </v-col>
           </v-row>
 
           <v-divider class="my-5"></v-divider>
@@ -243,21 +231,19 @@ onMounted(async () => {
         <template #item.actions="{ item }">
           <div class="d-flex align-center justify-center">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
-              <v-icon icon="mdi-pencil"></v-icon>
-              <v-tooltip activator="parent" location="top">Edit Stock</v-tooltip>
+              <v-icon icon="mdi-weight-kilogram"></v-icon>
+              <v-tooltip activator="parent" location="top">Reweight Stock</v-tooltip>
+            </v-btn>
+
+            <v-btn variant="text" density="comfortable" icon>
+              <v-icon icon="mdi-scale" color="red-darken-4"></v-icon>
+              <v-tooltip activator="parent" location="top">Segregate Stock</v-tooltip>
             </v-btn>
           </div>
         </template>
       </v-data-table-server>
     </v-col>
   </v-row>
-
-  <StockInFormDialog
-    v-model:is-dialog-visible="isDialogVisible"
-    :item-data="itemData"
-    :table-options="tableOptions"
-    :table-filters="tableFilters"
-  ></StockInFormDialog>
 </template>
 
 <style scoped>
