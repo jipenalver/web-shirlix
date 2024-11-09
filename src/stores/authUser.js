@@ -50,6 +50,17 @@ export const useAuthUserStore = defineStore('authUser', () => {
     userData.value = { id, email, ...user_metadata }
   }
 
+  // Retrieve User Roles Pages
+  async function getAuthPages(name) {
+    const { data } = await supabase
+      .from('user_roles')
+      .select('*, pages: user_role_pages (page)')
+      .eq('user_role', name)
+
+    // Set the retrieved data to state
+    authPages.value = data[0].pages.map((p) => p.page)
+  }
+
   // Update User Information
   async function updateUserInformation(updatedData) {
     const {
@@ -103,17 +114,6 @@ export const useAuthUserStore = defineStore('authUser', () => {
     }
   }
 
-  // Retrieve User Roles Pages
-  async function getAuthPages(name) {
-    const { data } = await supabase
-      .from('user_roles')
-      .select('*, pages: user_role_pages (page)')
-      .eq('user_role', name)
-
-    // Set the retrieved data to state
-    authPages.value = data[0].pages.map((p) => p.page)
-  }
-
   return {
     userData,
     userRole,
@@ -121,8 +121,8 @@ export const useAuthUserStore = defineStore('authUser', () => {
     $reset,
     isAuthenticated,
     getUserInformation,
+    getAuthPages,
     updateUserInformation,
-    updateUserImage,
-    getAuthPages
+    updateUserImage
   }
 })
