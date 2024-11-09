@@ -53,19 +53,19 @@ export const routes = [
     path: '/manage/user/roles',
     name: 'manage-user-roles',
     component: UserRolesView,
-    meta: { requiresAuth: true, requiresAdmin: true }
+    meta: { requiresAuth: true, requiresAccess: true }
   },
   {
     path: '/manage/users',
     name: 'manage-users',
     component: UsersView,
-    meta: { requiresAuth: true, requiresAdmin: true }
+    meta: { requiresAuth: true, requiresAccess: true }
   },
   {
     path: '/manage/branches',
     name: 'manage-branches',
     component: BranchesView,
-    meta: { requiresAuth: true, requiresAdmin: true }
+    meta: { requiresAuth: true, requiresAccess: true }
   },
 
   // Products

@@ -1,5 +1,4 @@
 import { useAuthUserStore } from '@/stores/authUser'
-import { isAuthenticated } from '@/utils/supabase'
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from './routes'
 
@@ -12,7 +11,7 @@ router.beforeEach(async (to) => {
   // Use Pinia Store
   const authStore = useAuthUserStore()
   // Load if user is logged in
-  const isLoggedIn = await isAuthenticated()
+  const isLoggedIn = await authStore.isAuthenticated()
 
   // Redirect to appropriate page if accessing home route
   if (to.name === 'home') {
@@ -39,11 +38,10 @@ router.beforeEach(async (to) => {
     }
 
     // Get the user role
-    const isAdmin = authStore.userData.is_admin
+    const isSuperAdmin = authStore.userRole === 'Super Administrator'
 
-    // Restrict access to admin-only routes
-    if (!isAdmin && to.meta.requiresAdmin) {
-      return { name: 'forbidden' }
+    if (!isSuperAdmin && authStore.authPages.length == 0) {
+      await authStore.getAuthPages(authStore.userRole)
     }
   }
 })

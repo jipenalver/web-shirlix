@@ -1,6 +1,6 @@
 <script setup>
 import ProfileHeaderNavigation from './ProfileHeaderNavigation.vue'
-import { isAuthenticated } from '@/utils/supabase'
+import { useAuthUserStore } from '@/stores/authUser'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -10,6 +10,9 @@ const emit = defineEmits(['isDrawerVisible'])
 
 // Utilize pre-defined vue functions
 const { xs, sm, mobile } = useDisplay()
+
+// Use Pinia Store
+const authStore = useAuthUserStore()
 
 // Load Variables
 const isLoggedIn = ref(false)
@@ -23,7 +26,7 @@ const onToggleTheme = () => {
 
 // Get Authentication status from supabase
 const getLoggedStatus = async () => {
-  isLoggedIn.value = await isAuthenticated()
+  isLoggedIn.value = await authStore.isAuthenticated()
 }
 
 // Load Functions during component rendering

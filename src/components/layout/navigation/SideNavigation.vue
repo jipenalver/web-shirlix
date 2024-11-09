@@ -8,14 +8,24 @@ import {
   menuItemsNav5
 } from './sideNavigation'
 import { useDisplay } from 'vuetify'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useAuthUserStore } from '@/stores/authUser'
 
 const props = defineProps(['isDrawerVisible'])
 
 // Utilize pre-defined vue functions
 const { mobile } = useDisplay()
 
+// Use Pinia Store
+const authStore = useAuthUserStore()
+
 // Load Variables
+const noAccessPages = ref([])
+const editableMenuItemsNav1 = ref([...menuItemsNav1])
+const editableMenuItemsNav2 = ref([...menuItemsNav2])
+const editableMenuItemsNav3 = ref([...menuItemsNav3])
+const editableMenuItemsNav4 = ref([...menuItemsNav4])
+const editableMenuItemsNav5 = ref([...menuItemsNav5])
 const isDrawerVisible = ref(props.isDrawerVisible)
 
 // Watch props if it changes
@@ -25,6 +35,29 @@ watch(
     isDrawerVisible.value = props.isDrawerVisible
   }
 )
+
+// Filter pages base on role
+const onFilterPages = async () => {
+  if (authStore.userRole === 'Super Administrator') return
+
+  const menuItems = [
+    { items: editableMenuItemsNav1, title: 'User Management' },
+    { items: editableMenuItemsNav2, title: 'Product Management' },
+    { items: editableMenuItemsNav3, title: 'Inventory' },
+    { items: editableMenuItemsNav4, title: 'Expenses Management' },
+    { items: editableMenuItemsNav5, title: 'Reporting' }
+  ]
+
+  menuItems.forEach(({ items, title }) => {
+    items.value = items.value.filter((item) => authStore.authPages.includes(item[3]))
+    if (items.value.length === 0) noAccessPages.value.push(title)
+  })
+}
+
+// Load Functions during component rendering
+onMounted(() => {
+  onFilterPages()
+})
 </script>
 
 <template>
@@ -44,13 +77,13 @@ watch(
       <v-divider></v-divider>
 
       <v-list-group :key="i" v-for="([title, icon], i) in mainNav">
-        <template #activator="{ props }">
+        <template #activator="{ props }" v-if="!noAccessPages.includes(title)">
           <v-list-item v-bind="props" :prepend-icon="icon" :title="title"></v-list-item>
         </template>
 
         <template v-if="title === 'User Management'">
           <v-list-item
-            v-for="([title, icon, subtitle, to], i) in menuItemsNav1"
+            v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav1"
             :key="i"
             :prepend-icon="icon"
             :title="title"
@@ -61,7 +94,7 @@ watch(
 
         <template v-if="title === 'Product Management'">
           <v-list-item
-            v-for="([title, icon, subtitle, to], i) in menuItemsNav2"
+            v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav2"
             :key="i"
             :prepend-icon="icon"
             :title="title"
@@ -72,7 +105,7 @@ watch(
 
         <template v-if="title === 'Inventory'">
           <v-list-item
-            v-for="([title, icon, subtitle, to], i) in menuItemsNav3"
+            v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav3"
             :key="i"
             :prepend-icon="icon"
             :title="title"
@@ -83,7 +116,7 @@ watch(
 
         <template v-if="title === 'Expenses Management'">
           <v-list-item
-            v-for="([title, icon, subtitle, to], i) in menuItemsNav4"
+            v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav4"
             :key="i"
             :prepend-icon="icon"
             :title="title"
@@ -94,7 +127,7 @@ watch(
 
         <template v-if="title === 'Reporting'">
           <v-list-item
-            v-for="([title, icon, subtitle, to], i) in menuItemsNav5"
+            v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav5"
             :key="i"
             :prepend-icon="icon"
             :title="title"

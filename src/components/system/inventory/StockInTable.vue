@@ -244,7 +244,7 @@ onMounted(async () => {
               <p class="text-caption">{{ item.products.description }}</p>
               <p class="text-caption">
                 <span class="font-weight-bold">Price:</span>
-                {{ getMoneyText(item.products.price) }}
+                {{ getMoneyText(item.price) }}
               </p>
             </div>
           </div>

@@ -85,7 +85,13 @@ onMounted(async () => {
               <v-icon icon="mdi-tag-edit"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Role</v-tooltip>
             </v-btn>
-            <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onDelete(item.id)"
+              :disabled="item.pages.length != 1"
+              icon
+            >
               <v-icon icon="mdi-tag-remove" color="red-darken-4"> </v-icon>
               <v-tooltip activator="parent" location="top">Delete Role</v-tooltip>
             </v-btn>
