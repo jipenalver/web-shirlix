@@ -60,7 +60,7 @@ const onFormSubmit = () => {
 
   <v-form ref="refVForm" @submit.prevent="onFormSubmit">
     <v-row dense>
-      <v-col cols="12" md="4">
+      <v-col cols="12" sm="4">
         <v-text-field
           v-model="formData.firstname"
           label="Firstname"
@@ -68,11 +68,11 @@ const onFormSubmit = () => {
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="4">
+      <v-col cols="12" sm="4">
         <v-text-field v-model="formData.middlename" label="Middlename"></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="4">
+      <v-col cols="12" sm="4">
         <v-text-field
           v-model="formData.lastname"
           label="Lastname"
@@ -80,7 +80,7 @@ const onFormSubmit = () => {
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           readonly
           disabled
@@ -90,7 +90,7 @@ const onFormSubmit = () => {
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="formData.phone"
           label="Phone Number"

@@ -12,10 +12,14 @@ import {
   menuItemsNav4,
   menuItemsNav5
 } from '@/components/layout/navigation/sideNavigation'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'itemData'])
 
 const emit = defineEmits(['update:isDialogVisible'])
+
+// Utilize pre-defined vue functions
+const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const userRolesStore = useUserRolesStore()
@@ -91,7 +95,12 @@ const onFormReset = () => {
 </script>
 
 <template>
-  <v-dialog max-width="600" :model-value="props.isDialogVisible" persistent>
+  <v-dialog
+    :max-width="mdAndDown ? undefined : '600'"
+    :model-value="props.isDialogVisible"
+    :fullscreen="mdAndDown"
+    persistent
+  >
     <v-card
       prepend-icon="mdi-tag"
       title="User Role"

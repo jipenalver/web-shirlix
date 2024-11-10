@@ -121,7 +121,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <v-row dense>
             <v-spacer></v-spacer>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="5">
               <v-text-field
                 v-model="tableFilters.search"
                 density="compact"
@@ -133,7 +133,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="3">
+            <v-col cols="12" sm="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
                 Add Product
               </v-btn>

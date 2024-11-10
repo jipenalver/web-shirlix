@@ -72,7 +72,7 @@ const onFormSubmit = () => {
 
   <v-form ref="refVForm" @submit.prevent="onFormSubmit">
     <v-row>
-      <v-col cols="12" md="5">
+      <v-col cols="12" sm="6" md="5">
         <v-img
           width="55%"
           class="mx-auto rounded-circle"
@@ -85,7 +85,7 @@ const onFormSubmit = () => {
         </v-img>
       </v-col>
 
-      <v-col cols="12" md="7">
+      <v-col cols="12" sm="6" md="7">
         <v-file-input
           class="mt-5"
           :rules="[requiredValidator, imageValidator]"

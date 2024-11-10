@@ -144,7 +144,7 @@ onMounted(async () => {
       >
         <template #top>
           <v-row dense>
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="4">
               <v-autocomplete
                 v-model="tableFilters.product_id"
                 :items="productsStore.products"
@@ -157,7 +157,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="4">
               <v-autocomplete
                 v-model="tableFilters.branch_id"
                 :items="branchesStore.branches"
@@ -170,7 +170,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="4">
               <v-date-input
                 v-model="tableFilters.purchased_at"
                 density="compact"
@@ -188,7 +188,7 @@ onMounted(async () => {
           <v-row dense>
             <v-spacer></v-spacer>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="5">
               <v-text-field
                 v-model="tableFilters.search"
                 density="compact"
@@ -200,7 +200,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="3">
+            <v-col cols="12" sm="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
                 Add Stock
               </v-btn>

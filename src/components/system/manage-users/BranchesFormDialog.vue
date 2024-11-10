@@ -4,10 +4,14 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
+
+// Utilize pre-defined vue functions
+const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -81,7 +85,12 @@ const onFormReset = () => {
 </script>
 
 <template>
-  <v-dialog max-width="600" :model-value="props.isDialogVisible" persistent>
+  <v-dialog
+    :max-width="mdAndDown ? undefined : '600'"
+    :model-value="props.isDialogVisible"
+    :fullscreen="mdAndDown"
+    persistent
+  >
     <v-card prepend-icon="mdi-store" title="Branch Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
@@ -104,6 +113,7 @@ const onFormReset = () => {
                 v-model="formData.address"
                 label="Address"
                 :rules="[requiredValidator]"
+                rows="2"
               ></v-textarea>
             </v-col>
           </v-row>

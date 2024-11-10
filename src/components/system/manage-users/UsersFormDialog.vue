@@ -6,10 +6,14 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { emailValidator, passwordValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { onMounted, ref, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions'])
 
 const emit = defineEmits(['update:isDialogVisible'])
+
+// Utilize pre-defined vue functions
+const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -97,7 +101,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-dialog max-width="800" :model-value="props.isDialogVisible" persistent>
+  <v-dialog
+    :max-width="mdAndDown ? undefined : '800'"
+    :model-value="props.isDialogVisible"
+    :fullscreen="mdAndDown"
+    persistent
+  >
     <v-card prepend-icon="mdi-account" title="User Information">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
@@ -107,7 +116,7 @@ onMounted(async () => {
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="4">
               <v-text-field
                 v-model="formData.firstname"
                 label="Firstname"
@@ -115,11 +124,11 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="4">
               <v-text-field v-model="formData.middlename" label="Middlename"></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="4">
               <v-text-field
                 v-model="formData.lastname"
                 label="Lastname"
@@ -127,7 +136,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-autocomplete
                 v-model="formData.user_role"
                 label="User Role"
@@ -139,7 +148,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-autocomplete
                 v-model="formData.branch"
                 label="Branch"
@@ -151,7 +160,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-text-field
                 v-model="formData.email"
                 label="Email"
@@ -161,7 +170,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-text-field
                 v-model="formData.phone"
                 label="Phone"

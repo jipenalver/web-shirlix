@@ -59,7 +59,7 @@ const onFormSubmit = () => {
 
   <v-form ref="refVForm" @submit.prevent="onFormSubmit">
     <v-row dense>
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="formData.password"
           prepend-inner-icon="mdi-lock-outline"
@@ -71,7 +71,7 @@ const onFormSubmit = () => {
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="formData.password_confirmation"
           label="Password Confirmation"
