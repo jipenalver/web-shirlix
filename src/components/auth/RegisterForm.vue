@@ -43,7 +43,7 @@ const onSubmit = async () => {
       data: {
         firstname: formData.value.firstname,
         lastname: formData.value.lastname,
-        is_admin: false // Just turn to true if admin account
+        is_admin: false // Just turn to true if super admin account
         // role: 'Administrator' // If role based; just change the string based on role
       }
     }
@@ -82,7 +82,7 @@ const onFormSubmit = () => {
 
   <v-form ref="refVForm" @submit.prevent="onFormSubmit">
     <v-row dense>
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="formData.firstname"
           label="Firstname"
@@ -90,7 +90,7 @@ const onFormSubmit = () => {
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="formData.lastname"
           label="Lastname"
@@ -107,7 +107,7 @@ const onFormSubmit = () => {
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="formData.password"
           prepend-inner-icon="mdi-lock-outline"
@@ -119,7 +119,7 @@ const onFormSubmit = () => {
         ></v-text-field>
       </v-col>
 
-      <v-col cols="12" md="6">
+      <v-col cols="12" sm="6">
         <v-text-field
           v-model="formData.password_confirmation"
           label="Password Confirmation"

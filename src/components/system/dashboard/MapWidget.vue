@@ -77,9 +77,8 @@ onMounted(() => {
   <v-card title="Current Location">
     <template #subtitle>
       <div class="text-wrap">
-        {{
-          `LatLng: ${coords.latitude}, ${coords.longitude} | Date/Time: ${new Date(locatedAt).toLocaleString()}`
-        }}
+        {{ `LatLng: ${coords.latitude}, ${coords.longitude}` }} <br />
+        {{ `Date/Time: ${new Date(locatedAt).toLocaleString()}` }}
       </div>
     </template>
 

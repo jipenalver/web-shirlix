@@ -10,7 +10,7 @@ const { mdAndDown } = useDisplay()
 </script>
 
 <template>
-  <v-card>
+  <v-card theme="light">
     <v-card-text>
       <v-row>
         <v-col cols="12" sm="4" :class="mdAndDown ? 'd-flex align-center' : ''">
