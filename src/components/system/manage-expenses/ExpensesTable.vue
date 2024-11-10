@@ -9,9 +9,11 @@ import { useExpensesStore } from '@/stores/expenses'
 import { getMoneyText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
+const { mobile } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -137,6 +139,8 @@ onMounted(async () => {
         :items="expensesStore.expensesTable"
         :items-length="expensesStore.expensesTotal"
         @update:options="onLoadItems"
+        :hide-default-header="mobile"
+        :mobile="mobile"
       >
         <template #top>
           <v-row dense>
@@ -214,7 +218,7 @@ onMounted(async () => {
         </template>
 
         <template #item.actions="{ item }">
-          <div class="d-flex align-center justify-center">
+          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Expenditue</v-tooltip>

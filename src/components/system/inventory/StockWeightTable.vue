@@ -9,9 +9,11 @@ import { useProductsStore } from '@/stores/products'
 import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
+const { mobile } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
@@ -101,6 +103,8 @@ onMounted(async () => {
         :items="stockInStore.stockInTable"
         :items-length="stockInStore.stockInTotal"
         @update:options="onLoadItems"
+        :hide-default-header="mobile"
+        :mobile="mobile"
       >
         <template #top>
           <v-row dense>
@@ -171,11 +175,16 @@ onMounted(async () => {
         </template>
 
         <template #item.products="{ item }">
-          <div class="d-flex align-center td-first">
+          <div
+            class="td-first"
+            :class="mobile ? '' : 'd-flex align-center'"
+            :style="mobile ? 'height: auto' : 'height: 100px'"
+          >
             <div class="me-2">
               <v-img
                 v-if="item.products.image_url"
                 class="rounded-circle td-first-img"
+                :class="mobile ? 'ml-auto my-2' : ''"
                 color="red-darken-4"
                 aspect-ratio="1"
                 :src="item.products.image_url"
@@ -229,7 +238,7 @@ onMounted(async () => {
         </template>
 
         <template #item.actions="{ item }">
-          <div class="d-flex align-center justify-center">
+          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-weight-kilogram"></v-icon>
               <v-tooltip activator="parent" location="top">Reweight Stock</v-tooltip>
