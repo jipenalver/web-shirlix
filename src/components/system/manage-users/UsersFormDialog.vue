@@ -46,7 +46,9 @@ watch(
   () => props.itemData,
   () => {
     isUpdate.value = props.itemData ? true : false
-    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    formData.value = props.itemData
+      ? { ...props.itemData, branch: props.itemData.branch.split(',') }
+      : { ...formDataDefault }
   }
 )
 
@@ -157,6 +159,8 @@ onMounted(async () => {
                 item-value="name"
                 clearable
                 :rules="[requiredValidator]"
+                multiple
+                chips
               ></v-autocomplete>
             </v-col>
 

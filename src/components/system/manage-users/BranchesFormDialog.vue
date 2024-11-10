@@ -1,7 +1,7 @@
 <script setup>
 import { useBranchesStore } from '@/stores/branches'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator } from '@/utils/validators'
+import { requiredValidator, alphaDashValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
@@ -104,7 +104,8 @@ const onFormReset = () => {
               <v-text-field
                 v-model="formData.name"
                 label="Name"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, alphaDashValidator]"
+                :disabled="isUpdate"
               ></v-text-field>
             </v-col>
 

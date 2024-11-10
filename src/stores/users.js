@@ -30,23 +30,23 @@ export const useUsersStore = defineStore('users', () => {
   // Add User
   async function addUser(formData) {
     // eslint-disable-next-line no-unused-vars
-    const { password, ...userMetadata } = formData
+    const { password, branch, ...userMetadata } = formData
 
     return await supabaseAdmin.auth.admin.createUser({
       email: formData.email,
       email_confirm: true,
       password: formData.password,
-      user_metadata: { ...userMetadata }
+      user_metadata: { ...userMetadata, branch: branch.toString() }
     })
   }
 
   // Update User
   async function updateUser(formData) {
     // eslint-disable-next-line no-unused-vars
-    const { email, password, ...userMetadata } = formData
+    const { email, password, branch, ...userMetadata } = formData
 
     return await supabaseAdmin.auth.admin.updateUserById(formData.id, {
-      user_metadata: { ...userMetadata }
+      user_metadata: { ...userMetadata, branch: branch.toString() }
     })
   }
 

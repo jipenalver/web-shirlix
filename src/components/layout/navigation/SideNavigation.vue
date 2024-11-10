@@ -41,11 +41,11 @@ const onFilterPages = async () => {
   if (authStore.userRole === 'Super Administrator') return
 
   const menuItems = [
-    { items: editableMenuItemsNav1, title: 'User Management' },
-    { items: editableMenuItemsNav2, title: 'Product Management' },
-    { items: editableMenuItemsNav3, title: 'Inventory' },
-    { items: editableMenuItemsNav4, title: 'Expenses Management' },
-    { items: editableMenuItemsNav5, title: 'Reporting' }
+    { items: editableMenuItemsNav1, title: mainNav[0][0] },
+    { items: editableMenuItemsNav2, title: mainNav[1][0] },
+    { items: editableMenuItemsNav3, title: mainNav[2][0] },
+    { items: editableMenuItemsNav4, title: mainNav[3][0] },
+    { items: editableMenuItemsNav5, title: mainNav[4][0] }
   ]
 
   menuItems.forEach(({ items, title }) => {
@@ -81,7 +81,7 @@ onMounted(() => {
           <v-list-item v-bind="props" :prepend-icon="icon" :title="title"></v-list-item>
         </template>
 
-        <template v-if="title === 'User Management'">
+        <template v-if="title === mainNav[0][0]">
           <v-list-item
             v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav1"
             :key="i"
@@ -92,7 +92,7 @@ onMounted(() => {
           ></v-list-item>
         </template>
 
-        <template v-if="title === 'Product Management'">
+        <template v-if="title === mainNav[1][0]">
           <v-list-item
             v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav2"
             :key="i"
@@ -103,7 +103,7 @@ onMounted(() => {
           ></v-list-item>
         </template>
 
-        <template v-if="title === 'Inventory'">
+        <template v-if="title === mainNav[2][0]">
           <v-list-item
             v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav3"
             :key="i"
@@ -114,7 +114,7 @@ onMounted(() => {
           ></v-list-item>
         </template>
 
-        <template v-if="title === 'Expenses Management'">
+        <template v-if="title === mainNav[3][0]">
           <v-list-item
             v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav4"
             :key="i"
@@ -125,7 +125,7 @@ onMounted(() => {
           ></v-list-item>
         </template>
 
-        <template v-if="title === 'Reporting'">
+        <template v-if="title === mainNav[4][0]">
           <v-list-item
             v-for="([title, icon, subtitle, to], i) in editableMenuItemsNav5"
             :key="i"

@@ -119,6 +119,7 @@ const onFormReset = () => {
                 v-model="formData.user_role"
                 label="Role Name"
                 :rules="[requiredValidator]"
+                :disabled="isUpdate"
               ></v-text-field>
             </v-col>
 
@@ -129,7 +130,7 @@ const onFormReset = () => {
                     <v-list-item v-bind="props" :prepend-icon="icon" :title="title"></v-list-item>
                   </template>
 
-                  <template v-if="title === 'User Management'">
+                  <template v-if="title === mainNav[0][0]">
                     <v-list-item
                       v-for="([title, icon, subtitle, to], i) in menuItemsNav1"
                       :key="i"
@@ -145,7 +146,7 @@ const onFormReset = () => {
                     </v-list-item>
                   </template>
 
-                  <template v-if="title === 'Product Management'">
+                  <template v-if="title === mainNav[1][0]">
                     <v-list-item
                       v-for="([title, icon, subtitle, to], i) in menuItemsNav2"
                       :key="i"
@@ -161,7 +162,7 @@ const onFormReset = () => {
                     </v-list-item>
                   </template>
 
-                  <template v-if="title === 'Inventory'">
+                  <template v-if="title === mainNav[2][0]">
                     <v-list-item
                       v-for="([title, icon, subtitle, to], i) in menuItemsNav3"
                       :key="i"
@@ -177,7 +178,7 @@ const onFormReset = () => {
                     </v-list-item>
                   </template>
 
-                  <template v-if="title === 'Expenses Management'">
+                  <template v-if="title === mainNav[3][0]">
                     <v-list-item
                       v-for="([title, icon, subtitle, to], i) in menuItemsNav4"
                       :key="i"
@@ -193,7 +194,7 @@ const onFormReset = () => {
                     </v-list-item>
                   </template>
 
-                  <template v-if="title === 'Reporting'">
+                  <template v-if="title === mainNav[4][0]">
                     <v-list-item
                       v-for="([title, icon, subtitle, to], i) in menuItemsNav5"
                       :key="i"
