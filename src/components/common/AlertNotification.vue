@@ -3,7 +3,7 @@ const props = defineProps(['formSuccessMessage', 'formErrorMessage'])
 </script>
 
 <template>
-  <div class="mb-5">
+  <div :class="props.formSuccessMessage || props.formErrorMessage ? 'mb-5' : ''">
     <v-alert
       v-if="props.formSuccessMessage"
       :text="props.formSuccessMessage"

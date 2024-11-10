@@ -4,17 +4,30 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { ref, watch } from 'vue'
+import {
+  mainNav,
+  menuItemsNav1,
+  menuItemsNav2,
+  menuItemsNav3,
+  menuItemsNav4,
+  menuItemsNav5
+} from '@/components/layout/navigation/sideNavigation'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'itemData'])
 
 const emit = defineEmits(['update:isDialogVisible'])
+
+// Utilize pre-defined vue functions
+const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const userRolesStore = useUserRolesStore()
 
 // Load Variables
 const formDataDefault = {
-  user_role: ''
+  user_role: '',
+  pages: []
 }
 const formData = ref({
   ...formDataDefault
@@ -24,13 +37,16 @@ const formAction = ref({
 })
 const refVForm = ref()
 const isUpdate = ref(false)
+const openedPages = ref(mainNav.map((elem) => elem[0]))
 
 // Monitor itemData if it has data
 watch(
   () => props.itemData,
   () => {
     isUpdate.value = props.itemData ? true : false
-    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    formData.value = props.itemData
+      ? { ...props.itemData, pages: props.itemData.pages.map((p) => p.page) }
+      : { ...formDataDefault }
   }
 )
 
@@ -79,8 +95,17 @@ const onFormReset = () => {
 </script>
 
 <template>
-  <v-dialog max-width="600" :model-value="props.isDialogVisible" persistent>
-    <v-card prepend-icon="mdi-tag" title="User Role">
+  <v-dialog
+    :max-width="mdAndDown ? undefined : '600'"
+    :model-value="props.isDialogVisible"
+    :fullscreen="mdAndDown"
+    persistent
+  >
+    <v-card
+      prepend-icon="mdi-tag"
+      title="User Role"
+      subtitle="Note: The Dashboard and Account Settings Page are accessible by default."
+    >
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -94,7 +119,98 @@ const onFormReset = () => {
                 v-model="formData.user_role"
                 label="Role Name"
                 :rules="[requiredValidator]"
+                :disabled="isUpdate"
               ></v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <v-list v-model:opened="openedPages" density="compact" nav>
+                <v-list-group v-for="([title, icon], i) in mainNav" :key="i" :value="title">
+                  <template #activator="{ props }">
+                    <v-list-item v-bind="props" :prepend-icon="icon" :title="title"></v-list-item>
+                  </template>
+
+                  <template v-if="title === mainNav[0][0]">
+                    <v-list-item
+                      v-for="([title, icon, subtitle, to], i) in menuItemsNav1"
+                      :key="i"
+                      :prepend-icon="icon"
+                      :title="title"
+                      :subtitle="subtitle ?? undefined"
+                    >
+                      <template #append>
+                        <v-list-item-action end>
+                          <v-checkbox-btn v-model="formData.pages" :value="to"></v-checkbox-btn>
+                        </v-list-item-action>
+                      </template>
+                    </v-list-item>
+                  </template>
+
+                  <template v-if="title === mainNav[1][0]">
+                    <v-list-item
+                      v-for="([title, icon, subtitle, to], i) in menuItemsNav2"
+                      :key="i"
+                      :prepend-icon="icon"
+                      :title="title"
+                      :subtitle="subtitle ?? undefined"
+                    >
+                      <template #append>
+                        <v-list-item-action end>
+                          <v-checkbox-btn v-model="formData.pages" :value="to"></v-checkbox-btn>
+                        </v-list-item-action>
+                      </template>
+                    </v-list-item>
+                  </template>
+
+                  <template v-if="title === mainNav[2][0]">
+                    <v-list-item
+                      v-for="([title, icon, subtitle, to], i) in menuItemsNav3"
+                      :key="i"
+                      :prepend-icon="icon"
+                      :title="title"
+                      :subtitle="subtitle ?? undefined"
+                    >
+                      <template #append>
+                        <v-list-item-action end>
+                          <v-checkbox-btn v-model="formData.pages" :value="to"></v-checkbox-btn>
+                        </v-list-item-action>
+                      </template>
+                    </v-list-item>
+                  </template>
+
+                  <template v-if="title === mainNav[3][0]">
+                    <v-list-item
+                      v-for="([title, icon, subtitle, to], i) in menuItemsNav4"
+                      :key="i"
+                      :prepend-icon="icon"
+                      :title="title"
+                      :subtitle="subtitle ?? undefined"
+                    >
+                      <template #append>
+                        <v-list-item-action end>
+                          <v-checkbox-btn v-model="formData.pages" :value="to"></v-checkbox-btn>
+                        </v-list-item-action>
+                      </template>
+                    </v-list-item>
+                  </template>
+
+                  <template v-if="title === mainNav[4][0]">
+                    <v-list-item
+                      v-for="([title, icon, subtitle, to], i) in menuItemsNav5"
+                      :key="i"
+                      :prepend-icon="icon"
+                      :title="title"
+                      :subtitle="subtitle ?? undefined"
+                    >
+                      <template #append>
+                        <v-list-item-action end>
+                          <v-checkbox-btn v-model="formData.pages" :value="to"></v-checkbox-btn>
+                        </v-list-item-action>
+                      </template>
+                    </v-list-item>
+                  </template>
+                </v-list-group>
+              </v-list>
             </v-col>
           </v-row>
         </v-card-text>

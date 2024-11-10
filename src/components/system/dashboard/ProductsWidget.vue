@@ -17,7 +17,7 @@ const series = [
 </script>
 
 <template>
-  <v-card title="Sales Per Day">
+  <v-card title="Product Inventory Level" subtitle="Quantity per product">
     <v-card-text>
       <apexchart width="100%" type="line" :options="options" :series="series"></apexchart>
     </v-card-text>

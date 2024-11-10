@@ -121,7 +121,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <v-row dense>
             <v-spacer></v-spacer>
 
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="5">
               <v-text-field
                 v-model="tableFilters.search"
                 density="compact"
@@ -133,7 +133,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="3">
+            <v-col cols="12" sm="3">
               <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
                 Add Product
               </v-btn>
@@ -144,11 +144,11 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         </template>
 
         <template #item.name="{ item }">
-          <div class="d-flex align-center" style="height: 100px">
-            <div class="me-2" style="width: 65px">
+          <div class="d-flex align-center td-first">
+            <div class="me-2">
               <v-img
                 v-if="item.image_url"
-                class="rounded-circle"
+                class="rounded-circle td-first-img"
                 color="red-darken-4"
                 aspect-ratio="1"
                 :src="item.image_url"
@@ -207,3 +207,14 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>
+
+<style scoped>
+.td-first {
+  height: 100px;
+  min-width: 200px;
+}
+
+.td-first-img {
+  width: 65px;
+}
+</style>

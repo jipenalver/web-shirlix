@@ -1,8 +1,11 @@
 <script setup>
-import { isAuthenticated } from '@/utils/supabase'
+import { useAuthUserStore } from '@/stores/authUser'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { onMounted, ref } from 'vue'
+
+// Use Pinia Store
+const authStore = useAuthUserStore()
 
 // Load Variables
 const isLoggedIn = ref(false)
@@ -10,7 +13,7 @@ const isDrawerVisible = ref(true)
 
 // Get Authentication status from supabase
 const getLoggedStatus = async () => {
-  isLoggedIn.value = await isAuthenticated()
+  isLoggedIn.value = await authStore.isAuthenticated()
 }
 
 // Load Functions during component rendering

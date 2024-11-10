@@ -1,6 +1,7 @@
 <script setup>
+import BottomNavigation from '@/components/layout/navigation/BottomNavigation.vue'
 import ProfileHeaderNavigation from './ProfileHeaderNavigation.vue'
-import { isAuthenticated } from '@/utils/supabase'
+import { useAuthUserStore } from '@/stores/authUser'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -11,8 +12,13 @@ const emit = defineEmits(['isDrawerVisible'])
 // Utilize pre-defined vue functions
 const { xs, sm, mobile } = useDisplay()
 
+// Use Pinia Store
+const authStore = useAuthUserStore()
+
 // Load Variables
 const isLoggedIn = ref(false)
+const isMobileLogged = ref(false)
+const isDesktop = ref(false)
 const theme = ref(localStorage.getItem('theme') ?? 'light')
 
 //  Toggle Theme
@@ -23,7 +29,10 @@ const onToggleTheme = () => {
 
 // Get Authentication status from supabase
 const getLoggedStatus = async () => {
-  isLoggedIn.value = await isAuthenticated()
+  isLoggedIn.value = await authStore.isAuthenticated()
+
+  isMobileLogged.value = mobile.value && isLoggedIn.value
+  isDesktop.value = !mobile.value && (isLoggedIn.value || !isLoggedIn.value)
 }
 
 // Load Functions during component rendering
@@ -40,7 +49,7 @@ onMounted(() => {
           v-if="props.isWithAppBarNavIcon"
           icon="mdi-menu"
           :theme="theme"
-          @click="emit('isDrawerVisible')"
+          @click="emit('isDrawerVisible', true)"
         >
         </v-app-bar-nav-icon>
 
@@ -68,6 +77,7 @@ onMounted(() => {
       </v-main>
 
       <v-footer
+        v-if="!isMobileLogged || isDesktop"
         class="font-weight-bold"
         :class="mobile ? 'text-caption' : ''"
         :color="theme === 'light' ? 'red-lighten-2' : 'red-darken-4'"
@@ -78,6 +88,8 @@ onMounted(() => {
           Copyright © 2024 - Shirlix Meatshop | All Rights Reserved
         </div>
       </v-footer>
+
+      <BottomNavigation v-else-if="isMobileLogged" :theme="theme"></BottomNavigation>
     </v-app>
   </v-responsive>
 </template>

@@ -13,7 +13,7 @@ const { mobile } = useDisplay()
   <v-card>
     <v-card-text>
       <v-row>
-        <v-col cols="12" md="4">
+        <v-col cols="12" sm="4">
           <v-img
             class="mx-auto"
             src="/images/logo-shop.png"
@@ -21,7 +21,7 @@ const { mobile } = useDisplay()
           ></v-img>
         </v-col>
 
-        <v-col cols="12" md="8">
+        <v-col cols="12" sm="8">
           <h2 class="mb-5">
             Welcome Aboard,
             <span class="font-weight-black">

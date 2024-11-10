@@ -13,7 +13,7 @@ const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'table
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Utilize pre-defined vue functions
-const { md, mobile } = useDisplay()
+const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
@@ -117,9 +117,9 @@ onMounted(async () => {
 
 <template>
   <v-dialog
-    :max-width="md || mobile ? undefined : '800'"
+    :max-width="mdAndDown ? undefined : '800'"
     :model-value="props.isDialogVisible"
-    :fullscreen="md || mobile"
+    :fullscreen="mdAndDown"
     persistent
   >
     <v-card prepend-icon="mdi-information-box" title="Stock Information">
@@ -131,7 +131,7 @@ onMounted(async () => {
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
-            <v-col cols="12" md="4">
+            <v-col cols="12" sm="6" md="4">
               <v-img
                 width="55%"
                 class="mx-auto rounded-circle"
@@ -144,7 +144,7 @@ onMounted(async () => {
               </v-img>
             </v-col>
 
-            <v-col cols="12" md="8" class="d-flex align-center">
+            <v-col cols="12" sm="6" md="8" class="d-flex align-center">
               <v-autocomplete
                 v-model="formData.product_id"
                 label="Product"
@@ -158,7 +158,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-autocomplete
                 v-model="formData.branch_id"
                 label="Branch"
@@ -170,7 +170,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-text-field
                 v-model="formData.supplier"
                 label="Supplier Name"
@@ -178,7 +178,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="9" md="4">
+            <v-col cols="9" sm="4">
               <v-text-field
                 v-model="formData.qty"
                 label="Quantity"
@@ -188,7 +188,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="3" md="2">
+            <v-col cols="3" sm="2">
               <v-select
                 v-model="formData.qty_metric"
                 label="Metric"
@@ -197,7 +197,7 @@ onMounted(async () => {
               ></v-select>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-text-field
                 v-model="formData.price"
                 prefix="Php"
@@ -208,7 +208,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-date-input
                 v-model="formData.purchased_at"
                 label="Purchased Date"
@@ -217,7 +217,7 @@ onMounted(async () => {
               ></v-date-input>
             </v-col>
 
-            <v-col cols="12" md="6">
+            <v-col cols="12" sm="6">
               <v-date-input
                 v-model="formData.expired_at"
                 label="Expiration Date"
