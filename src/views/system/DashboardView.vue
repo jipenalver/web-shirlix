@@ -1,7 +1,6 @@
 <script setup>
 import WelcomeWidget from '@/components/system/dashboard/WelcomeWidget.vue'
-import SalesWidget from '@/components/system/dashboard/SalesWidget.vue'
-import ExpensesWidget from '@/components/system/dashboard/ExpensesWidget.vue'
+import ProductsWidget from '@/components/system/dashboard/ProductsWidget.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -42,12 +41,8 @@ const isDrawerVisible = ref(true)
             <WelcomeWidget></WelcomeWidget>
           </v-col>
 
-          <v-col cols="12" lg="6">
-            <SalesWidget></SalesWidget>
-          </v-col>
-
-          <v-col cols="12" lg="6">
-            <ExpensesWidget></ExpensesWidget>
+          <v-col cols="12">
+            <ProductsWidget></ProductsWidget>
           </v-col>
         </v-row>
       </v-container>
