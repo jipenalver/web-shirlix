@@ -7,9 +7,11 @@ import { formActionDefault } from '@/utils/supabase'
 import { tableHeaders } from './branchesTableUtils'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
+const { mobile } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -115,6 +117,8 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         :items="branchesStore.branchesTable"
         :items-length="branchesStore.branchesTotal"
         @update:options="onLoadItems"
+        :hide-default-header="mobile"
+        :mobile="mobile"
       >
         <template #top>
           <v-row dense>
@@ -155,7 +159,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         </template>
 
         <template #item.actions="{ item }">
-          <div class="d-flex align-center justify-center">
+          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Branch</v-tooltip>

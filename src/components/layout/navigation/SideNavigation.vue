@@ -63,6 +63,7 @@ onMounted(() => {
 <template>
   <v-navigation-drawer
     v-model="isDrawerVisible"
+    :persistent="mobile"
     :temporary="mobile"
     :permanent="!mobile"
     width="325"

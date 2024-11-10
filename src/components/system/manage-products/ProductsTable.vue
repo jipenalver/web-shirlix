@@ -8,9 +8,11 @@ import { useProductsStore } from '@/stores/products'
 import { getAvatarText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
+const { mobile } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
@@ -116,6 +118,8 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         :items="productsStore.productsTable"
         :items-length="productsStore.productsTotal"
         @update:options="onLoadItems"
+        :hide-default-header="mobile"
+        :mobile="mobile"
       >
         <template #top>
           <v-row dense>
@@ -144,11 +148,16 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         </template>
 
         <template #item.name="{ item }">
-          <div class="d-flex align-center td-first">
+          <div
+            class="td-first"
+            :class="mobile ? '' : 'd-flex align-center'"
+            :style="mobile ? 'height: auto' : 'height: 100px'"
+          >
             <div class="me-2">
               <v-img
                 v-if="item.image_url"
                 class="rounded-circle td-first-img"
+                :class="mobile ? 'ml-auto my-2' : ''"
                 color="red-darken-4"
                 aspect-ratio="1"
                 :src="item.image_url"
@@ -177,7 +186,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
         </template>
 
         <template #item.actions="{ item }">
-          <div class="d-flex align-center justify-center">
+          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
             <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
               <v-icon icon="mdi-pencil"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Product</v-tooltip>

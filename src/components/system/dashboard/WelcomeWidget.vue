@@ -6,18 +6,18 @@ import { useDisplay } from 'vuetify'
 const authStore = useAuthUserStore()
 
 // Utilize pre-defined vue functions
-const { mobile } = useDisplay()
+const { mdAndDown } = useDisplay()
 </script>
 
 <template>
-  <v-card>
+  <v-card theme="light">
     <v-card-text>
       <v-row>
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="4" :class="mdAndDown ? 'd-flex align-center' : ''">
           <v-img
-            class="mx-auto"
+            :class="!mdAndDown ? 'mx-auto' : ''"
             src="/images/logo-shop.png"
-            :width="mobile ? '80%' : '50%'"
+            :width="mdAndDown ? '80%' : '60%'"
           ></v-img>
         </v-col>
 

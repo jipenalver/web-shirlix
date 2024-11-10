@@ -2,9 +2,13 @@
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
+
+// Utilize pre-defined vue functions
+const { mobile } = useDisplay()
 
 // Load Variables
-const isDrawerVisible = ref(true)
+const isDrawerVisible = ref(mobile.value ? false : true)
 </script>
 
 <template>

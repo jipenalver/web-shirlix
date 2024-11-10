@@ -1,8 +1,12 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
+import { useAuthUserStore } from './authUser'
 
 export const useBranchesStore = defineStore('branches', () => {
+  // Use Pinia Store
+  const authStore = useAuthUserStore()
+
   // States
   const branchesTable = ref([])
   const branches = ref([])
@@ -48,8 +52,11 @@ export const useBranchesStore = defineStore('branches', () => {
   async function getBranches() {
     const { data } = await supabase.from('branches').select().order('name', { ascending: true })
 
+    // Filter branches for selection based on auth user
+    const authBranches = authStore.userData.branch.split(',')
+
     // Set the retrieved data to state
-    branches.value = data
+    branches.value = data.filter((b) => authBranches.includes(b.name))
   }
 
   // Add Branches
