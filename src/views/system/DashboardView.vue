@@ -5,13 +5,18 @@ import WelcomeWidget from '@/components/system/dashboard/WelcomeWidget.vue'
 import ProductsWidget from '@/components/system/dashboard/ProductsWidget.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
+import { useAuthUserStore } from '@/stores/authUser'
 import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
+
+// Use Pinia Store
+const authStore = useAuthUserStore()
 
 // Utilize pre-defined vue functions
 const { mobile } = useDisplay()
 
 // Load Variables
+const isSuperAdmin = authStore.userRole === 'Super Administrator'
 const isDrawerVisible = ref(mobile.value ? false : true)
 </script>
 
@@ -37,7 +42,7 @@ const isDrawerVisible = ref(mobile.value ? false : true)
 
           <v-col cols="12" md="4">
             <v-row>
-              <v-col cols="12">
+              <v-col cols="12" v-if="isSuperAdmin">
                 <CodeGeneratorWidget></CodeGeneratorWidget>
               </v-col>
 
