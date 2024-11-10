@@ -1,4 +1,5 @@
 <script setup>
+import CodeGeneratorWidget from '@/components/system/dashboard/CodeGeneratorWidget.vue'
 import MapWidget from '@/components/system/dashboard/MapWidget.vue'
 import WelcomeWidget from '@/components/system/dashboard/WelcomeWidget.vue'
 import ProductsWidget from '@/components/system/dashboard/ProductsWidget.vue'
@@ -35,7 +36,15 @@ const isDrawerVisible = ref(mobile.value ? false : true)
           </v-col>
 
           <v-col cols="12" md="4">
-            <MapWidget></MapWidget>
+            <v-row>
+              <v-col cols="12">
+                <CodeGeneratorWidget></CodeGeneratorWidget>
+              </v-col>
+
+              <v-col cols="12">
+                <MapWidget></MapWidget>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-container>

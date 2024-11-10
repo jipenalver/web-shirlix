@@ -29,6 +29,15 @@ export const getMoneyText = (value) => {
   }).format(value)
 }
 
+// 👉 Alpha-numeric Random Code
+export const getRandomCode = (length = 6) => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+  return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join(
+    ''
+  )
+}
+
 // 👉 Pad String Left
 export const getPadLeftText = (value, length = 4, char = '0') => {
   value = String(value)
