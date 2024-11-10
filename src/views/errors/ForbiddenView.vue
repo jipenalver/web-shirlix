@@ -3,13 +3,17 @@ import { useAuthUserStore } from '@/stores/authUser'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
+
+// Utilize pre-defined vue functions
+const { mobile } = useDisplay()
 
 // Use Pinia Store
 const authStore = useAuthUserStore()
 
 // Load Variables
 const isLoggedIn = ref(false)
-const isDrawerVisible = ref(true)
+const isDrawerVisible = ref(mobile.value ? false : true)
 
 // Get Authentication status from supabase
 const getLoggedStatus = async () => {

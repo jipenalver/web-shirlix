@@ -6,12 +6,16 @@ import ProfileForm from '@/components/system/account-settings/ProfileForm.vue'
 import PasswordForm from '@/components/system/account-settings/PasswordForm.vue'
 import { useAuthUserStore } from '@/stores/authUser'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
+
+// Utilize pre-defined vue functions
+const { mobile } = useDisplay()
 
 // Use Pinia Store
 const authStore = useAuthUserStore()
 
 // Load Variables
-const isDrawerVisible = ref(true)
+const isDrawerVisible = ref(mobile.value ? false : true)
 </script>
 
 <template>

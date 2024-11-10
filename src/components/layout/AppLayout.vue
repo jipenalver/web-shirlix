@@ -49,7 +49,7 @@ onMounted(() => {
           v-if="props.isWithAppBarNavIcon"
           icon="mdi-menu"
           :theme="theme"
-          @click="emit('isDrawerVisible', true)"
+          @click="emit('isDrawerVisible')"
         >
         </v-app-bar-nav-icon>
 
