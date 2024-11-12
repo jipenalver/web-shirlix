@@ -1,20 +1,20 @@
 <script setup>
-import { useBranchesStore } from '@/stores/branches'
+import { useCodesStore } from '@/stores/codes'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator, alphaDashValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
-const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
+const props = defineProps(['isDialogVisible'])
 
-const emit = defineEmits(['update:isDialogVisible'])
+const emit = defineEmits(['update:isDialogVisible', 'isCodeVerified'])
 
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
-const branchesStore = useBranchesStore()
+const codesStore = useCodesStore()
 
 // Load Variables
 const formDataDefault = {
@@ -27,46 +27,32 @@ const formAction = ref({
   ...formActionDefault
 })
 const refVForm = ref()
-const isUpdate = ref(false)
-
-// Monitor itemData if it has data
-watch(
-  () => props.itemData,
-  () => {
-    isUpdate.value = props.itemData ? true : false
-    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
-  }
-)
 
 // Submit Functionality
 const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  //   // Check if isUpdate is true, then do update, if false do add
-  //   const { data, error } = isUpdate.value
-  //     ? await branchesStore.updateBranch(formData.value)
-  //     : await branchesStore.addBranch(formData.value)
+  // Check if isUpdate is true, then do update, if false do add
+  const { data, error } = await codesStore.checkCode(formData.value)
 
-  //   if (error) {
-  //     // Add Error Message and Status Code
-  //     formAction.value.formErrorMessage = error.message
-  //     formAction.value.formStatus = error.status
+  if (error) {
+    // Add Error Message and Status Code
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
 
-  //     // Turn off processing
-  //     formAction.value.formProcess = false
-  //   } else if (data) {
-  //     // Add Success Message
-  //     formAction.value.formSuccessMessage = 'Successfully Added Branch.'
+    // Turn off processing
+    formAction.value.formProcess = false
+  } else if (data) {
+    // Add Success Message
+    formAction.value.formSuccessMessage = 'Successfully Verified Code.'
 
-  //     await branchesStore.getBranchesTable(props.tableOptions, props.tableFilters)
-  //     await branchesStore.getBranches()
-
-  //     // Form Reset and Close Dialog
-  //     setTimeout(() => {
-  //       onFormReset()
-  //     }, 2500)
-  //   }
+    // Form Reset and Close Dialog
+    setTimeout(() => {
+      emit('isCodeVerified', true)
+      onFormReset()
+    }, 1500)
+  }
 }
 
 // Trigger Validators
@@ -79,6 +65,7 @@ const onFormSubmit = () => {
 // Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
+  formData.value = { ...formDataDefault }
   emit('update:isDialogVisible', false)
 }
 </script>
@@ -90,7 +77,11 @@ const onFormReset = () => {
     :fullscreen="mdAndDown"
     persistent
   >
-    <v-card prepend-icon="mdi-number" title="Branch Information">
+    <v-card
+      prepend-icon="mdi-shield-edit"
+      title="Approval Code"
+      subtitle="Please input approval code to proceed."
+    >
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -102,9 +93,9 @@ const onFormReset = () => {
             <v-col cols="12">
               <v-text-field
                 v-model="formData.code"
-                label="Name"
+                prepend-inner-icon="mdi-key"
+                label="Code"
                 :rules="[requiredValidator, alphaDashValidator]"
-                :disabled="isUpdate"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -125,7 +116,7 @@ const onFormReset = () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            {{ isUpdate ? 'Update Branch' : 'Add Branch' }}
+            Submit
           </v-btn>
         </v-card-actions>
       </v-form>

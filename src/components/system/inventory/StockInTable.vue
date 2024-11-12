@@ -1,4 +1,5 @@
 <script setup>
+import CodeFormDialog from './CodeFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import StockInFormDialog from './StockInFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
@@ -34,7 +35,8 @@ const tableFilters = ref({
   product_id: null,
   purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
 })
-const isDialogVisible = ref(false)
+const isFormDialogVisible = ref(false)
+const isCodeDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
 const itemData = ref(null)
 const deleteId = ref('')
@@ -45,13 +47,18 @@ const formAction = ref({
 // Trigger Update Btn
 const onUpdate = (item) => {
   itemData.value = item
-  isDialogVisible.value = true
+  isCodeDialogVisible.value = true
+}
+
+// Confirmed Update
+const onUpdateConfirmed = (isApproved) => {
+  isFormDialogVisible.value = isApproved
 }
 
 // Trigger Add Btn
 const onAdd = () => {
   itemData.value = null
-  isDialogVisible.value = true
+  isFormDialogVisible.value = true
 }
 
 // Trigger Delete Btn
@@ -308,8 +315,13 @@ onMounted(async () => {
     </v-col>
   </v-row>
 
+  <CodeFormDialog
+    v-model:is-dialog-visible="isCodeDialogVisible"
+    @is-code-verified="onUpdateConfirmed"
+  ></CodeFormDialog>
+
   <StockInFormDialog
-    v-model:is-dialog-visible="isDialogVisible"
+    v-model:is-dialog-visible="isFormDialogVisible"
     :item-data="itemData"
     :table-options="tableOptions"
     :table-filters="tableFilters"

@@ -20,7 +20,11 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   // Retrieve StockIn Table
   async function getStockInTable(tableOptions, { search, product_id, branch_id, purchased_at }) {
-    const { rangeStart, rangeEnd, column, order } = tablePagination(tableOptions, 'purchased_at') // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
+    const { rangeStart, rangeEnd, column, order } = tablePagination(
+      tableOptions,
+      'purchased_at',
+      false
+    ) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 
     // Query Supabase with pagination and sorting
