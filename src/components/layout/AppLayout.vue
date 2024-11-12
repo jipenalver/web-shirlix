@@ -7,7 +7,7 @@ import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isWithAppBarNavIcon'])
 
-const emit = defineEmits(['isDrawerVisible'])
+const emit = defineEmits(['isDrawerVisible', 'theme'])
 
 // Utilize pre-defined vue functions
 const { xs, sm, mobile } = useDisplay()
@@ -25,6 +25,7 @@ const theme = ref(localStorage.getItem('theme') ?? 'light')
 const onToggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('theme', theme.value)
+  emit('theme', theme.value)
 }
 
 // Get Authentication status from supabase

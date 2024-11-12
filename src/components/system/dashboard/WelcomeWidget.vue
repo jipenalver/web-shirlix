@@ -2,6 +2,8 @@
 import { useAuthUserStore } from '@/stores/authUser'
 import { useDisplay } from 'vuetify'
 
+const props = defineProps(['theme'])
+
 // Use Pinia Store
 const authStore = useAuthUserStore()
 
@@ -10,13 +12,13 @@ const { mdAndDown } = useDisplay()
 </script>
 
 <template>
-  <v-card theme="light">
+  <v-card>
     <v-card-text>
       <v-row>
         <v-col cols="12" sm="4" :class="mdAndDown ? 'd-flex align-center' : ''">
           <v-img
             :class="!mdAndDown ? 'mx-auto' : ''"
-            src="/images/logo-shop.png"
+            :src="props.theme == 'light' ? '/images/logo-shop.png' : '/images/logo-shop-dark.png'"
             :width="mdAndDown ? '80%' : '60%'"
           ></v-img>
         </v-col>
