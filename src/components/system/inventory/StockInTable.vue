@@ -43,16 +43,19 @@ const deleteId = ref('')
 const formAction = ref({
   ...formActionDefault
 })
+const action = ref('')
+
+// Verified Code
+const onCodeVerified = (isVerified) => {
+  if (action.value === 'update') isFormDialogVisible.value = isVerified
+  if (action.value === 'delete') isConfirmDeleteDialog.value = isVerified
+}
 
 // Trigger Update Btn
 const onUpdate = (item) => {
   itemData.value = item
   isCodeDialogVisible.value = true
-}
-
-// Confirmed Update
-const onUpdateConfirmed = (isApproved) => {
-  isFormDialogVisible.value = isApproved
+  action.value = 'update'
 }
 
 // Trigger Add Btn
@@ -64,7 +67,8 @@ const onAdd = () => {
 // Trigger Delete Btn
 const onDelete = (id) => {
   deleteId.value = id
-  isConfirmDeleteDialog.value = true
+  isCodeDialogVisible.value = true
+  action.value = 'delete'
 }
 
 // Confirm Delete
@@ -317,7 +321,7 @@ onMounted(async () => {
 
   <CodeFormDialog
     v-model:is-dialog-visible="isCodeDialogVisible"
-    @is-code-verified="onUpdateConfirmed"
+    @is-code-verified="onCodeVerified"
   ></CodeFormDialog>
 
   <StockInFormDialog
