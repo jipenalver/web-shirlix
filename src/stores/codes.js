@@ -16,7 +16,7 @@ export const useCodesStore = defineStore('codes', () => {
   async function getCodes(tableOptions) {
     const { column, order } = tablePagination(tableOptions, 'id', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
 
-    // Query Supabase with pagination and sorting
+    // Query Supabase with sorting
     let query = supabase.from('codes').select().eq('is_used', 0).order(column, { ascending: order })
 
     // Execute the query
@@ -34,10 +34,27 @@ export const useCodesStore = defineStore('codes', () => {
     return await supabase.from('codes').insert(codeData).select()
   }
 
+  // Check Code
+  async function checkCode(formData) {
+    const { count, error } = await supabase
+      .from('codes')
+      .select('code', { count: 'exact', head: true })
+      .eq('code', formData.code)
+      .eq('is_used', 0)
+
+    // Check if it has error or Count is zero
+    if (error) return { error }
+    if (count == 0)
+      return { error: { message: 'Code is either used or does not exist', status: 404 } }
+
+    return await supabase.from('codes').update({ is_used: true }).eq('code', formData.code).select()
+  }
+
   return {
     codes,
     $reset,
     getCodes,
-    addCode
+    addCode,
+    checkCode
   }
 })

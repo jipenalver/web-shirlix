@@ -1,9 +1,25 @@
 <script setup>
 import { useBranchesStore } from '@/stores/branches'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+
+const props = defineProps(['theme'])
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
+
+// Load Variables
+const chartFilters = ref({
+  branch_id: null
+})
+const themeVal = ref('')
+
+// Monitor theme if it has data
+watch(
+  () => props.theme,
+  () => {
+    themeVal.value = props.theme
+  }
+)
 
 // Chart Options
 const options = {
@@ -22,7 +38,10 @@ const options = {
     enabled: true
   },
   legend: {
-    show: true
+    show: true,
+    labels: {
+      colors: '#C62828'
+    }
   },
   xaxis: {
     type: 'category',
@@ -38,26 +57,38 @@ const options = {
     ],
     labels: {
       style: {
-        colors: ['#36454F'],
+        colors: '#C62828',
         fontSize: '12px',
         fontWeight: 'bold'
       }
     },
     title: {
-      text: 'Products'
+      text: 'Products',
+      style: {
+        color: '#C62828'
+      }
     }
   },
   yaxis: {
     labels: {
       style: {
-        colors: ['#36454F'],
+        colors: '#C62828',
         fontSize: '14px',
         fontWeight: 'bold'
       }
     },
     title: {
-      text: 'Quantity'
+      text: 'Quantity',
+      style: {
+        color: '#C62828'
+      }
     }
+  },
+  theme: {
+    mode: themeVal.value
+  },
+  tooltip: {
+    theme: themeVal.value
   }
 }
 
@@ -69,10 +100,6 @@ const series = [
   }
 ]
 
-const chartFilters = ref({
-  branch_id: null
-})
-
 // Retrieve Data based on Filter
 const onFilterItems = () => {}
 
@@ -83,7 +110,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card title="Product Inventory Level" subtitle="Quantity per product" theme="light">
+  <v-card title="Product Inventory Level" subtitle="Quantity per product">
     <template #append>
       <v-autocomplete
         width="200px"

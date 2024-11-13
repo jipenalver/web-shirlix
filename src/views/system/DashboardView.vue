@@ -18,12 +18,19 @@ const { mobile } = useDisplay()
 // Load Variables
 const isSuperAdmin = authStore.userRole === 'Super Administrator'
 const isDrawerVisible = ref(mobile.value ? false : true)
+const theme = ref(localStorage.getItem('theme') ?? 'light')
+
+// On Theme Update
+const onThemeUpdate = (value) => {
+  theme.value = value
+}
 </script>
 
 <template>
   <AppLayout
     :is-with-app-bar-nav-icon="true"
     @is-drawer-visible="isDrawerVisible = !isDrawerVisible"
+    @theme="onThemeUpdate"
   >
     <template #navigation>
       <SideNavigation :is-drawer-visible="isDrawerVisible"></SideNavigation>
@@ -33,11 +40,11 @@ const isDrawerVisible = ref(mobile.value ? false : true)
       <v-container>
         <v-row>
           <v-col cols="12">
-            <WelcomeWidget></WelcomeWidget>
+            <WelcomeWidget :theme="theme"></WelcomeWidget>
           </v-col>
 
           <v-col cols="12" md="8">
-            <ProductsWidget></ProductsWidget>
+            <ProductsWidget :theme="theme"></ProductsWidget>
           </v-col>
 
           <v-col cols="12" md="4">
