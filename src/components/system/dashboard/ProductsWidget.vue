@@ -1,8 +1,12 @@
 <script setup>
 import { useBranchesStore } from '@/stores/branches'
 import { ref, onMounted, watch } from 'vue'
+// import { useDisplay } from 'vuetify'
 
 const props = defineProps(['theme'])
+
+// Utilize pre-defined vue functions
+// const { mobile } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -21,11 +25,34 @@ watch(
   }
 )
 
-// Chart Options
-const options = {
+// Pie Chart Options
+const donutOptions = {
+  chart: {
+    type: 'donut'
+  },
+  responsive: [
+    {
+      breakpoint: 480,
+      options: {
+        chart: {
+          width: 200
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  ]
+}
+
+// Bar Chart Options
+const barOptions = {
   chart: {
     height: 350,
-    type: 'bar'
+    type: 'bar',
+    toolbar: {
+      show: false
+    }
   },
   colors: ['#2E93fA', '#66DA26', '#546E7A', '#E91E63', '#FF9800'],
   plotOptions: {
@@ -126,8 +153,12 @@ onMounted(async () => {
       ></v-autocomplete>
     </template>
 
+    <v-card-text v-if="false">
+      <apexchart type="pie" width="100%" :options="donutOptions" :series="series"></apexchart>
+    </v-card-text>
+
     <v-card-text>
-      <apexchart width="100%" type="bar" :options="options" :series="series"></apexchart>
+      <apexchart type="bar" width="100%" :options="barOptions" :series="series"></apexchart>
     </v-card-text>
   </v-card>
 </template>

@@ -4,11 +4,11 @@ import { useDisplay } from 'vuetify'
 
 const props = defineProps(['theme'])
 
-// Use Pinia Store
-const authStore = useAuthUserStore()
-
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
+
+// Use Pinia Store
+const authStore = useAuthUserStore()
 </script>
 
 <template>
