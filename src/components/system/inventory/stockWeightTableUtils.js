@@ -12,17 +12,17 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Original Weight',
+    title: 'Original Weight / Qty',
     key: 'qty',
     align: 'start'
   },
   {
-    title: 'Reweighed Weight',
+    title: 'Re-weighed Weight / Qty',
     key: 'qty_reweighed',
     align: 'start'
   },
   {
-    title: 'Weight Loss',
+    title: 'Weight Loss / Difference',
     key: 'weight_loss',
     align: 'start'
   },

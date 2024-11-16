@@ -1,4 +1,5 @@
 <script setup>
+import StockWeightFormDialog from './StockWeightFormDialog.vue'
 import CodeFormDialog from './CodeFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { tableHeaders } from './stockWeightTableUtils'
@@ -236,6 +237,22 @@ onMounted(async () => {
           </span>
         </template>
 
+        <template #item.qty_reweighed="{ item }">
+          <span class="font-weight-bold">
+            {{ item.qty_reweighed ? item.qty_reweighed + ' ' + item.qty_metric : '-' }}
+          </span>
+        </template>
+
+        <template #item.weight_loss="{ item }">
+          <span class="font-weight-bold">
+            {{
+              item.qty_reweighed
+                ? (item.qty - item.qty_reweighed).toFixed(2) + ' ' + item.qty_metric
+                : '-'
+            }}
+          </span>
+        </template>
+
         <template #item.status="{ item }">
           <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
             {{ item.is_reweighed ? 'Reweighed' : 'For Re-Weighing' }}
@@ -281,6 +298,13 @@ onMounted(async () => {
     v-model:is-dialog-visible="isCodeDialogVisible"
     @is-code-verified="onCodeVerified"
   ></CodeFormDialog>
+
+  <StockWeightFormDialog
+    v-model:is-dialog-visible="isWeightFormDialogVisible"
+    :item-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
+  ></StockWeightFormDialog>
 </template>
 
 <style scoped>

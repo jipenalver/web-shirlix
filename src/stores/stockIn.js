@@ -3,8 +3,12 @@ import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
 import { useDate } from 'vuetify'
+import { useAuthUserStore } from './authUser'
 
 export const useStockInStore = defineStore('stockIn', () => {
+  // Use Pinia Store
+  const authStore = useAuthUserStore()
+
   // Utilize pre-defined vue functions
   const date = useDate()
 
@@ -59,7 +63,7 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Filter StockIn
-  function getStockInFilter(query, { search, product_id, branch_id, purchased_at }) {
+  async function getStockInFilter(query, { search, product_id, branch_id, purchased_at }) {
     if (search) {
       if (search.length >= 4 && !isNaN(search)) query = query.eq('id', search)
       else
@@ -71,6 +75,18 @@ export const useStockInStore = defineStore('stockIn', () => {
     if (product_id) query = query.eq('product_id', product_id)
 
     if (branch_id) query = query.eq('branch_id', branch_id)
+    // If branch is not set, get the branch(es) of the user
+    else {
+      const { data } = await supabase
+        .from('branches')
+        .select('id')
+        .in('name', authStore.userData.branch.split(','))
+
+      query = query.in(
+        'branch_id',
+        data.map((b) => b.id)
+      )
+    }
 
     if (purchased_at) {
       if (purchased_at.length === 1)
