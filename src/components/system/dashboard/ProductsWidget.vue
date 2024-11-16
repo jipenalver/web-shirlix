@@ -1,12 +1,8 @@
 <script setup>
 import { useBranchesStore } from '@/stores/branches'
 import { ref, onMounted, watch } from 'vue'
-// import { useDisplay } from 'vuetify'
 
 const props = defineProps(['theme'])
-
-// Utilize pre-defined vue functions
-// const { mobile } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -24,26 +20,6 @@ watch(
     themeVal.value = props.theme
   }
 )
-
-// Pie Chart Options
-const donutOptions = {
-  chart: {
-    type: 'donut'
-  },
-  responsive: [
-    {
-      breakpoint: 480,
-      options: {
-        chart: {
-          width: 200
-        },
-        legend: {
-          position: 'bottom'
-        }
-      }
-    }
-  ]
-}
 
 // Bar Chart Options
 const barOptions = {
@@ -152,10 +128,6 @@ onMounted(async () => {
         @update:model-value="onFilterItems"
       ></v-autocomplete>
     </template>
-
-    <v-card-text v-if="false">
-      <apexchart type="pie" width="100%" :options="donutOptions" :series="series"></apexchart>
-    </v-card-text>
 
     <v-card-text>
       <apexchart type="bar" width="100%" :options="barOptions" :series="series"></apexchart>
