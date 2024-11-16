@@ -1,6 +1,6 @@
 <script setup>
+import CodeFormDialog from './CodeFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-// import StockInFormDialog from './StockInFormDialog.vue'
 import { tableHeaders } from './stockWeightTableUtils'
 import { formActionDefault } from '@/utils/supabase'
 import { useStockInStore } from '@/stores/stockIn'
@@ -33,16 +33,33 @@ const tableFilters = ref({
   product_id: null,
   purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
 })
-const isDialogVisible = ref(false)
+const isWeightFormDialogVisible = ref(false)
+const isSegregateFormDialogVisible = ref(false)
+const isCodeDialogVisible = ref(false)
 const itemData = ref(null)
 const formAction = ref({
   ...formActionDefault
 })
+const action = ref('')
+
+// Verified Code
+const onCodeVerified = (isVerified) => {
+  if (action.value === 'weight') isWeightFormDialogVisible.value = isVerified
+  if (action.value === 'segregate') isSegregateFormDialogVisible.value = isVerified
+}
 
 // Trigger Update Btn
-const onUpdate = (item) => {
+const onUpdateWeight = (item) => {
   itemData.value = item
-  isDialogVisible.value = true
+  isCodeDialogVisible.value = true
+  action.value = 'weight'
+}
+
+// Trigger Update Btn
+const onUpdateSegregate = (item) => {
+  itemData.value = item
+  isCodeDialogVisible.value = true
+  action.value = 'segregate'
 }
 
 // Retrieve Data based on Date
@@ -239,13 +256,19 @@ onMounted(async () => {
 
         <template #item.actions="{ item }">
           <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
-            <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
+            <v-btn variant="text" density="comfortable" @click="onUpdateWeight(item)" icon>
               <v-icon icon="mdi-weight-kilogram"></v-icon>
               <v-tooltip activator="parent" location="top">Reweight Stock</v-tooltip>
             </v-btn>
 
-            <v-btn variant="text" density="comfortable" icon>
-              <v-icon icon="mdi-scale" color="red-darken-4"></v-icon>
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onUpdateSegregate(item)"
+              :disabled="!item.is_reweighed"
+              icon
+            >
+              <v-icon icon="mdi-scale"></v-icon>
               <v-tooltip activator="parent" location="top">Segregate Stock</v-tooltip>
             </v-btn>
           </div>
@@ -253,6 +276,11 @@ onMounted(async () => {
       </v-data-table-server>
     </v-col>
   </v-row>
+
+  <CodeFormDialog
+    v-model:is-dialog-visible="isCodeDialogVisible"
+    @is-code-verified="onCodeVerified"
+  ></CodeFormDialog>
 </template>
 
 <style scoped>

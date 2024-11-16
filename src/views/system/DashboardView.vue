@@ -13,7 +13,7 @@ import { useDisplay } from 'vuetify'
 const authStore = useAuthUserStore()
 
 // Utilize pre-defined vue functions
-const { mobile } = useDisplay()
+const { smAndUp, mobile } = useDisplay()
 
 // Load Variables
 const isSuperAdmin = authStore.userRole === 'Super Administrator'
@@ -43,7 +43,7 @@ const onThemeUpdate = (value) => {
             <WelcomeWidget :theme="theme"></WelcomeWidget>
           </v-col>
 
-          <v-col cols="12" md="8">
+          <v-col cols="12" md="8" v-if="smAndUp">
             <ProductsWidget :theme="theme"></ProductsWidget>
           </v-col>
 
