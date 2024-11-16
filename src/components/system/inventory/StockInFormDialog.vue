@@ -51,7 +51,7 @@ watch(
       ? { ...props.itemData, purchased_at: new Date(props.itemData.purchased_at) }
       : { ...formDataDefault }
     imgPreview.value = isUpdate.value
-      ? props.itemData.products.image_url
+      ? formData.value.products.image_url
       : '/images/img-product.png'
   }
 )
@@ -59,7 +59,7 @@ watch(
 // Function to handle file change and show image preview
 const onPreview = async (value) => {
   // Update imgPreview state
-  imgPreview.value = value ? value.image_url : '/images/img-product.png'
+  imgPreview.value = value.image_url ?? '/images/img-product.png'
 }
 
 // Submit Functionality
@@ -185,6 +185,7 @@ onMounted(async () => {
                 type="number"
                 min="1"
                 :rules="[requiredValidator]"
+                hint="Please select correct metric"
               ></v-text-field>
             </v-col>
 

@@ -119,6 +119,23 @@ export const useStockInStore = defineStore('stockIn', () => {
     return await supabase.from('stock_ins').delete().eq('id', id)
   }
 
+  // Add Stock Portion
+  async function addStockPortion(formData) {
+    const transformedData = formData.map((value) => {
+      // eslint-disable-next-line no-unused-vars
+      const { product_id, product_preview, qty, ...stockData } = value
+
+      return {
+        ...stockData,
+        product_id: product_id.id,
+        qty: qty,
+        qty_reweighed: qty
+      }
+    })
+
+    return await supabase.from('stock_ins').insert(transformedData).select()
+  }
+
   return {
     stockInTable,
     stockInTotal,
@@ -126,6 +143,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     getStockInTable,
     addStockIn,
     updateStockIn,
-    deleteStockIn
+    deleteStockIn,
+    addStockPortion
   }
 })

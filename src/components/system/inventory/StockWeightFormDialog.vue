@@ -43,7 +43,7 @@ watch(
   () => props.itemData,
   () => {
     formData.value = { ...props.itemData, is_reweighed: true }
-    imgPreview.value = props.itemData.products.image_url ?? '/images/img-product.png'
+    imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'
   }
 )
 
@@ -132,7 +132,6 @@ onMounted(async () => {
                 item-value="id"
                 return-object
                 readonly
-                :rules="[requiredValidator]"
               ></v-autocomplete>
             </v-col>
 
@@ -154,7 +153,6 @@ onMounted(async () => {
                 label="Original Weight / Qty"
                 type="number"
                 min="1"
-                :rules="[requiredValidator]"
                 readonly
               ></v-text-field>
             </v-col>
@@ -164,7 +162,6 @@ onMounted(async () => {
                 v-model="formData.qty_metric"
                 label="Metric"
                 :items="['kg', 'grams', 'L', 'ml', 'm', 'cm', 'pieces']"
-                :rules="[requiredValidator]"
                 readonly
               ></v-select>
             </v-col>
@@ -184,7 +181,6 @@ onMounted(async () => {
                 v-model="formData.qty_metric"
                 label="Metric"
                 :items="['kg', 'grams', 'L', 'ml', 'm', 'cm', 'pieces']"
-                :rules="[requiredValidator]"
                 readonly
               ></v-select>
             </v-col>
