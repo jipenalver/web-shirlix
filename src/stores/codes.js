@@ -2,8 +2,12 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination } from '@/utils/supabase'
 import { getRandomCode } from '@/utils/helpers'
+import { useAuthUserStore } from './authUser'
 
 export const useCodesStore = defineStore('codes', () => {
+  // Use Pinia Store
+  const authStore = useAuthUserStore()
+
   // States
   const codes = ref([])
 
@@ -47,7 +51,11 @@ export const useCodesStore = defineStore('codes', () => {
     if (count == 0)
       return { error: { message: 'Code is either used or does not exist', status: 404 } }
 
-    return await supabase.from('codes').update({ is_used: true }).eq('code', formData.code).select()
+    return await supabase
+      .from('codes')
+      .update({ is_used: true, user_id: authStore.userData.id })
+      .eq('code', formData.code)
+      .select()
   }
 
   return {
