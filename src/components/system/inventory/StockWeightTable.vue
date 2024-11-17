@@ -268,7 +268,7 @@ onMounted(async () => {
                   : 'For Re-Weighing'
             }}
 
-            <v-tooltip activator="parent" location="top">
+            <v-tooltip activator="parent" location="top" open-on-click>
               <span class="font-weight-bold">Added Date:</span>
               {{ date.format(item.created_at, 'fullDateTime') }} <br />
               <span class="font-weight-bold">Purchased Date:</span>

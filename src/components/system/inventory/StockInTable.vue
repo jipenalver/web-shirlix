@@ -262,9 +262,13 @@ onMounted(async () => {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption">
+              <p class="text-caption" v-if="item.price">
                 <span class="font-weight-bold">Price:</span>
                 {{ getMoneyText(item.price) }}
+              </p>
+              <p class="text-caption" v-else>
+                <span class="font-weight-bold">Stock ID:</span>
+                {{ getPadLeftText(item.stock_in_id) }}
               </p>
             </div>
           </div>
@@ -290,9 +294,15 @@ onMounted(async () => {
 
         <template #item.status="{ item }">
           <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
-            {{ item.is_reweighed ? 'Reweighed' : 'For Re-Weighing' }}
+            {{
+              item.stock_in_id != null
+                ? 'Stock Portion'
+                : item.is_reweighed
+                  ? 'Reweighed'
+                  : 'For Re-Weighing'
+            }}
 
-            <v-tooltip activator="parent" location="top">
+            <v-tooltip activator="parent" location="top" open-on-click>
               <span class="font-weight-bold">Added Date:</span>
               {{ date.format(item.created_at, 'fullDateTime') }} <br />
               <span class="font-weight-bold">Branch:</span> {{ item.branches.name }} <br />
@@ -304,12 +314,24 @@ onMounted(async () => {
 
         <template #item.actions="{ item }">
           <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
-            <v-btn variant="text" density="comfortable" @click="onUpdate(item)" icon>
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onUpdate(item)"
+              :disabled="item.stock_in_id != null"
+              icon
+            >
               <v-icon icon="mdi-pencil"></v-icon>
               <v-tooltip activator="parent" location="top">Edit Stock</v-tooltip>
             </v-btn>
 
-            <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onDelete(item.id)"
+              :disabled="item.stock_in_id != null"
+              icon
+            >
               <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
               <v-tooltip activator="parent" location="top">Delete Stock</v-tooltip>
             </v-btn>

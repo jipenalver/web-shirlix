@@ -143,11 +143,15 @@ onMounted(async () => {
     :fullscreen="mdAndDown"
     persistent
   >
-    <v-card
-      prepend-icon="mdi-scale"
-      title="Stock Segregate"
-      subtitle="Stock portioning into cuts or component parts"
-    >
+    <v-card prepend-icon="mdi-scale" title="Stock Segregate">
+      <template #subtitle>
+        <div class="text-wrap">
+          Stock portioning into cuts or component parts. Please properly input stock portion fields.
+          <br />
+          <b class="text-error">THIS ACTION CANNOT BE UNDONE.</b>
+        </div>
+      </template>
+
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -222,7 +226,9 @@ onMounted(async () => {
 
           <v-row dense>
             <v-col cols="12" sm="4" md="3" class="d-flex align-center justify-center">
-              <span> Remaining Weight / Qty: {{ remainingQty }} </span>
+              <span class="text-body-2">
+                Remaining Weight / Qty: <b>{{ remainingQty }}</b>
+              </span>
             </v-col>
 
             <v-col cols="12" sm="8" md="9" class="d-flex justify-end">
@@ -282,6 +288,7 @@ onMounted(async () => {
                       min="0"
                       :max="remainingQty"
                       :rules="[requiredValidator]"
+                      hint="Please input correct value"
                     ></v-text-field>
                   </v-col>
 
