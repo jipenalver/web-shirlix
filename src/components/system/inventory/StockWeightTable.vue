@@ -1,4 +1,6 @@
 <script setup>
+import StockSegregateFormDialog from './StockSegregateFormDialog.vue'
+import StockWeightFormDialog from './StockWeightFormDialog.vue'
 import CodeFormDialog from './CodeFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { tableHeaders } from './stockWeightTableUtils'
@@ -222,9 +224,13 @@ onMounted(async () => {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption">
+              <p class="text-caption" v-if="item.price">
                 <span class="font-weight-bold">Price:</span>
                 {{ getMoneyText(item.price) }}
+              </p>
+              <p class="text-caption" v-else>
+                <span class="font-weight-bold">Stock ID:</span>
+                {{ getPadLeftText(item.stock_in_id) }}
               </p>
             </div>
           </div>
@@ -236,11 +242,33 @@ onMounted(async () => {
           </span>
         </template>
 
+        <template #item.qty_reweighed="{ item }">
+          <span class="font-weight-bold">
+            {{ item.qty_reweighed ? item.qty_reweighed + ' ' + item.qty_metric : '-' }}
+          </span>
+        </template>
+
+        <template #item.weight_loss="{ item }">
+          <span class="font-weight-bold">
+            {{
+              item.qty_reweighed
+                ? (item.qty - item.qty_reweighed).toFixed(2) + ' ' + item.qty_metric
+                : '-'
+            }}
+          </span>
+        </template>
+
         <template #item.status="{ item }">
           <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
-            {{ item.is_reweighed ? 'Reweighed' : 'For Re-Weighing' }}
+            {{
+              item.stock_in_id != null
+                ? 'Stock Portion'
+                : item.is_reweighed
+                  ? 'Reweighed'
+                  : 'For Re-Weighing'
+            }}
 
-            <v-tooltip activator="parent" location="top">
+            <v-tooltip activator="parent" location="top" open-on-click>
               <span class="font-weight-bold">Added Date:</span>
               {{ date.format(item.created_at, 'fullDateTime') }} <br />
               <span class="font-weight-bold">Purchased Date:</span>
@@ -256,7 +284,13 @@ onMounted(async () => {
 
         <template #item.actions="{ item }">
           <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
-            <v-btn variant="text" density="comfortable" @click="onUpdateWeight(item)" icon>
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onUpdateWeight(item)"
+              :disabled="item.stock_in_id != null"
+              icon
+            >
               <v-icon icon="mdi-weight-kilogram"></v-icon>
               <v-tooltip activator="parent" location="top">Reweight Stock</v-tooltip>
             </v-btn>
@@ -265,7 +299,7 @@ onMounted(async () => {
               variant="text"
               density="comfortable"
               @click="onUpdateSegregate(item)"
-              :disabled="!item.is_reweighed"
+              :disabled="!item.is_reweighed || item.stock_in_id != null"
               icon
             >
               <v-icon icon="mdi-scale"></v-icon>
@@ -281,6 +315,20 @@ onMounted(async () => {
     v-model:is-dialog-visible="isCodeDialogVisible"
     @is-code-verified="onCodeVerified"
   ></CodeFormDialog>
+
+  <StockWeightFormDialog
+    v-model:is-dialog-visible="isWeightFormDialogVisible"
+    :item-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
+  ></StockWeightFormDialog>
+
+  <StockSegregateFormDialog
+    v-model:is-dialog-visible="isSegregateFormDialogVisible"
+    :item-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
+  ></StockSegregateFormDialog>
 </template>
 
 <style scoped>

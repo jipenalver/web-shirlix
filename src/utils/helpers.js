@@ -29,6 +29,11 @@ export const getMoneyText = (value) => {
   }).format(value)
 }
 
+// 👉 Precise Number
+export const getPreciseNumber = (value) => {
+  return (Math.round(value) * 100) / 100
+}
+
 // 👉 Alpha-numeric Random Code
 export const getRandomCode = (length = 6) => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'

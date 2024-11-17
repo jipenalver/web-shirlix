@@ -22,13 +22,10 @@ const stockInStore = useStockInStore()
 
 // Load Variables
 const formDataDefault = {
-  supplier: '',
   remarks: '',
-  price: 0,
   qty: 1,
+  qty_reweighed: 1,
   qty_metric: 'kg',
-  purchased_at: new Date(),
-  expired_at: null,
   branch_id: null,
   product_id: null
 }
@@ -39,41 +36,23 @@ const formAction = ref({
   ...formActionDefault
 })
 const refVForm = ref()
-const isUpdate = ref(false)
 const imgPreview = ref('/images/img-product.png')
 
 // Monitor itemData if it has data
 watch(
   () => props.itemData,
   () => {
-    isUpdate.value = props.itemData ? true : false
-    formData.value = props.itemData
-      ? { ...props.itemData, purchased_at: new Date(props.itemData.purchased_at) }
-      : { ...formDataDefault }
-    imgPreview.value = isUpdate.value
-      ? formData.value.products.image_url
-      : '/images/img-product.png'
+    formData.value = { ...props.itemData, is_reweighed: true }
+    imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'
   }
 )
-
-// Function to handle file change and show image preview
-const onPreview = async (value) => {
-  // Update imgPreview state
-  imgPreview.value = value.image_url ?? '/images/img-product.png'
-}
 
 // Submit Functionality
 const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { id } = formData.value.product_id
-  formData.value.product_id = id
-
-  // Check if isUpdate is true, then do update, if false do add
-  const { data, error } = isUpdate.value
-    ? await stockInStore.updateStockIn(formData.value)
-    : await stockInStore.addStockIn(formData.value)
+  const { data, error } = await stockInStore.updateStockIn(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -84,7 +63,7 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added Stock.'
+    formAction.value.formSuccessMessage = 'Successfully Updated Stock Weight.'
 
     await stockInStore.getStockInTable(props.tableOptions, props.tableFilters)
 
@@ -122,7 +101,7 @@ onMounted(async () => {
     :fullscreen="mdAndDown"
     persistent
   >
-    <v-card prepend-icon="mdi-information-box" title="Stock Information">
+    <v-card prepend-icon="mdi-weight-kilogram" title="Stock Re-weight">
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -152,13 +131,11 @@ onMounted(async () => {
                 item-title="name"
                 item-value="id"
                 return-object
-                clearable
-                @update:model-value="onPreview"
-                :rules="[requiredValidator]"
+                readonly
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" sm="6">
+            <v-col cols="12">
               <v-autocomplete
                 v-model="formData.branch_id"
                 label="Branch"
@@ -170,22 +147,13 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" sm="6">
-              <v-text-field
-                v-model="formData.supplier"
-                label="Supplier Name"
-                :rules="[requiredValidator]"
-              ></v-text-field>
-            </v-col>
-
             <v-col cols="9" sm="4">
               <v-text-field
                 v-model="formData.qty"
-                label="Weight / Qty"
+                label="Original Weight / Qty"
                 type="number"
                 min="1"
-                :rules="[requiredValidator]"
-                hint="Please select correct metric"
+                readonly
               ></v-text-field>
             </v-col>
 
@@ -194,37 +162,27 @@ onMounted(async () => {
                 v-model="formData.qty_metric"
                 label="Metric"
                 :items="formDataMetrics"
-                :rules="[requiredValidator]"
+                readonly
               ></v-select>
             </v-col>
 
-            <v-col cols="12" sm="6">
+            <v-col cols="9" sm="4">
               <v-text-field
-                v-model="formData.price"
-                prefix="Php"
-                label="Price"
+                v-model="formData.qty_reweighed"
+                label="Re-weighed Weight / Qty"
                 type="number"
-                min="0"
+                min="1"
                 :rules="[requiredValidator]"
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" sm="6">
-              <v-date-input
-                v-model="formData.purchased_at"
-                label="Purchased Date"
-                :rules="[requiredValidator]"
-                hide-actions
-              ></v-date-input>
-            </v-col>
-
-            <v-col cols="12" sm="6">
-              <v-date-input
-                v-model="formData.expired_at"
-                label="Expiration Date"
-                clearable
-                hide-actions
-              ></v-date-input>
+            <v-col cols="3" sm="2">
+              <v-select
+                v-model="formData.qty_metric"
+                label="Metric"
+                :items="formDataMetrics"
+                readonly
+              ></v-select>
             </v-col>
 
             <v-col cols="12">
@@ -248,7 +206,7 @@ onMounted(async () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            {{ isUpdate ? 'Update Stock' : 'Add Stock' }}
+            Update Stock
           </v-btn>
         </v-card-actions>
       </v-form>

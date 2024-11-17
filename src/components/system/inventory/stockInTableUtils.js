@@ -12,7 +12,7 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Original Weight',
+    title: 'Original Weight / Qty',
     key: 'qty',
     align: 'start'
   },
