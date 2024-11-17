@@ -4,7 +4,7 @@ import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
-import { formActionDefault } from '@/utils/supabase.js'
+import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -193,7 +193,7 @@ onMounted(async () => {
               <v-select
                 v-model="formData.qty_metric"
                 label="Metric"
-                :items="['kg', 'grams', 'L', 'ml', 'm', 'cm', 'pieces']"
+                :items="formDataMetrics"
                 :rules="[requiredValidator]"
               ></v-select>
             </v-col>

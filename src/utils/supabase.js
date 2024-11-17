@@ -26,6 +26,9 @@ export const formActionDefault = {
   formSuccessMessage: ''
 }
 
+// 👉 Form Metrics
+export const formDataMetrics = ['kg', 'L', 'm', 'piece(s)']
+
 // 👉 Table Pagination
 export const tablePagination = (
   { page, itemsPerPage, sortBy },

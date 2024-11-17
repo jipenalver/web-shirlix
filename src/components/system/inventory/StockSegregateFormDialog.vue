@@ -1,12 +1,12 @@
 <script setup>
-import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator } from '@/utils/validators'
-import { formActionDefault } from '@/utils/supabase.js'
+import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
+import { getPreciseNumber } from '@/utils/helpers'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
@@ -17,7 +17,6 @@ const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
-const branchesStore = useBranchesStore()
 const stockInStore = useStockInStore()
 
 // Load Variables
@@ -85,12 +84,10 @@ const onRemoveStock = () => {
 
 // Calculate remaining qty
 const calcRemainingQty = () => {
-  remainingQty.value =
-    Math.round(
-      (formData.value.qty_reweighed -
-        formData.value.stocks.reduce((acc, cur) => acc + Number(cur.qty), 0)) *
-        100
-    ) / 100
+  remainingQty.value = getPreciseNumber(
+    formData.value.qty_reweighed -
+      formData.value.stocks.reduce((acc, cur) => acc + Number(cur.qty), 0)
+  )
 }
 
 // Submit Functionality
@@ -135,7 +132,6 @@ const onFormReset = () => {
 
 // Load Functions during component rendering
 onMounted(async () => {
-  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
   if (productsStore.products.length == 0) await productsStore.getProducts()
 })
 </script>
@@ -199,7 +195,7 @@ onMounted(async () => {
               <v-select
                 v-model="formData.qty_metric"
                 label="Metric"
-                :items="['kg', 'grams', 'L', 'ml', 'm', 'cm', 'pieces']"
+                :items="formDataMetrics"
                 readonly
               ></v-select>
             </v-col>
@@ -218,17 +214,20 @@ onMounted(async () => {
               <v-select
                 v-model="formData.qty_metric"
                 label="Metric"
-                :items="['kg', 'grams', 'L', 'ml', 'm', 'cm', 'pieces']"
+                :items="formDataMetrics"
                 readonly
               ></v-select>
             </v-col>
           </v-row>
 
           <v-row dense>
-            <span> Remaining Weight / Qty: {{ remainingQty }} </span>
-            <v-col cols="12" class="d-flex justify-end">
+            <v-col cols="12" sm="4" md="3" class="d-flex align-center justify-center">
+              <span> Remaining Weight / Qty: {{ remainingQty }} </span>
+            </v-col>
+
+            <v-col cols="12" sm="8" md="9" class="d-flex justify-end">
               <v-btn
-                text="Add Stock Portion"
+                text="Add Portion"
                 variant="plain"
                 prepend-icon="mdi-plus-thick"
                 @click="onAddPortion"
@@ -290,7 +289,7 @@ onMounted(async () => {
                     <v-select
                       v-model="value.qty_metric"
                       label="Metric"
-                      :items="['kg', 'grams', 'L', 'ml', 'm', 'cm', 'pieces']"
+                      :items="formDataMetrics"
                       readonly
                     ></v-select>
                   </v-col>

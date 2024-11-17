@@ -65,7 +65,8 @@ export const useStockInStore = defineStore('stockIn', () => {
   // Filter StockIn
   async function getStockInFilter(query, { search, product_id, branch_id, purchased_at }) {
     if (search) {
-      if (search.length >= 4 && !isNaN(search)) query = query.eq('id', search)
+      if (search.length >= 4 && !isNaN(search))
+        query = query.or('id.eq.' + search + ', stock_in_id.eq.' + search)
       else
         query = query.or('name.ilike.%' + search + '%, description.ilike.%' + search + '%', {
           referencedTable: 'products'
