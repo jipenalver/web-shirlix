@@ -37,7 +37,7 @@ const onThemeUpdate = (value) => {
     </template>
 
     <template #content>
-      <v-container>
+      <v-container fluid>
         <v-row>
           <v-col cols="12">
             <WelcomeWidget :theme="theme"></WelcomeWidget>

@@ -110,7 +110,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
     >
       <template #top>
         <v-form ref="refVForm" @submit.prevent="onFormSubmit">
-          <v-row dense>
+          <v-row class="mx-1" dense>
             <v-spacer></v-spacer>
 
             <v-col cols="4" sm="4">
@@ -132,6 +132,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
                 type="submit"
                 :disabled="formAction.formProcess"
                 :loading="formAction.formProcess"
+                block
               >
                 <v-icon icon="mdi-shield-refresh"></v-icon>
 

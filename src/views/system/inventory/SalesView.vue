@@ -21,26 +21,12 @@ const isDrawerVisible = ref(mobile.value ? false : true)
     </template>
 
     <template #content>
-      <v-container>
-        <v-card class="mb-5">
-          <template #title>
-            <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['Inventory', 'Sales']">
-                <template #prepend>
-                  <v-icon icon="mdi-tray-arrow-up" size="small" class="me-1"></v-icon>
-                </template>
-              </v-breadcrumbs>
-            </span>
-          </template>
+      <v-container fluid>
+        <v-row dense>
+          <v-col cols="12" sm="8"> </v-col>
 
-          <template #subtitle>
-            <p class="ms-4 text-wrap">Sell Products.</p>
-          </template>
-        </v-card>
-
-        <v-card>
-          <v-card-text> </v-card-text>
-        </v-card>
+          <v-col cols="12" sm="4"> </v-col>
+        </v-row>
       </v-container>
     </template>
   </AppLayout>
