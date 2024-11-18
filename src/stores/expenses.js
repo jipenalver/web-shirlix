@@ -2,12 +2,8 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
-import { useDate } from 'vuetify'
 
 export const useExpensesStore = defineStore('expenses', () => {
-  // Utilize pre-defined vue functions
-  const date = useDate()
-
   // States
   const expensesTable = ref([])
   const expensesReport = ref([])
@@ -80,12 +76,11 @@ export const useExpensesStore = defineStore('expenses', () => {
     if (branch_id) query = query.eq('branch_id', branch_id)
 
     if (spent_at) {
-      if (spent_at.length === 1)
-        query = query.eq('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString())
+      if (spent_at.length === 1) query = query.eq('spent_at', dateShiftFixValue(spent_at[0]))
       else {
         query = query
-          .gte('spent_at', dateShiftFixValue(date, spent_at[0]).toISOString()) // Greater than or equal to `from` date
-          .lte('spent_at', spent_at[spent_at.length - 1].toISOString()) // Less than or equal to `to` date
+          .gte('spent_at', dateShiftFixValue(spent_at[0])) // Greater than or equal to `from` date
+          .lte('spent_at', dateShiftFixValue(spent_at[spent_at.length - 1])) // Less than or equal to `to` date
       }
     }
 
@@ -100,7 +95,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   // Update Expenses
   async function updateExpenditure(formData) {
     // eslint-disable-next-line no-unused-vars
-    const { branches, ...data } = dateShiftFixForm(date, formData, ['spent_at'])
+    const { branches, ...data } = dateShiftFixForm(formData, ['spent_at'])
 
     return await supabase.from('expenses').update(data).eq('id', formData.id).select()
   }

@@ -228,9 +228,12 @@ onMounted(async () => {
                 <span class="font-weight-bold">Stock In Price:</span>
                 {{ getMoneyText(item.price_stockin) }}
               </p>
-              <p class="text-caption" v-else>
+              <p class="text-caption" v-else-if="item.is_portion">
                 <span class="font-weight-bold">Portion of ID:</span>
                 {{ getPadLeftText(item.stock_in_id) }}
+                <br />
+                <span class="font-weight-bold">Unit Price:</span>
+                {{ getMoneyText(item.unit_price) }} per {{ item.unit_price_metric }}
               </p>
             </div>
           </div>
