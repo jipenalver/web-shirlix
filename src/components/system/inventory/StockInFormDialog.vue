@@ -24,7 +24,7 @@ const stockInStore = useStockInStore()
 const formDataDefault = {
   supplier: '',
   remarks: '',
-  price: 0,
+  price_stockin: 0,
   qty: 1,
   qty_metric: 'kg',
   purchased_at: new Date(),
@@ -48,7 +48,11 @@ watch(
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData
-      ? { ...props.itemData, purchased_at: new Date(props.itemData.purchased_at) }
+      ? {
+          ...props.itemData,
+          purchased_at: new Date(props.itemData.purchased_at),
+          expired_at: props.itemData.expired_at ? new Date(props.itemData.expired_at) : null
+        }
       : { ...formDataDefault }
     imgPreview.value = isUpdate.value
       ? formData.value.products.image_url
@@ -84,7 +88,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added Stock.'
+    formAction.value.formSuccessMessage = isUpdate.value
+      ? 'Successfully Updated Stock Information.'
+      : 'Successfully Added Stock.'
 
     await stockInStore.getStockInTable(props.tableOptions, props.tableFilters)
 
@@ -200,9 +206,9 @@ onMounted(async () => {
 
             <v-col cols="12" sm="6">
               <v-text-field
-                v-model="formData.price"
+                v-model="formData.price_stockin"
                 prefix="Php"
-                label="Price"
+                label="Stock In Price"
                 type="number"
                 min="0"
                 :rules="[requiredValidator]"

@@ -2,15 +2,11 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
-import { useDate } from 'vuetify'
 import { useAuthUserStore } from './authUser'
 
 export const useStockInStore = defineStore('stockIn', () => {
   // Use Pinia Store
   const authStore = useAuthUserStore()
-
-  // Utilize pre-defined vue functions
-  const date = useDate()
 
   // States
   const stockInTable = ref([])
@@ -91,11 +87,11 @@ export const useStockInStore = defineStore('stockIn', () => {
 
     if (purchased_at) {
       if (purchased_at.length === 1)
-        query = query.eq('purchased_at', dateShiftFixValue(date, purchased_at[0]).toISOString())
+        query = query.eq('purchased_at', dateShiftFixValue(purchased_at[0]))
       else {
         query = query
-          .gte('purchased_at', dateShiftFixValue(date, purchased_at[0]).toISOString()) // Greater than or equal to `from` date
-          .lte('purchased_at', purchased_at[purchased_at.length - 1].toISOString()) // Less than or equal to `to` date
+          .gte('purchased_at', dateShiftFixValue(purchased_at[0])) // Greater than or equal to `from` date
+          .lte('purchased_at', dateShiftFixValue(purchased_at[purchased_at.length - 1])) // Less than or equal to `to` date
       }
     }
 
@@ -104,15 +100,30 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   // Add StockIn
   async function addStockIn(formData) {
-    return await supabase.from('stock_ins').insert([formData]).select()
+    return await supabase
+      .from('stock_ins')
+      .insert([{ ...formData, last_updated_id: authStore.userData.id }])
+      .select()
   }
 
-  // Update StockIn
-  async function updateStockIn(formData) {
-    // eslint-disable-next-line no-unused-vars
-    const { branches, products, ...data } = dateShiftFixForm(date, formData, ['purchased_at'])
+  // Update StockIn; if you put arg stockId will assume a customized formData
+  async function updateStockIn(formData, stockId = null) {
+    let transformedData = {}
+    if (stockId) transformedData = formData
+    else {
+      // eslint-disable-next-line no-unused-vars
+      const { branches, products, ...data } = dateShiftFixForm(formData, [
+        'purchased_at',
+        'expired_at'
+      ])
+      transformedData = data
+    }
 
-    return await supabase.from('stock_ins').update(data).eq('id', formData.id).select()
+    return await supabase
+      .from('stock_ins')
+      .update({ ...transformedData, last_updated_id: authStore.userData.id })
+      .eq('id', stockId ?? formData.id)
+      .select()
   }
 
   // Delete StockIn
@@ -121,18 +132,22 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Add Stock Portion
-  async function addStockPortion(formData) {
+  async function addStockPortion(formData, stockId) {
     const transformedData = formData.map((value) => {
       // eslint-disable-next-line no-unused-vars
       const { product_id, product_preview, qty, ...stockData } = value
 
       return {
         ...stockData,
-        product_id: product_id.id,
         qty: qty,
-        qty_reweighed: qty
+        qty_reweighed: qty,
+        product_id: product_id.id,
+        last_updated_id: authStore.userData.id
       }
     })
+
+    // Update segregated status
+    await updateStockIn({ is_segregated: true }, stockId)
 
     return await supabase.from('stock_ins').insert(transformedData).select()
   }

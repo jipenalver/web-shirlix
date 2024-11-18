@@ -58,7 +58,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added Branch.'
+    formAction.value.formSuccessMessage = isUpdate.value
+      ? 'Successfully Updated Branch Information.'
+      : 'Successfully Added Branch.'
 
     await branchesStore.getBranchesTable(props.tableOptions, props.tableFilters)
     await branchesStore.getBranches()

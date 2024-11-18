@@ -68,7 +68,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added Expenditure.'
+    formAction.value.formSuccessMessage = isUpdate.value
+      ? 'Successfully Updated Expenditure Information.'
+      : 'Successfully Added Expenditure.'
 
     await expensesStore.getExpensesTable(props.tableOptions, props.tableFilters)
 

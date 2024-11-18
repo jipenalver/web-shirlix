@@ -3,9 +3,13 @@ import StockWeightTable from '@/components/system/inventory/StockWeightTable.vue
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
+import { useDisplay } from 'vuetify'
+
+// Utilize pre-defined vue functions
+const { mobile } = useDisplay()
 
 // Load Variables
-const isDrawerVisible = ref(true)
+const isDrawerVisible = ref(mobile.value ? false : true)
 </script>
 
 <template>
@@ -22,7 +26,7 @@ const isDrawerVisible = ref(true)
         <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['Inventory', 'Weight Tracking of Stocks']">
+              <v-breadcrumbs :items="['Inventory', 'Stock Weight']">
                 <template #prepend>
                   <v-icon icon="mdi-weight-kilogram" size="small" class="me-1"></v-icon>
                 </template>
