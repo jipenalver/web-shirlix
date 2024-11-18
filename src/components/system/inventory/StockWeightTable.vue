@@ -261,11 +261,13 @@ onMounted(async () => {
         <template #item.status="{ item }">
           <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
             {{
-              item.stock_in_id != null
+              item.is_portion
                 ? 'Stock Portion'
-                : item.is_reweighed
-                  ? 'Reweighed'
-                  : 'For Re-Weighing'
+                : item.is_segregated
+                  ? 'Segregated'
+                  : item.is_reweighed
+                    ? 'Reweighed'
+                    : 'For Re-Weighing'
             }}
 
             <v-tooltip activator="parent" location="top" open-on-click>
@@ -288,7 +290,7 @@ onMounted(async () => {
               variant="text"
               density="comfortable"
               @click="onUpdateWeight(item)"
-              :disabled="item.stock_in_id != null"
+              :disabled="item.is_portion || item.is_segregated"
               icon
             >
               <v-icon icon="mdi-weight-kilogram"></v-icon>
@@ -299,7 +301,7 @@ onMounted(async () => {
               variant="text"
               density="comfortable"
               @click="onUpdateSegregate(item)"
-              :disabled="!item.is_reweighed || item.stock_in_id != null"
+              :disabled="!item.is_reweighed || item.is_portion || item.is_segregated"
               icon
             >
               <v-icon icon="mdi-scale"></v-icon>

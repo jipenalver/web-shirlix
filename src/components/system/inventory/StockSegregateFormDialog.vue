@@ -26,7 +26,10 @@ const formDataPortionDefault = {
   product_id: null,
   qty: 0,
   qty_metric: 'kg',
-  is_reweighed: true
+  is_reweighed: true,
+  unit_price: 0,
+  unit_price_metric: 'kg',
+  is_portion: true
 }
 const formDataDefault = {
   qty: 1,
@@ -95,7 +98,10 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { data, error } = await stockInStore.addStockPortion(formData.value.stocks)
+  const { data, error } = await stockInStore.addStockPortion(
+    formData.value.stocks,
+    formData.value.id
+  )
 
   if (error) {
     // Add Error Message and Status Code
@@ -254,7 +260,7 @@ onMounted(async () => {
 
               <v-col cols="12" sm="6" md="4">
                 <v-img
-                  width="55%"
+                  :width="mdAndDown ? '55%' : '90%'"
                   class="mx-auto rounded-circle"
                   color="red-darken-4"
                   aspect-ratio="1"
@@ -298,6 +304,26 @@ onMounted(async () => {
                       label="Metric"
                       :items="formDataMetrics"
                       readonly
+                    ></v-select>
+                  </v-col>
+
+                  <v-col cols="9">
+                    <v-text-field
+                      v-model="value.unit_price"
+                      prefix="Php"
+                      label="Unit Price Per"
+                      type="number"
+                      min="0"
+                      :rules="[requiredValidator]"
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col cols="3">
+                    <v-select
+                      v-model="value.unit_price_metric"
+                      label="Metric"
+                      :items="formDataMetrics"
+                      :rules="[requiredValidator]"
                     ></v-select>
                   </v-col>
                 </v-row>

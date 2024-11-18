@@ -48,7 +48,11 @@ watch(
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData
-      ? { ...props.itemData, purchased_at: new Date(props.itemData.purchased_at) }
+      ? {
+          ...props.itemData,
+          purchased_at: new Date(props.itemData.purchased_at),
+          expired_at: props.itemData.expired_at ? new Date(props.itemData.expired_at) : null
+        }
       : { ...formDataDefault }
     imgPreview.value = isUpdate.value
       ? formData.value.products.image_url
@@ -84,7 +88,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added Stock.'
+    formAction.value.formSuccessMessage = isUpdate.value
+      ? 'Successfully Updated Stock Information.'
+      : 'Successfully Added Stock.'
 
     await stockInStore.getStockInTable(props.tableOptions, props.tableFilters)
 

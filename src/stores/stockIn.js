@@ -107,12 +107,24 @@ export const useStockInStore = defineStore('stockIn', () => {
     return await supabase.from('stock_ins').insert([formData]).select()
   }
 
-  // Update StockIn
-  async function updateStockIn(formData) {
-    // eslint-disable-next-line no-unused-vars
-    const { branches, products, ...data } = dateShiftFixForm(date, formData, ['purchased_at'])
+  // Update StockIn; if you put arg stockId will assume a customized formData
+  async function updateStockIn(formData, stockId = null) {
+    let transformedData = {}
+    if (stockId) transformedData = formData
+    else {
+      // eslint-disable-next-line no-unused-vars
+      const { branches, products, ...data } = dateShiftFixForm(date, formData, [
+        'purchased_at',
+        'expired_at'
+      ])
+      transformedData = data
+    }
 
-    return await supabase.from('stock_ins').update(data).eq('id', formData.id).select()
+    return await supabase
+      .from('stock_ins')
+      .update(transformedData)
+      .eq('id', stockId ?? formData.id)
+      .select()
   }
 
   // Delete StockIn
@@ -121,18 +133,21 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Add Stock Portion
-  async function addStockPortion(formData) {
+  async function addStockPortion(formData, stockId) {
     const transformedData = formData.map((value) => {
       // eslint-disable-next-line no-unused-vars
       const { product_id, product_preview, qty, ...stockData } = value
 
       return {
         ...stockData,
-        product_id: product_id.id,
         qty: qty,
-        qty_reweighed: qty
+        qty_reweighed: qty,
+        product_id: product_id.id
       }
     })
+
+    // Update segregated status
+    await updateStockIn({ is_segregated: true }, stockId)
 
     return await supabase.from('stock_ins').insert(transformedData).select()
   }

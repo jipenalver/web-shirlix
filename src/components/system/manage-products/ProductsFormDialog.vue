@@ -78,7 +78,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added Product.'
+    formAction.value.formSuccessMessage = isUpdate.value
+      ? 'Successfully Updated Product Information.'
+      : 'Successfully Added Product.'
 
     await productsStore.getProductsTable(props.tableOptions, props.tableFilters)
 

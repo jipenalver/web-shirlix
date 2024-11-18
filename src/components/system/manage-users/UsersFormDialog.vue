@@ -71,7 +71,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added User.'
+    formAction.value.formSuccessMessage = isUpdate.value
+      ? 'Successfully Updated User Information.'
+      : 'Successfully Added User.'
 
     await usersStore.getUsersTable(props.tableOptions)
 

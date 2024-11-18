@@ -69,7 +69,9 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Added User Role.'
+    formAction.value.formSuccessMessage = isUpdate.value
+      ? "Successfully Updated User Role's Pages"
+      : 'Successfully Added User Role.'
 
     await userRolesStore.getUserRoles()
 
