@@ -224,12 +224,12 @@ onMounted(async () => {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption" v-if="item.price">
-                <span class="font-weight-bold">Price:</span>
-                {{ getMoneyText(item.price) }}
+              <p class="text-caption" v-if="item.price_stockin">
+                <span class="font-weight-bold">Stock In Price:</span>
+                {{ getMoneyText(item.price_stockin) }}
               </p>
               <p class="text-caption" v-else>
-                <span class="font-weight-bold">Stock ID:</span>
+                <span class="font-weight-bold">Portion of ID:</span>
                 {{ getPadLeftText(item.stock_in_id) }}
               </p>
             </div>

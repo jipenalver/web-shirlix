@@ -31,7 +31,7 @@ export const getMoneyText = (value) => {
 
 // 👉 Precise Number
 export const getPreciseNumber = (value) => {
-  return (Math.round(value) * 100) / 100
+  return Math.round(value * 100) / 100
 }
 
 // 👉 Alpha-numeric Random Code

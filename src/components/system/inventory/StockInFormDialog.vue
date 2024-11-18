@@ -24,7 +24,7 @@ const stockInStore = useStockInStore()
 const formDataDefault = {
   supplier: '',
   remarks: '',
-  price: 0,
+  price_stockin: 0,
   qty: 1,
   qty_metric: 'kg',
   purchased_at: new Date(),
@@ -200,9 +200,9 @@ onMounted(async () => {
 
             <v-col cols="12" sm="6">
               <v-text-field
-                v-model="formData.price"
+                v-model="formData.price_stockin"
                 prefix="Php"
-                label="Price"
+                label="Stock In Price"
                 type="number"
                 min="0"
                 :rules="[requiredValidator]"
