@@ -305,11 +305,15 @@ onMounted(async () => {
             }}
 
             <v-tooltip activator="parent" location="top" open-on-click>
-              <span class="font-weight-bold">Added Date:</span>
-              {{ date.format(item.created_at, 'fullDateTime') }} <br />
-              <span class="font-weight-bold">Branch:</span> {{ item.branches.name }} <br />
-              <span class="font-weight-bold">Supplier:</span> {{ item.supplier }} <br />
-              <span class="font-weight-bold">Remarks:</span> {{ item.remarks }} <br />
+              <ul class="ms-2">
+                <li>
+                  <span class="font-weight-bold">Added Date:</span>
+                  {{ date.format(item.created_at, 'fullDateTime') }}
+                </li>
+                <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
+                <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
+                <li><span class="font-weight-bold">Remarks:</span> {{ item.remarks }}</li>
+              </ul>
             </v-tooltip>
           </v-chip>
         </template>

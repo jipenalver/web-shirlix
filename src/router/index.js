@@ -33,9 +33,7 @@ router.beforeEach(async (to) => {
   // Check if the user is logged in
   if (isLoggedIn) {
     // Load user data if not already done
-    if (!authStore.userData) {
-      await authStore.getUserInformation()
-    }
+    if (!authStore.userData) await authStore.getUserInformation()
 
     // Get the user role
     const isSuperAdmin = authStore.userRole === 'Super Administrator'
