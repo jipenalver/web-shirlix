@@ -16,7 +16,7 @@ export const useAuthUserStore = defineStore('authUser', () => {
   // Reset State Action
   function $reset() {
     userData.value = null
-    authPages.value = null
+    authPages.value = []
   }
 
   // Actions
