@@ -52,11 +52,15 @@ export const useBranchesStore = defineStore('branches', () => {
   async function getBranches() {
     const { data } = await supabase.from('branches').select().order('name', { ascending: true })
 
-    // Filter branches for selection based on auth user
-    const authBranches = authStore.userData.branch.split(',')
+    // If Super Admin, display all branches
+    if (authStore.userRole === 'Super Administrator') branches.value = data.map((b) => b.name)
+    else {
+      // Filter branches for selection based on auth user
+      const authBranches = authStore.userData.branch.split(',')
 
-    // Set the retrieved data to state
-    branches.value = data.filter((b) => authBranches.includes(b.name))
+      // Set the retrieved data to state
+      branches.value = data.filter((b) => authBranches.includes(b.name))
+    }
   }
 
   // Add Branches
