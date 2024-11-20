@@ -208,7 +208,7 @@ onMounted(async () => {
                 v-model="tableFilters.search"
                 density="compact"
                 prepend-inner-icon="mdi-magnify"
-                placeholder="Search"
+                placeholder="Search by ID, Supplier or Remarks"
                 clearable
                 @click:clear="onSearchItems"
                 @input="onSearchItems"
