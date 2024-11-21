@@ -1,24 +1,25 @@
 <script setup>
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
-import { watch } from 'vue'
+import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
-
-const props = defineProps(['listData'])
 
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
 
-// Load Variables
-const formDataDefault = {
-  qty: '',
-  discount: ''
+// Use Pinia Store
+const salesStore = useSalesStore()
+
+// Set Discounted Price
+const onDiscountPrice = (item) => {
+  if (item.is_cash_discount) item.discounted_price = item.total_price - Number(item.discount)
+  else item.discounted_price = item.total_price - item.total_price * (Number(item.discount) / 100)
 }
 
-// Monitor itemData if it has data
-watch(
-  () => props.listData,
-  () => {}
-)
+// Toggle Discount either Percentage or Cash
+const onDiscountToggle = (item) => {
+  item.is_cash_discount = !item.is_cash_discount
+  onDiscountPrice(item)
+}
 </script>
 
 <template>
@@ -33,7 +34,7 @@ watch(
 
     <v-divider class="my-3"></v-divider>
 
-    <v-list lines="one" v-for="(item, index) in props.listData" :key="index">
+    <v-list lines="one" v-for="(item, index) in salesStore.stocksCart" :key="index">
       <v-list-group :value="item.product.products.name" color="error" fluid>
         <template #activator="{ props }">
           <v-list-item
@@ -51,14 +52,16 @@ watch(
             <template #append>
               <div class="me-1">
                 <span class="text-body-2 font-weight-bold">
-                  {{ getMoneyText(getPreciseNumber(item.qty * item.product.unit_price)) }}
+                  {{ getMoneyText(getPreciseNumber(item.discounted_price)) }}
                 </span>
-                <div>
-                  <span class="text-caption">Discount</span>
+                <div v-if="item.discount > 0">
+                  <span class="text-caption text-decoration-line-through">
+                    {{ getMoneyText(getPreciseNumber(item.total_price)) }}
+                  </span>
                 </div>
               </div>
 
-              <v-btn variant="text" density="compact" icon>
+              <v-btn variant="text" density="compact" @click="console.log('delete')" icon>
                 <v-icon icon="mdi-delete"></v-icon>
               </v-btn>
             </template>
@@ -69,6 +72,7 @@ watch(
           <v-row dense>
             <v-col cols="6">
               <v-text-field
+                v-model="item.qty"
                 class="mt-2"
                 variant="outlined"
                 density="compact"
@@ -81,13 +85,17 @@ watch(
 
             <v-col cols="6">
               <v-text-field
+                v-model="item.discount"
                 class="mt-2"
                 variant="outlined"
                 density="compact"
-                label="Discount"
-                suffix="%"
+                :label="item.is_cash_discount ? 'Cash Discount' : 'Discount (%)'"
+                :prepend-inner-icon="item.is_cash_discount ? 'mdi-currency-php' : undefined"
                 type="number"
                 min="0"
+                :append-icon="item.is_cash_discount ? 'mdi-cash' : 'mdi-sale'"
+                @click:append="onDiscountToggle(item)"
+                @update:model-value="onDiscountPrice(item)"
               ></v-text-field>
             </v-col>
           </v-row>

@@ -5,8 +5,6 @@ import { getMoneyText } from '@/utils/helpers'
 import { tableSearch } from '@/utils/supabase'
 import { onMounted, ref } from 'vue'
 
-const emit = defineEmits(['quantity'])
-
 // Use Pinia Store
 const salesStore = useSalesStore()
 
@@ -26,7 +24,14 @@ const onAddQty = (item) => {
 
 // Emit Qty
 const onSoldQty = (qty) => {
-  emit('quantity', { product: itemData.value, qty })
+  salesStore.stocksCart.push({
+    product: itemData.value,
+    qty,
+    discount: 0,
+    is_cash_discount: false,
+    total_price: qty * itemData.value.unit_price,
+    discounted_price: qty * itemData.value.unit_price
+  })
 }
 
 // Retrieve Data based on Search

@@ -11,12 +11,6 @@ const { mobile } = useDisplay()
 
 // Load Variables
 const isDrawerVisible = ref(mobile.value ? false : true)
-const listData = ref([])
-
-// Product Data and Qty
-const onSoldQty = (itemData) => {
-  listData.value.push(itemData)
-}
 </script>
 
 <template>
@@ -31,12 +25,12 @@ const onSoldQty = (itemData) => {
     <template #content>
       <v-container fluid>
         <v-row>
-          <v-col cols="12" sm="8" class="bg-surface-light">
-            <StocksList @quantity="onSoldQty"></StocksList>
+          <v-col cols="12" md="8" class="bg-surface-light">
+            <StocksList></StocksList>
           </v-col>
 
-          <v-col cols="12" sm="4" class="position-relative h-screen">
-            <StocksSoldList :list-data="listData"></StocksSoldList>
+          <v-col cols="12" md="4" class="position-relative h-screen">
+            <StocksSoldList></StocksSoldList>
           </v-col>
         </v-row>
       </v-container>

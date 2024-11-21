@@ -9,6 +9,13 @@ export const useSalesStore = defineStore('sales', () => {
 
   // States
   const stocks = ref([])
+  const stocksCart = ref([])
+
+  // Reset State Action
+  function $reset() {
+    stocks.value = []
+    stocksCart.value = []
+  }
 
   // Retrieve Stocks Table
   async function getStocks() {
@@ -42,5 +49,5 @@ export const useSalesStore = defineStore('sales', () => {
     return query
   }
 
-  return { stocks, getStocks }
+  return { stocks, stocksCart, $reset, getStocks }
 })
