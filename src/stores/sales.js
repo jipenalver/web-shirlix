@@ -9,12 +9,18 @@ export const useSalesStore = defineStore('sales', () => {
 
   // States
   const stocks = ref([])
-  const stocksCart = ref([])
+  const stocksCart = ref(
+    localStorage.getItem('stocksCart') ? JSON.parse(localStorage.getItem('stocksCart')) : []
+  )
 
   // Reset State Action
   function $reset() {
     stocks.value = []
+  }
+
+  function $resetCart() {
     stocksCart.value = []
+    localStorage.removeItem('stocksCart')
   }
 
   // Retrieve Stocks Table
@@ -49,5 +55,5 @@ export const useSalesStore = defineStore('sales', () => {
     return query
   }
 
-  return { stocks, stocksCart, $reset, getStocks }
+  return { stocks, stocksCart, $reset, $resetCart, getStocks }
 })

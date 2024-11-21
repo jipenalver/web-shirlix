@@ -30,11 +30,11 @@ const isDrawerVisible = ref(mobile.value ? false : true)
         </div>
 
         <v-row v-else>
-          <v-col cols="12" sm="7" md="8" class="bg-surface-light">
+          <v-col cols="12" sm="6" md="8" class="bg-surface-light">
             <StocksList></StocksList>
           </v-col>
 
-          <v-col cols="12" sm="5" md="4" class="position-relative h-screen">
+          <v-col cols="12" sm="6" md="4" class="position-relative h-screen">
             <StocksSoldList></StocksSoldList>
           </v-col>
         </v-row>

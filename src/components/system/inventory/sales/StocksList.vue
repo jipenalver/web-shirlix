@@ -26,12 +26,13 @@ const onAddQty = (item) => {
 const onCartQty = (qty) => {
   salesStore.stocksCart.push({
     product: itemData.value,
-    qty,
+    qty: Number(qty),
     discount: 0,
     is_cash_discount: false,
-    total_price: qty * itemData.value.unit_price,
-    discounted_price: qty * itemData.value.unit_price
+    total_price: Number(qty) * itemData.value.unit_price,
+    discounted_price: Number(qty) * itemData.value.unit_price
   })
+  localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
 }
 
 // Retrieve Data based on Search
@@ -77,7 +78,7 @@ onMounted(() => {
       </v-card>
     </v-col>
 
-    <v-col cols="12" sm="4" md="3" v-for="(item, index) in listData" :key="index">
+    <v-col cols="12" sm="6" md="3" v-for="(item, index) in listData" :key="index">
       <v-card @click="onAddQty(item)">
         <v-img
           height="150"

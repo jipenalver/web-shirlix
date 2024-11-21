@@ -12,6 +12,7 @@ const { mdAndDown } = useDisplay()
 const salesStore = useSalesStore()
 
 // Load Variables
+const deleteIndex = ref(null)
 const isConfirmDeleteDialog = ref(false)
 
 // Set Discounted Price
@@ -27,12 +28,16 @@ const onDiscountToggle = (item) => {
 }
 
 // Trigger Delete Btn
-const onDelete = () => {
+const onDelete = (index) => {
+  deleteIndex.value = index
   isConfirmDeleteDialog.value = true
 }
 
 // Confirm Delete
-const onConfirmDelete = () => {}
+const onConfirmDelete = () => {
+  salesStore.stocksCart = salesStore.stocksCart.filter((item, index) => index !== deleteIndex.value)
+  localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
+}
 </script>
 
 <template>
@@ -54,13 +59,7 @@ const onConfirmDelete = () => {}
             v-bind="props"
             :prepend-avatar="mdAndDown ? undefined : item.product.products.image_url"
             :title="item.product.products.name"
-            :subtitle="
-              item.qty +
-              ' x ' +
-              getMoneyText(item.product.unit_price) +
-              ' per ' +
-              item.product.unit_price_metric
-            "
+            :subtitle="`${item.qty} x ${getMoneyText(item.product.unit_price)} per ${item.product.unit_price_metric}`"
           >
             <template #append>
               <div class="me-1">
@@ -74,7 +73,7 @@ const onConfirmDelete = () => {}
                 </div>
               </div>
 
-              <v-btn variant="text" density="compact" @click="onDelete" icon>
+              <v-btn variant="text" density="compact" @click="onDelete(index)" icon>
                 <v-icon icon="mdi-delete"></v-icon>
               </v-btn>
             </template>
@@ -83,20 +82,7 @@ const onConfirmDelete = () => {}
 
         <v-list-item>
           <v-row dense>
-            <v-col cols="6">
-              <v-text-field
-                v-model="item.qty"
-                class="mt-2"
-                variant="outlined"
-                density="compact"
-                label="Weight / Qty"
-                :suffix="item.product.unit_price_metric"
-                type="number"
-                min="1"
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="6">
+            <v-col cols="12">
               <v-text-field
                 v-model="item.discount"
                 class="mt-2"
