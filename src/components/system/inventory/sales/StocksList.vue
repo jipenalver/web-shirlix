@@ -22,8 +22,8 @@ const onAddQty = (item) => {
   isFormDialogVisible.value = true
 }
 
-// Emit Qty
-const onSoldQty = (qty) => {
+// Set Stock Cart Qty
+const onCartQty = (qty) => {
   salesStore.stocksCart.push({
     product: itemData.value,
     qty,
@@ -103,6 +103,6 @@ onMounted(() => {
   <StockQtyFormDialog
     v-model:is-dialog-visible="isFormDialogVisible"
     :item-data="itemData"
-    @quantity="onSoldQty"
+    @quantity="onCartQty"
   ></StockQtyFormDialog>
 </template>

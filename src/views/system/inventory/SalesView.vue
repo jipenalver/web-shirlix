@@ -1,4 +1,5 @@
 <script setup>
+import NotAcceptableUI from '@/components/errors/NotAcceptableUI.vue'
 import StocksSoldList from '@/components/system/inventory/sales/StocksSoldList.vue'
 import StocksList from '@/components/system/inventory/sales/StocksList.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -7,7 +8,7 @@ import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
-const { mobile } = useDisplay()
+const { xs, mobile } = useDisplay()
 
 // Load Variables
 const isDrawerVisible = ref(mobile.value ? false : true)
@@ -24,12 +25,16 @@ const isDrawerVisible = ref(mobile.value ? false : true)
 
     <template #content>
       <v-container fluid>
-        <v-row>
-          <v-col cols="12" md="8" class="bg-surface-light">
+        <div class="mt-16" v-if="xs">
+          <NotAcceptableUI :is-show-back-btn="true"></NotAcceptableUI>
+        </div>
+
+        <v-row v-else>
+          <v-col cols="12" sm="7" md="8" class="bg-surface-light">
             <StocksList></StocksList>
           </v-col>
 
-          <v-col cols="12" md="4" class="position-relative h-screen">
+          <v-col cols="12" sm="5" md="4" class="position-relative h-screen">
             <StocksSoldList></StocksSoldList>
           </v-col>
         </v-row>

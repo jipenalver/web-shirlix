@@ -1,11 +1,16 @@
 <script setup>
+import NotAcceptableUI from '@/components/errors/NotAcceptableUI.vue'
 import { useBranchesStore } from '@/stores/branches'
 import { ref, onMounted, watch } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['theme'])
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
+
+// Utilize pre-defined vue functions
+const { xs } = useDisplay()
 
 // Load Variables
 const chartFilters = ref({
@@ -113,7 +118,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card title="Product Inventory Level" subtitle="Quantity per product">
+  <v-card v-if="xs" title="Product Inventory Level" subtitle="Quantity per product">
+    <v-card-text class="mb-8">
+      <NotAcceptableUI :is-show-back-btn="false"></NotAcceptableUI>
+    </v-card-text>
+  </v-card>
+
+  <v-card v-else title="Product Inventory Level" subtitle="Quantity per product">
     <template #append>
       <v-autocomplete
         width="200px"

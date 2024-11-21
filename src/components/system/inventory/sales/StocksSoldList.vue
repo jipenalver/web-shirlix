@@ -1,13 +1,18 @@
 <script setup>
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const salesStore = useSalesStore()
+
+// Load Variables
+const isConfirmDeleteDialog = ref(false)
 
 // Set Discounted Price
 const onDiscountPrice = (item) => {
@@ -20,6 +25,14 @@ const onDiscountToggle = (item) => {
   item.is_cash_discount = !item.is_cash_discount
   onDiscountPrice(item)
 }
+
+// Trigger Delete Btn
+const onDelete = () => {
+  isConfirmDeleteDialog.value = true
+}
+
+// Confirm Delete
+const onConfirmDelete = () => {}
 </script>
 
 <template>
@@ -61,7 +74,7 @@ const onDiscountToggle = (item) => {
                 </div>
               </div>
 
-              <v-btn variant="text" density="compact" @click="console.log('delete')" icon>
+              <v-btn variant="text" density="compact" @click="onDelete" icon>
                 <v-icon icon="mdi-delete"></v-icon>
               </v-btn>
             </template>
@@ -127,4 +140,11 @@ const onDiscountToggle = (item) => {
       <div style="height: 10rem"></div>
     </v-row>
   </section>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmDeleteDialog"
+    title="Confirm Delete"
+    text="Are you sure you want to remove from cart?"
+    @confirm="onConfirmDelete"
+  ></ConfirmDialog>
 </template>
