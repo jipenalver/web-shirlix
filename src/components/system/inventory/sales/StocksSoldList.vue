@@ -43,10 +43,8 @@ const onConfirmDelete = () => {
 <template>
   <section>
     <v-row dense>
-      <v-col cols="12" class="d-flex justify-end">
-        <v-btn variant="text" density="compact" icon>
-          <v-icon icon="mdi-refresh"></v-icon>
-        </v-btn>
+      <v-col cols="12">
+        <v-btn variant="elevated" prepend-icon="mdi-account-tie" block> Add Customer </v-btn>
       </v-col>
     </v-row>
 
@@ -103,10 +101,8 @@ const onConfirmDelete = () => {
     </v-list>
 
     <v-row class="position-absolute bottom-0 left-0 right-0 pa-4" dense>
-      <v-col cols="12" class="bg-primary w-100">
-        <v-btn variant="text"> Add </v-btn>
-
-        <v-btn variant="text"> Discount </v-btn>
+      <v-col cols="12">
+        <v-btn variant="elevated" prepend-icon="mdi-sale" block> Add Discount </v-btn>
       </v-col>
 
       <v-col cols="12">
@@ -117,10 +113,12 @@ const onConfirmDelete = () => {
         <h3>Payable Amount</h3>
       </v-col>
 
-      <v-divider class="my-3"></v-divider>
+      <v-divider class="mb-3"></v-divider>
 
       <v-col cols="12">
-        <v-btn block>Proceed</v-btn>
+        <v-btn variant="elevated" prepend-icon="mdi-location-enter" color="red-darken-4" block>
+          Proceed
+        </v-btn>
       </v-col>
 
       <div style="height: 10rem"></div>

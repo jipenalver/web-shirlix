@@ -13,11 +13,12 @@ export const useSalesStore = defineStore('sales', () => {
     localStorage.getItem('stocksCart') ? JSON.parse(localStorage.getItem('stocksCart')) : []
   )
 
-  // Reset State Action
+  // Reset State Stocks
   function $reset() {
     stocks.value = []
   }
 
+  // Reset State Cart
   function $resetCart() {
     stocksCart.value = []
     localStorage.removeItem('stocksCart')
