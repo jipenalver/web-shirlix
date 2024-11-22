@@ -63,10 +63,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     if (search) {
       if (search.length >= 4 && !isNaN(search))
         query = query.or('id.eq.' + search + ', stock_in_id.eq.' + search)
-      else
-        query = query.or('name.ilike.%' + search + '%, description.ilike.%' + search + '%', {
-          referencedTable: 'products'
-        })
+      else query = query.or('supplier.ilike.%' + search + '%, remarks.ilike.%' + search + '%')
     }
 
     if (product_id) query = query.eq('product_id', product_id)

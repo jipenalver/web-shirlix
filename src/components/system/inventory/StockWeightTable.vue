@@ -176,7 +176,7 @@ onMounted(async () => {
                 v-model="tableFilters.search"
                 density="compact"
                 prepend-inner-icon="mdi-magnify"
-                placeholder="Search"
+                placeholder="Search by ID, Supplier or Remarks"
                 clearable
                 @click:clear="onSearchItems"
                 @input="onSearchItems"
@@ -274,15 +274,23 @@ onMounted(async () => {
             }}
 
             <v-tooltip activator="parent" location="top" open-on-click>
-              <span class="font-weight-bold">Added Date:</span>
-              {{ date.format(item.created_at, 'fullDateTime') }} <br />
-              <span class="font-weight-bold">Purchased Date:</span>
-              {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }} <br />
-              <span class="font-weight-bold">Expiration Date:</span>
-              {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }} <br />
-              <span class="font-weight-bold">Branch:</span> {{ item.branches.name }} <br />
-              <span class="font-weight-bold">Supplier:</span> {{ item.supplier }} <br />
-              <span class="font-weight-bold">Remarks:</span> {{ item.remarks }} <br />
+              <ul class="ms-2">
+                <li>
+                  <span class="font-weight-bold">Added Date:</span>
+                  {{ date.format(item.created_at, 'fullDateTime') }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Purchased Date:</span>
+                  {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Expiration Date:</span>
+                  {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
+                </li>
+                <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
+                <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
+                <li><span class="font-weight-bold">Remarks:</span> {{ item.remarks }}</li>
+              </ul>
             </v-tooltip>
           </v-chip>
         </template>

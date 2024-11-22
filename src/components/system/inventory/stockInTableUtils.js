@@ -8,6 +8,7 @@ export const tableHeaders = [
   {
     title: 'Product',
     key: 'products',
+    sortable: false,
     align: 'start'
   },
 
@@ -31,6 +32,7 @@ export const tableHeaders = [
   {
     title: 'Status',
     key: 'status',
+    sortable: false,
     align: 'center'
   },
   {
