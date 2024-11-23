@@ -105,15 +105,13 @@ const onConfirmDelete = () => {
         <v-btn variant="elevated" prepend-icon="mdi-sale" block> Add Discount </v-btn>
       </v-col>
 
+      <v-divider class="my-3"></v-divider>
+
       <v-col cols="12">
-        <ul class="ms-5">
-          <li>Subtotal</li>
-          <li>Tax</li>
-        </ul>
         <h3>Payable Amount</h3>
       </v-col>
 
-      <v-divider class="mb-3"></v-divider>
+      <v-divider class="my-3"></v-divider>
 
       <v-col cols="12">
         <v-btn variant="elevated" prepend-icon="mdi-location-enter" color="red-darken-4" block>
@@ -121,7 +119,7 @@ const onConfirmDelete = () => {
         </v-btn>
       </v-col>
 
-      <div style="height: 10rem"></div>
+      <div class="abs-padding"></div>
     </v-row>
   </section>
 
@@ -132,3 +130,9 @@ const onConfirmDelete = () => {
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 </template>
+
+<style scoped>
+.abs-padding {
+  height: 10rem;
+}
+</style>
