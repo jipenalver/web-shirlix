@@ -13,6 +13,7 @@ import ProductsView from '@/views/system/manage-products/ProductsView.vue'
 import StockInView from '@/views/system/inventory/StockInView.vue'
 import StockWeightView from '@/views/system/inventory/StockWeightView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
+import ItemsView from '@/views/system/manage-products/ItemsView.vue'
 
 // 👉 Routes
 export const routes = [
@@ -73,6 +74,12 @@ export const routes = [
     path: '/products',
     name: 'products',
     component: ProductsView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/items',
+    name: 'items',
+    component: ItemsView,
     meta: { requiresAuth: true }
   },
 
