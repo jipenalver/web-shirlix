@@ -2,10 +2,17 @@
 import { onMounted } from 'vue'
 import { useItemsStore } from '@/stores/items'
 
+// Use Pinia Store
 const itemsStore = useItemsStore()
 
+// Trigger retrieve from api and reset db
+const onRetrieveFromApi = async () => {
+  await itemsStore.getItemsFromApi()
+}
+
+// Load Functions during component rendering
 onMounted(async () => {
-  if (itemsStore.items.length == 0) await itemsStore.getItemsFromApi()
+  if (itemsStore.items.length == 0) await itemsStore.getItems()
 })
 </script>
 
@@ -26,7 +33,7 @@ onMounted(async () => {
     </v-col>
 
     <v-col cols="12" sm="1">
-      <v-btn variant="elevated" density="comfortable" icon>
+      <v-btn variant="elevated" density="comfortable" @click="onRetrieveFromApi" icon>
         <v-icon icon="mdi-refresh"></v-icon>
       </v-btn>
     </v-col>
