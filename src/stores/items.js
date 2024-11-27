@@ -91,6 +91,11 @@ export const useItemsStore = defineStore('items', () => {
     return await supabase.from('items').update(formData).eq('id', formData.id).select()
   }
 
+  // Delete Item
+  async function deleteItem(id) {
+    return await supabase.from('items').delete().eq('id', id)
+  }
+
   // Update Item Image
   async function updateItemImage(file, filename) {
     // Upload the file with the file name and file extension
@@ -109,5 +114,5 @@ export const useItemsStore = defineStore('items', () => {
     }
   }
 
-  return { itemsFromApi, items, $reset, getItemsFromApi, getItems, addItem, updateItem }
+  return { itemsFromApi, items, $reset, getItemsFromApi, getItems, addItem, updateItem, deleteItem }
 })

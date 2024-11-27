@@ -26,6 +26,12 @@ const onUpdate = (item) => {
   isDialogVisible.value = true
 }
 
+// Delete Item; You can modify this, check other Components like ProductsTable, so that you could have confirm dialog
+const onDelete = async (id) => {
+  await itemsStore.deleteItem(id)
+  await itemsStore.getItems(tableFilters.value)
+}
+
 // Retrieve Data based on Search
 const onSearchItems = async () => {
   if (
