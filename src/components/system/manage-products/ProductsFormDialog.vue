@@ -42,6 +42,7 @@ watch(
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
   }
 )
 
@@ -56,7 +57,7 @@ const onPreview = async (event) => {
 
 // Function to reset preview if file-input clear is clicked
 const onPreviewReset = () => {
-  imgPreview.value = '/images/img-product.png'
+  imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
 }
 
 // Submit Functionality

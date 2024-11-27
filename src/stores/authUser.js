@@ -110,7 +110,7 @@ export const useAuthUserStore = defineStore('authUser', () => {
       const { data: imageData } = supabase.storage.from('shirlix').getPublicUrl(data.path)
 
       // Update the user information with the new image_url
-      return await this.updateUserInformation({ ...userData.value, image_url: imageData.publicUrl })
+      return await updateUserInformation({ ...userData.value, image_url: imageData.publicUrl })
     }
   }
 
