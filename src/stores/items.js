@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import { supabase, tableSearch } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
 import axios from 'axios'
@@ -46,15 +46,24 @@ export const useItemsStore = defineStore('items', () => {
     const { data } = await supabase.from('items').insert(transformedData).select()
 
     // Trigger get Items actions
-    if (data) await getItems()
+    if (data) await getItems({ search: '' })
   }
 
   // Retrieve from Supabase
-  async function getItems() {
-    const { data } = await supabase.from('items').select('*')
+  async function getItems({ search }) {
+    search = tableSearch(search)
+
+    const { data } = await supabase
+      .from('items')
+      .select('*')
+      .ilike('name', '%' + search + '%')
 
     items.value = data
   }
 
-  return { itemsFromApi, items, $reset, getItemsFromApi, getItems }
+  async function addItem(formData) {
+    return await supabase.from('items').insert([formData]).select()
+  }
+
+  return { itemsFromApi, items, $reset, getItemsFromApi, getItems, addItem }
 })
