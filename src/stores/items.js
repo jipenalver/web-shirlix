@@ -1,4 +1,5 @@
 import { supabase, tableSearch } from '@/utils/supabase'
+import { getSlugText } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
 import axios from 'axios'
@@ -53,17 +54,60 @@ export const useItemsStore = defineStore('items', () => {
   async function getItems({ search }) {
     search = tableSearch(search)
 
+    // Display all items, applied sorting and search filter
     const { data } = await supabase
       .from('items')
       .select('*')
+      .order('name', { ascending: true })
       .ilike('name', '%' + search + '%')
 
+    // Set response data to state
     items.value = data
   }
 
+  // Add Item
   async function addItem(formData) {
+    // Check if there is image uploaded in form
+    if (formData.image) {
+      // Upload image in supabase and get url
+      formData.image_url = await updateItemImage(formData.image, formData.name)
+      delete formData.image
+    }
+
+    // Insert form data in table
     return await supabase.from('items').insert([formData]).select()
   }
 
-  return { itemsFromApi, items, $reset, getItemsFromApi, getItems, addItem }
+  // Update Item
+  async function updateItem(formData) {
+    // Check if there is image uploaded in form
+    if (formData.image) {
+      // Upload image in supabase and get url
+      formData.image_url = await updateItemImage(formData.image, formData.name)
+      delete formData.image
+    }
+
+    // Update form data in table
+    return await supabase.from('items').update(formData).eq('id', formData.id).select()
+  }
+
+  // Update Item Image
+  async function updateItemImage(file, filename) {
+    // Upload the file with the file name and file extension
+    const { data } = await supabase.storage
+      .from('sample')
+      .upload('items/' + getSlugText(filename) + '.png', file, {
+        cacheControl: '3600',
+        upsert: true
+      })
+
+    // If no error set data to userData state with the image_url
+    if (data) {
+      // Retrieve Image Public Url
+      const { data: imageData } = supabase.storage.from('sample').getPublicUrl(data.path)
+      return imageData.publicUrl
+    }
+  }
+
+  return { itemsFromApi, items, $reset, getItemsFromApi, getItems, addItem, updateItem }
 })

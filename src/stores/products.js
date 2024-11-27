@@ -59,7 +59,7 @@ export const useProductsStore = defineStore('products', () => {
   // Add Products
   async function addProduct(formData) {
     if (formData.image) {
-      formData.image_url = await this.updateProductImage(formData.image, formData.name)
+      formData.image_url = await updateProductImage(formData.image, formData.name)
       delete formData.image
     }
 
@@ -69,7 +69,7 @@ export const useProductsStore = defineStore('products', () => {
   // Update Products
   async function updateProduct(formData) {
     if (formData.image) {
-      formData.image_url = await this.updateProductImage(formData.image, formData.name)
+      formData.image_url = await updateProductImage(formData.image, formData.name)
       delete formData.image
     }
 

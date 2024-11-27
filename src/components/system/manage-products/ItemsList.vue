@@ -1,8 +1,8 @@
 <script setup>
 import ItemsFormDialog from './ItemsFormDialog.vue'
-import { onMounted, ref } from 'vue'
 import { useItemsStore } from '@/stores/items'
 import { getMoneyText } from '@/utils/helpers'
+import { onMounted, ref } from 'vue'
 
 // Use Pinia Store
 const itemsStore = useItemsStore()
@@ -16,7 +16,24 @@ const isDialogVisible = ref(false)
 
 // Add Item
 const onAdd = () => {
+  itemData.value = null
   isDialogVisible.value = true
+}
+
+// Update Item
+const onUpdate = (item) => {
+  itemData.value = item
+  isDialogVisible.value = true
+}
+
+// Retrieve Data based on Search
+const onSearchItems = async () => {
+  if (
+    tableFilters.value.search?.length >= 3 ||
+    tableFilters.value.search?.length == 0 ||
+    tableFilters.value.search === null
+  )
+    await itemsStore.getItems(tableFilters.value)
 }
 
 // Trigger retrieve from api and reset db
@@ -26,7 +43,7 @@ const onRetrieveFromApi = async () => {
 
 // Load Functions during component rendering
 onMounted(async () => {
-  if (itemsStore.items.length == 0) await itemsStore.getItems(tableFilters)
+  if (itemsStore.items.length == 0) await itemsStore.getItems(tableFilters.value)
 })
 </script>
 
@@ -40,6 +57,8 @@ onMounted(async () => {
         density="compact"
         append-inner-icon="mdi-magnify"
         clearable
+        @click:clear="onSearchItems"
+        @input="onSearchItems"
       ></v-text-field>
     </v-col>
 
@@ -56,7 +75,9 @@ onMounted(async () => {
     <v-divider class="mb-3"></v-divider>
 
     <v-col cols="12" sm="4" v-for="item in itemsStore.items" :key="item.id">
-      <v-card :title="item.name" height="200">
+      <v-card :title="item.name" height="250">
+        <v-img v-if="item.image_url" :src="item.image_url" height="50" cover></v-img>
+
         <v-card-text>
           <p class="mb-2">{{ item.description }}</p>
 
@@ -64,11 +85,11 @@ onMounted(async () => {
         </v-card-text>
 
         <v-card-actions>
-          <v-btn variant="elevated" density="comfortable" icon>
+          <v-btn variant="elevated" density="comfortable" @click="onUpdate(item)" icon>
             <v-icon icon="mdi-pencil"></v-icon>
           </v-btn>
 
-          <v-btn variant="elevated" density="comfortable" icon>
+          <v-btn variant="elevated" density="comfortable" @click="onDelete(item.id)" icon>
             <v-icon color="error" icon="mdi-trash-can"></v-icon>
           </v-btn>
         </v-card-actions>

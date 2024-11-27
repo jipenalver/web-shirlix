@@ -3,9 +3,10 @@ import { useAuthUserStore } from '@/stores/authUser'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator, imageValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
-import { ref } from 'vue'
-import { useDisplay } from 'vuetify'
+import { fileExtract } from '@/utils/helpers'
 import { useItemsStore } from '@/stores/items'
+import { useDisplay } from 'vuetify'
+import { ref, watch } from 'vue'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableFilters'])
 
@@ -23,6 +24,7 @@ const formDataDefault = {
   name: '',
   price: 0,
   description: '',
+  image: null,
   user_id: authStore.userData.id
 }
 const formData = ref({
@@ -35,12 +37,38 @@ const refVForm = ref()
 const isUpdate = ref(false)
 const imgPreview = ref('/images/img-product.png')
 
+// Monitor itemData if it has data
+watch(
+  () => props.itemData,
+  () => {
+    isUpdate.value = props.itemData ? true : false
+    formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }
+    imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
+  }
+)
+
+// Function to handle file change and show image preview
+const onPreview = async (event) => {
+  const { fileObject, fileUrl } = await fileExtract(event)
+  // Update formData
+  formData.value.image = fileObject
+  // Update imgPreview state
+  imgPreview.value = fileUrl
+}
+
+// Function to reset preview if file-input clear is clicked
+const onPreviewReset = () => {
+  imgPreview.value = formData.value.image_url ?? '/images/img-product.png'
+}
+
 const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
   // Check if isUpdate is true, then do update, if false do add
-  const { data, error } = await itemsStore.addItem(formData.value)
+  const { data, error } = isUpdate.value
+    ? await itemsStore.updateItem(formData.value)
+    : await itemsStore.addItem(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -139,12 +167,14 @@ const onFormReset = () => {
               <v-file-input
                 class="mt-5"
                 :rules="[imageValidator]"
-                accept="image/png, image/jpeg, image/bmp"
+                accept="image/png, image/jpeg"
                 label="Browse Item Picture"
                 placeholder="Browse Item Picture"
                 prepend-icon="mdi-camera"
                 show-size
                 chips
+                @change="onPreview"
+                @click:clear="onPreviewReset"
               ></v-file-input>
             </v-col>
           </v-row>
