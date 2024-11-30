@@ -76,6 +76,7 @@ const onConfirmDelete = async () => {
 
   // Retrieve Data
   onLoadItems(tableOptions.value, tableFilters.value)
+  await productsStore.getProducts()
 }
 
 // Retrieve Data based on Search
