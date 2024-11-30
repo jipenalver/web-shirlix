@@ -75,6 +75,7 @@ const onConfirmDelete = async () => {
 
   // Retrieve Data
   onLoadItems(tableOptions.value, tableFilters.value)
+  await branchesStore.getBranches()
 }
 
 // Retrieve Data based on Search
