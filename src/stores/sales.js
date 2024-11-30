@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useSalesStore = defineStore('sales', () => {
   // Use Pinia Store
@@ -12,6 +12,11 @@ export const useSalesStore = defineStore('sales', () => {
   const stocksCart = ref(
     localStorage.getItem('stocksCart') ? JSON.parse(localStorage.getItem('stocksCart')) : []
   )
+
+  // Getters
+  const getStocksCartTotal = computed(() => {
+    return stocksCart.value.reduce((acc, item) => acc + item.discounted_price, 0)
+  })
 
   // Reset State Stocks
   function $reset() {
@@ -56,5 +61,5 @@ export const useSalesStore = defineStore('sales', () => {
     return query
   }
 
-  return { stocks, stocksCart, $reset, $resetCart, getStocks }
+  return { stocks, stocksCart, getStocksCartTotal, $reset, $resetCart, getStocks }
 })

@@ -1,5 +1,6 @@
 <script setup>
 import AddCustomerBtn from './AddCustomerBtn.vue'
+import AddDiscountBtn from './AddDiscountBtn.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { useSalesStore } from '@/stores/sales'
@@ -14,7 +15,9 @@ const salesStore = useSalesStore()
 
 // Load Variables
 const formDataDefault = {
-  customer: ''
+  customer: '',
+  discount: 0,
+  is_cash_discount: false
 }
 const formData = ref({
   ...formDataDefault
@@ -50,6 +53,12 @@ const onConfirmDelete = () => {
 const onAddCustomer = (value) => {
   formData.value.customer = value
 }
+
+// Add Discount on Form
+const onAddDiscount = (value) => {
+  formData.value.discount = value.discount
+  formData.value.is_cash_discount = value.is_cash_discount
+}
 </script>
 
 <template>
@@ -63,7 +72,7 @@ const onAddCustomer = (value) => {
     <v-divider class="my-3"></v-divider>
 
     <v-list lines="one" v-for="(item, index) in salesStore.stocksCart" :key="index">
-      <v-list-group :value="item.product.products.name" color="error" fluid>
+      <v-list-group :value="item.product.products.name" color="grey-lighten-1" fluid>
         <template #activator="{ props }">
           <v-list-item
             v-bind="props"
@@ -98,8 +107,8 @@ const onAddCustomer = (value) => {
                 class="mt-2"
                 variant="outlined"
                 density="compact"
-                :label="item.is_cash_discount ? 'Cash Discount' : 'Discount (%)'"
-                :prepend-inner-icon="item.is_cash_discount ? 'mdi-currency-php' : undefined"
+                :label="item.is_cash_discount ? 'Cash Discount' : 'Discount'"
+                :prepend-inner-icon="item.is_cash_discount ? 'mdi-currency-php' : 'mdi-percent'"
                 type="number"
                 min="0"
                 :append-icon="item.is_cash_discount ? 'mdi-cash' : 'mdi-sale'"
@@ -114,13 +123,15 @@ const onAddCustomer = (value) => {
 
     <v-row class="position-absolute bottom-0 left-0 right-0 pa-4" dense>
       <v-col cols="12">
-        <v-btn variant="elevated" prepend-icon="mdi-sale" block> Add Discount </v-btn>
+        <AddDiscountBtn @form-data="onAddDiscount"></AddDiscountBtn>
       </v-col>
 
       <v-divider class="my-3"></v-divider>
 
-      <v-col cols="12">
+      <v-col cols="12" class="d-flex justify-space-between">
         <h3>Payable Amount</h3>
+
+        <h3>{{ getMoneyText(getPreciseNumber(salesStore.getStocksCartTotal)) }}</h3>
       </v-col>
 
       <v-divider class="my-3"></v-divider>

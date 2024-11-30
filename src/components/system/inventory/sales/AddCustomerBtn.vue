@@ -25,8 +25,8 @@ const onEmitCustomer = (customer) => {
       prepend-inner-icon="mdi-account-tie"
       append-icon="mdi-close"
       @click:append="isAddCustomerBtnClicked = false"
-      hide-details
       @update:model-value="onEmitCustomer"
+      hide-details
     ></v-text-field>
 
     <v-btn
