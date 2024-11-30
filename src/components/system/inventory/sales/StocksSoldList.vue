@@ -1,4 +1,5 @@
 <script setup>
+import AddCustomerBtn from './AddCustomerBtn.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { useSalesStore } from '@/stores/sales'
@@ -12,6 +13,12 @@ const { mdAndDown } = useDisplay()
 const salesStore = useSalesStore()
 
 // Load Variables
+const formDataDefault = {
+  customer: ''
+}
+const formData = ref({
+  ...formDataDefault
+})
 const deleteIndex = ref(null)
 const isConfirmDeleteDialog = ref(false)
 
@@ -38,13 +45,18 @@ const onConfirmDelete = () => {
   salesStore.stocksCart = salesStore.stocksCart.filter((item, index) => index !== deleteIndex.value)
   localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
 }
+
+// Add Customer Name on Form
+const onAddCustomer = (value) => {
+  formData.value.customer = value
+}
 </script>
 
 <template>
   <section>
     <v-row dense>
       <v-col cols="12">
-        <v-btn variant="elevated" prepend-icon="mdi-account-tie" block> Add Customer </v-btn>
+        <AddCustomerBtn @form-data="onAddCustomer"></AddCustomerBtn>
       </v-col>
     </v-row>
 
