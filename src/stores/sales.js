@@ -62,12 +62,31 @@ export const useSalesStore = defineStore('sales', () => {
   }
 
   // Add Sales
-  async function addSale() {
-    const { data, error } = await supabase
+  async function addSales(formData) {
+    const { stocks, ...salesData } = formData
+
+    // Add Sale Report
+    const { data } = await supabase
       .from('sales')
-      .insert([{ some_column: 'someValue', other_column: 'otherValue' }])
+      .insert([{ ...salesData, user_id: authStore.userData.id }])
       .select()
+
+    // Re-mapped Sold Products
+    const stockFormData = stocks.map((stock) => {
+      return {
+        qty: stock.qty,
+        total_price: stock.total_price,
+        is_cash_discount: stock.is_cash_discount,
+        discount: stock.discount,
+        discounted_price: stock.discounted_price,
+        product_id: stock.product.product_id,
+        sale_id: data[0].id
+      }
+    })
+
+    // Add Sold Products
+    return await supabase.from('sale_products').insert(stockFormData).select()
   }
 
-  return { stocks, stocksCart, stocksCartTotal, $reset, $resetCart, getStocks, addSale }
+  return { stocks, stocksCart, stocksCartTotal, $reset, $resetCart, getStocks, addSales }
 })

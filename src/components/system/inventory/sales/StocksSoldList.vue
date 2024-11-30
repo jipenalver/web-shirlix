@@ -1,8 +1,10 @@
 <script setup>
+import AlertNotification from '@/components/common/AlertNotification.vue'
 import AddCustomerBtn from './AddCustomerBtn.vue'
 import AddDiscountBtn from './AddDiscountBtn.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
+import { formActionDefault } from '@/utils/supabase.js'
 import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
 import { ref, onMounted } from 'vue'
@@ -21,6 +23,9 @@ const formDataDefault = {
 }
 const formData = ref({
   ...formDataDefault
+})
+const formAction = ref({
+  ...formActionDefault
 })
 const deleteIndex = ref(null)
 const isConfirmDeleteDialog = ref(false)
@@ -74,17 +79,37 @@ const onCalcTotal = () => {
 }
 
 // Proceed Sales
-const onConfirmProceed = () => {
-  const data = {
+const onConfirmProceed = async () => {
+  // Reset Form Action utils
+  formAction.value = { ...formActionDefault, formProcess: true }
+
+  const transformedData = {
     ...formData.value,
-    total: formData.value.discount == 0 ? salesStore.stocksCartTotal : onCalcTotal(),
+    overall_price: formData.value.discount == 0 ? salesStore.stocksCartTotal : onCalcTotal(),
     stocks: salesStore.stocksCart
   }
-  console.log(data)
 
-  // salesStore.addSales(data)
-  // salesStore.$resetCart()
-  // formData.value = { ...formDataDefault }
+  const { data, error } = await salesStore.addSales(transformedData)
+
+  if (error) {
+    // Add Error Message and Status Code
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+
+    // Turn off processing
+    formAction.value.formProcess = false
+  } else if (data) {
+    // Add Success Message
+    formAction.value.formSuccessMessage = 'Successfully Sold Products.'
+
+    // Reset Cart State
+    salesStore.$resetCart()
+
+    // Reset Form Action utils
+    setTimeout(() => {
+      formAction.value = { ...formActionDefault }
+    }, 5000)
+  }
 }
 
 // Retrieve Window Size
@@ -107,6 +132,11 @@ onMounted(() => {
     </v-row>
 
     <v-divider class="my-3"></v-divider>
+
+    <AlertNotification
+      :form-success-message="formAction.formSuccessMessage"
+      :form-error-message="formAction.formErrorMessage"
+    ></AlertNotification>
 
     <div class="overflow-auto" :style="`height: ${windowSize.y - 380}px`">
       <v-list lines="one" v-for="(item, index) in salesStore.stocksCart" :key="index">
@@ -187,6 +217,8 @@ onMounted(() => {
           prepend-icon="mdi-location-enter"
           color="red-darken-4"
           @click="isConfirmSoldDialog = true"
+          :disabled="formAction.formProcess"
+          :loading="formAction.formProcess"
           block
         >
           Proceed
