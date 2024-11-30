@@ -8,6 +8,7 @@ export const useSalesStore = defineStore('sales', () => {
   const authStore = useAuthUserStore()
 
   // States
+  const customers = ref([])
   const stocks = ref([])
   const stocksCart = ref(
     localStorage.getItem('stocksCart') ? JSON.parse(localStorage.getItem('stocksCart')) : []
@@ -35,6 +36,7 @@ export const useSalesStore = defineStore('sales', () => {
       .from('stock_ins')
       .select('*, products( name, image_url )')
       .order('name', { referencedTable: 'products', ascending: true })
+      .order('id', { ascending: true })
       .eq('is_portion', true)
 
     query = getStockFilter(query)
@@ -61,14 +63,34 @@ export const useSalesStore = defineStore('sales', () => {
     return query
   }
 
+  // Get Customers
+  async function getCustomers() {
+    const { data } = await supabase.from('customers').select()
+
+    customers.value = data
+  }
+
   // Add Sales
   async function addSales(formData) {
-    const { stocks, ...salesData } = formData
+    const { stocks, customer, ...salesData } = formData
+
+    // Check if new customer
+    let customer_id = null
+    if (typeof customer === 'string') {
+      const { data } = await supabase
+        .from('customers')
+        .insert([{ customer_name: customer }])
+        .select()
+
+      customer_id = data[0].id
+    }
+    // Check if it is customer id
+    else if (typeof customer === 'number') customer_id = customer
 
     // Add Sale Report
     const { data } = await supabase
       .from('sales')
-      .insert([{ ...salesData, user_id: authStore.userData.id }])
+      .insert([{ ...salesData, user_id: authStore.userData.id, customer_id }])
       .select()
 
     // Re-mapped Sold Products
@@ -88,5 +110,15 @@ export const useSalesStore = defineStore('sales', () => {
     return await supabase.from('sale_products').insert(stockFormData).select()
   }
 
-  return { stocks, stocksCart, stocksCartTotal, $reset, $resetCart, getStocks, addSales }
+  return {
+    stocks,
+    stocksCart,
+    stocksCartTotal,
+    customers,
+    $reset,
+    $resetCart,
+    getStocks,
+    getCustomers,
+    addSales
+  }
 })

@@ -104,6 +104,7 @@ const onConfirmProceed = async () => {
 
     // Reset Cart State
     salesStore.$resetCart()
+    salesStore.getCustomers()
 
     // Reset Form Action utils
     setTimeout(() => {
@@ -217,7 +218,7 @@ onMounted(() => {
           prepend-icon="mdi-location-enter"
           color="red-darken-4"
           @click="isConfirmSoldDialog = true"
-          :disabled="formAction.formProcess"
+          :disabled="formAction.formProcess || salesStore.stocksCart.length == 0"
           :loading="formAction.formProcess"
           block
         >
