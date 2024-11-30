@@ -4,22 +4,32 @@ import { ref } from 'vue'
 const emit = defineEmits(['formData'])
 
 // Load Variables
-const formData = ref({
-  discount: '',
+const formDataDefault = {
+  discount: 0,
   is_cash_discount: false
+}
+const formData = ref({
+  ...formDataDefault
 })
-const isAddDiscountBtnClicked = ref(false)
+const isAddBtnClicked = ref(false)
 
 // Emit components input
-const onEmitCustomer = () => {
+const onEmitForm = () => {
   emit('formData', formData.value)
+}
+
+// Cancel component
+const onCancel = () => {
+  formData.value = { ...formDataDefault }
+  isAddBtnClicked.value = false
+  onEmitForm()
 }
 </script>
 
 <template>
   <div>
     <v-text-field
-      v-if="isAddDiscountBtnClicked"
+      v-if="isAddBtnClicked"
       v-model="formData.discount"
       density="compact"
       :label="formData.is_cash_discount ? 'Cash Discount' : 'Discount'"
@@ -30,17 +40,11 @@ const onEmitCustomer = () => {
       min="0"
       hide-details
       @click:append-inner="formData.is_cash_discount = !formData.is_cash_discount"
-      @click:append="isAddDiscountBtnClicked = false"
-      @update:model-value="onEmitCustomer"
+      @click:append="onCancel"
+      @update:model-value="onEmitForm"
     ></v-text-field>
 
-    <v-btn
-      v-else
-      variant="elevated"
-      prepend-icon="mdi-sale"
-      @click="isAddDiscountBtnClicked = true"
-      block
-    >
+    <v-btn v-else variant="elevated" prepend-icon="mdi-sale" @click="isAddBtnClicked = true" block>
       Add Discount
     </v-btn>
   </div>

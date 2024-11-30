@@ -4,28 +4,38 @@ import { ref } from 'vue'
 const emit = defineEmits(['formData'])
 
 // Load Variables
-const formData = ref({
+const formDataDefault = {
   customer: ''
+}
+const formData = ref({
+  ...formDataDefault
 })
-const isAddCustomerBtnClicked = ref(false)
+const isAddBtnClicked = ref(false)
 
 // Emit components input
-const onEmitCustomer = (customer) => {
+const onEmitForm = (customer) => {
   emit('formData', customer)
+}
+
+// Cancel component
+const onCancel = () => {
+  formData.value = { ...formDataDefault }
+  isAddBtnClicked.value = false
+  onEmitForm()
 }
 </script>
 
 <template>
   <div>
     <v-text-field
-      v-if="isAddCustomerBtnClicked"
+      v-if="isAddBtnClicked"
       v-model="formData.customer"
       label="Customer Name"
       density="compact"
       prepend-inner-icon="mdi-account-tie"
       append-icon="mdi-close"
-      @click:append="isAddCustomerBtnClicked = false"
-      @update:model-value="onEmitCustomer"
+      @click:append="onCancel"
+      @update:model-value="onEmitForm"
       hide-details
     ></v-text-field>
 
@@ -33,7 +43,7 @@ const onEmitCustomer = (customer) => {
       v-else
       variant="elevated"
       prepend-icon="mdi-account-tie"
-      @click="isAddCustomerBtnClicked = true"
+      @click="isAddBtnClicked = true"
       block
     >
       Add Customer

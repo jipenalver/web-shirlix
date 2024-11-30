@@ -59,6 +59,17 @@ const onAddDiscount = (value) => {
   formData.value.discount = value.discount
   formData.value.is_cash_discount = value.is_cash_discount
 }
+
+// Calculate Total Overall
+const onCalcTotal = () => {
+  if (formData.value.is_cash_discount)
+    return salesStore.getStocksCartTotal - Number(formData.value.discount)
+  else
+    return (
+      salesStore.getStocksCartTotal -
+      salesStore.getStocksCartTotal * (Number(formData.value.discount) / 100)
+    )
+}
 </script>
 
 <template>
@@ -131,7 +142,13 @@ const onAddDiscount = (value) => {
       <v-col cols="12" class="d-flex justify-space-between">
         <h3>Payable Amount</h3>
 
-        <h3>{{ getMoneyText(getPreciseNumber(salesStore.getStocksCartTotal)) }}</h3>
+        <h3>
+          {{
+            formData.discount == 0
+              ? getMoneyText(getPreciseNumber(salesStore.getStocksCartTotal))
+              : onCalcTotal()
+          }}
+        </h3>
       </v-col>
 
       <v-divider class="my-3"></v-divider>
