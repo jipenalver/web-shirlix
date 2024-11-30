@@ -61,5 +61,13 @@ export const useSalesStore = defineStore('sales', () => {
     return query
   }
 
-  return { stocks, stocksCart, stocksCartTotal, $reset, $resetCart, getStocks }
+  // Add Sales
+  async function addSale() {
+    const { data, error } = await supabase
+      .from('sales')
+      .insert([{ some_column: 'someValue', other_column: 'otherValue' }])
+      .select()
+  }
+
+  return { stocks, stocksCart, stocksCartTotal, $reset, $resetCart, getStocks, addSale }
 })

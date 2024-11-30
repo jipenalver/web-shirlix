@@ -5,7 +5,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
@@ -25,6 +25,7 @@ const formData = ref({
 const deleteIndex = ref(null)
 const isConfirmDeleteDialog = ref(false)
 const isConfirmSoldDialog = ref(false)
+const windowSize = ref({ x: 0, y: 0 })
 
 // Set Discounted Price
 const onDiscountPrice = (item) => {
@@ -85,10 +86,20 @@ const onConfirmProceed = () => {
   // salesStore.$resetCart()
   // formData.value = { ...formDataDefault }
 }
+
+// Retrieve Window Size
+const onResize = () => {
+  windowSize.value = { x: window.innerWidth, y: window.innerHeight }
+}
+
+// Load Functions during component rendering
+onMounted(() => {
+  onResize()
+})
 </script>
 
 <template>
-  <section>
+  <section v-resize="onResize">
     <v-row dense>
       <v-col cols="12">
         <AddCustomerBtn @form-data="onAddCustomer"></AddCustomerBtn>
@@ -97,57 +108,59 @@ const onConfirmProceed = () => {
 
     <v-divider class="my-3"></v-divider>
 
-    <v-list lines="one" v-for="(item, index) in salesStore.stocksCart" :key="index">
-      <v-list-group :value="item.product.products.name" color="grey-lighten-1" fluid>
-        <template #activator="{ props }">
-          <v-list-item
-            v-bind="props"
-            :prepend-avatar="mdAndDown ? undefined : item.product.products.image_url"
-            :title="item.product.products.name"
-            :subtitle="`${item.qty} x ${getMoneyText(item.product.unit_price)} per ${item.product.unit_price_metric}`"
-          >
-            <template #append>
-              <div class="me-1">
-                <span class="text-body-2 font-weight-bold">
-                  {{ getMoneyText(getPreciseNumber(item.discounted_price)) }}
-                </span>
-                <div v-if="item.discount > 0">
-                  <span class="text-caption text-decoration-line-through">
-                    {{ getMoneyText(getPreciseNumber(item.total_price)) }}
+    <div class="overflow-auto" :style="`height: ${windowSize.y - 380}px`">
+      <v-list lines="one" v-for="(item, index) in salesStore.stocksCart" :key="index">
+        <v-list-group :value="item.product.products.name" color="grey-lighten-1" fluid>
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              :prepend-avatar="mdAndDown ? undefined : item.product.products.image_url"
+              :title="item.product.products.name"
+              :subtitle="`${item.qty} x ${getMoneyText(item.product.unit_price)} per ${item.product.unit_price_metric}`"
+            >
+              <template #append>
+                <div class="me-1">
+                  <span class="text-body-2 font-weight-bold">
+                    {{ getMoneyText(getPreciseNumber(item.discounted_price)) }}
                   </span>
+                  <div v-if="item.discount > 0">
+                    <span class="text-caption text-decoration-line-through">
+                      {{ getMoneyText(getPreciseNumber(item.total_price)) }}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <v-btn variant="text" density="compact" @click="onDelete(index)" icon>
-                <v-icon icon="mdi-delete"></v-icon>
-              </v-btn>
-            </template>
+                <v-btn variant="text" density="compact" @click="onDelete(index)" icon>
+                  <v-icon icon="mdi-delete"></v-icon>
+                </v-btn>
+              </template>
+            </v-list-item>
+          </template>
+
+          <v-list-item>
+            <v-row dense>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="item.discount"
+                  class="mt-2"
+                  variant="outlined"
+                  density="compact"
+                  :label="item.is_cash_discount ? 'Cash Discount' : 'Discount'"
+                  :prepend-inner-icon="item.is_cash_discount ? 'mdi-currency-php' : 'mdi-percent'"
+                  :append-icon="item.is_cash_discount ? 'mdi-cash' : 'mdi-sale'"
+                  type="number"
+                  min="0"
+                  @click:append="onDiscountToggle(item)"
+                  @update:model-value="onDiscountPrice(item)"
+                ></v-text-field>
+              </v-col>
+            </v-row>
           </v-list-item>
-        </template>
+        </v-list-group>
+      </v-list>
+    </div>
 
-        <v-list-item>
-          <v-row dense>
-            <v-col cols="12">
-              <v-text-field
-                v-model="item.discount"
-                class="mt-2"
-                variant="outlined"
-                density="compact"
-                :label="item.is_cash_discount ? 'Cash Discount' : 'Discount'"
-                :prepend-inner-icon="item.is_cash_discount ? 'mdi-currency-php' : 'mdi-percent'"
-                type="number"
-                min="0"
-                :append-icon="item.is_cash_discount ? 'mdi-cash' : 'mdi-sale'"
-                @click:append="onDiscountToggle(item)"
-                @update:model-value="onDiscountPrice(item)"
-              ></v-text-field>
-            </v-col>
-          </v-row>
-        </v-list-item>
-      </v-list-group>
-    </v-list>
-
-    <v-row class="position-absolute bottom-0 left-0 right-0 pa-4" dense>
+    <v-row class="position-absolute bottom-0 left-0 right-0 pa-1 mx-1 bg-background" dense>
       <v-col cols="12">
         <AddDiscountBtn @form-data="onAddDiscount"></AddDiscountBtn>
       </v-col>
@@ -201,6 +214,6 @@ const onConfirmProceed = () => {
 
 <style scoped>
 .abs-padding {
-  height: 10rem;
+  height: 11rem;
 }
 </style>
