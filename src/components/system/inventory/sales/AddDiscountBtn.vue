@@ -18,6 +18,12 @@ const onEmitForm = () => {
   emit('formData', formData.value)
 }
 
+// Toggle Discount either Percentage or Cash
+const onDiscountToggle = () => {
+  formData.value.is_cash_discount = !formData.value.is_cash_discount
+  onEmitForm()
+}
+
 // Cancel component
 const onCancel = () => {
   formData.value = { ...formDataDefault }
@@ -39,7 +45,7 @@ const onCancel = () => {
       type="number"
       min="0"
       hide-details
-      @click:append-inner="formData.is_cash_discount = !formData.is_cash_discount"
+      @click:append-inner="onDiscountToggle"
       @click:append="onCancel"
       @update:model-value="onEmitForm"
     ></v-text-field>

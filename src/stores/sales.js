@@ -14,7 +14,7 @@ export const useSalesStore = defineStore('sales', () => {
   )
 
   // Getters
-  const getStocksCartTotal = computed(() => {
+  const stocksCartTotal = computed(() => {
     return stocksCart.value.reduce((acc, item) => acc + item.discounted_price, 0)
   })
 
@@ -61,5 +61,5 @@ export const useSalesStore = defineStore('sales', () => {
     return query
   }
 
-  return { stocks, stocksCart, getStocksCartTotal, $reset, $resetCart, getStocks }
+  return { stocks, stocksCart, stocksCartTotal, $reset, $resetCart, getStocks }
 })

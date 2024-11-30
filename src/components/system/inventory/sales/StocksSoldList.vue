@@ -24,6 +24,7 @@ const formData = ref({
 })
 const deleteIndex = ref(null)
 const isConfirmDeleteDialog = ref(false)
+const isConfirmSoldDialog = ref(false)
 
 // Set Discounted Price
 const onDiscountPrice = (item) => {
@@ -63,12 +64,26 @@ const onAddDiscount = (value) => {
 // Calculate Total Overall
 const onCalcTotal = () => {
   if (formData.value.is_cash_discount)
-    return salesStore.getStocksCartTotal - Number(formData.value.discount)
+    return salesStore.stocksCartTotal - Number(formData.value.discount)
   else
     return (
-      salesStore.getStocksCartTotal -
-      salesStore.getStocksCartTotal * (Number(formData.value.discount) / 100)
+      salesStore.stocksCartTotal -
+      salesStore.stocksCartTotal * (Number(formData.value.discount) / 100)
     )
+}
+
+// Proceed Sales
+const onConfirmProceed = () => {
+  const data = {
+    ...formData.value,
+    total: formData.value.discount == 0 ? salesStore.stocksCartTotal : onCalcTotal(),
+    stocks: salesStore.stocksCart
+  }
+  console.log(data)
+
+  // salesStore.addSales(data)
+  // salesStore.$resetCart()
+  // formData.value = { ...formDataDefault }
 }
 </script>
 
@@ -145,7 +160,7 @@ const onCalcTotal = () => {
         <h3>
           {{
             formData.discount == 0
-              ? getMoneyText(getPreciseNumber(salesStore.getStocksCartTotal))
+              ? getMoneyText(getPreciseNumber(salesStore.stocksCartTotal))
               : onCalcTotal()
           }}
         </h3>
@@ -154,7 +169,13 @@ const onCalcTotal = () => {
       <v-divider class="my-3"></v-divider>
 
       <v-col cols="12">
-        <v-btn variant="elevated" prepend-icon="mdi-location-enter" color="red-darken-4" block>
+        <v-btn
+          variant="elevated"
+          prepend-icon="mdi-location-enter"
+          color="red-darken-4"
+          @click="isConfirmSoldDialog = true"
+          block
+        >
           Proceed
         </v-btn>
       </v-col>
@@ -168,6 +189,13 @@ const onCalcTotal = () => {
     title="Confirm Delete"
     text="Are you sure you want to remove from cart?"
     @confirm="onConfirmDelete"
+  ></ConfirmDialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmSoldDialog"
+    title="Confirm Stocks Sold"
+    text="Are you sure you want to continue? Please always double check the stocks sold."
+    @confirm="onConfirmProceed"
   ></ConfirmDialog>
 </template>
 
