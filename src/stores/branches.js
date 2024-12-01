@@ -53,7 +53,7 @@ export const useBranchesStore = defineStore('branches', () => {
     const { data } = await supabase.from('branches').select().order('name', { ascending: true })
 
     // If Super Admin, display all branches
-    if (authStore.userRole === 'Super Administrator') branches.value = data.map((b) => b.name)
+    if (authStore.userRole === 'Super Administrator') branches.value = data
     else {
       // Filter branches for selection based on auth user
       const authBranches = authStore.userData.branch.split(',')
