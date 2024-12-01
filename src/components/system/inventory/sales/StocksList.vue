@@ -1,5 +1,6 @@
 <script setup>
 import StockQtyFormDialog from './StockQtyFormDialog.vue'
+import { useBranchesStore } from '@/stores/branches'
 import { useSalesStore } from '@/stores/sales'
 import { getMoneyText } from '@/utils/helpers'
 import { tableSearch } from '@/utils/supabase'
@@ -7,10 +8,12 @@ import { onMounted, ref } from 'vue'
 
 // Use Pinia Store
 const salesStore = useSalesStore()
+const branchesStore = useBranchesStore()
 
 // Load Variables
 const listFilters = ref({
-  search: ''
+  search: '',
+  branch_id: null
 })
 const listData = ref([])
 const itemData = ref(null)
@@ -35,10 +38,15 @@ const onCartQty = (qty) => {
   localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
 }
 
+// Retrieve Data based on Filter
+const onFilterItems = () => {
+  onLoadItems(listFilters.value)
+}
+
 // Retrieve Data based on Search
 const onSearchItems = async () => {
   if (
-    listFilters.value.search?.length >= 4 ||
+    listFilters.value.search?.length >= 2 ||
     listFilters.value.search?.length == 0 ||
     listFilters.value.search === null
   )
@@ -46,8 +54,8 @@ const onSearchItems = async () => {
 }
 
 // Load List Data
-const onLoadItems = async ({ search }) => {
-  await salesStore.getStocks()
+const onLoadItems = async ({ search, branch_id }) => {
+  await salesStore.getStocks({ branch_id })
 
   listData.value = salesStore.stocks.filter((item) =>
     item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase())
@@ -55,8 +63,9 @@ const onLoadItems = async ({ search }) => {
 }
 
 // Load Functions during component rendering
-onMounted(() => {
+onMounted(async () => {
   if (listData.value.length == 0) onLoadItems(listFilters.value)
+  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
 })
 </script>
 
@@ -65,15 +74,32 @@ onMounted(() => {
     <v-col cols="12">
       <v-card>
         <v-card-text>
-          <v-text-field
-            v-model="listFilters.search"
-            density="compact"
-            prepend-inner-icon="mdi-magnify"
-            placeholder="Search Name"
-            clearable
-            @click:clear="onSearchItems"
-            @input="onSearchItems"
-          ></v-text-field>
+          <v-row dense>
+            <v-col cols="12" sm="6">
+              <v-text-field
+                v-model="listFilters.search"
+                density="compact"
+                prepend-inner-icon="mdi-magnify"
+                placeholder="Search Name"
+                clearable
+                @click:clear="onSearchItems"
+                @input="onSearchItems"
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="12" sm="6"
+              ><v-autocomplete
+                v-model="listFilters.branch_id"
+                :items="branchesStore.branches"
+                label="Branch"
+                density="compact"
+                item-title="name"
+                item-value="id"
+                clearable
+                @update:model-value="onFilterItems"
+              ></v-autocomplete
+            ></v-col>
+          </v-row>
         </v-card-text>
       </v-card>
     </v-col>

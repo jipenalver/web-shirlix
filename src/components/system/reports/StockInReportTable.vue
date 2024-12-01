@@ -1,16 +1,18 @@
 <script setup>
-import CodeFormDialog from './CodeFormDialog.vue'
-import AlertNotification from '@/components/common/AlertNotification.vue'
-import StockInFormDialog from './StockInFormDialog.vue'
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { tableHeaders } from './stockInTableUtils'
-import { formActionDefault } from '@/utils/supabase'
+import { tableHeaders } from './stockInReportTableUtils'
 import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
-import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
+import {
+  getAvatarText,
+  getMoneyText,
+  getPadLeftText,
+  generateCSV,
+  generateCSVTrim,
+  getPreciseNumber
+} from '@/utils/helpers'
 import { useDate } from 'vuetify'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
@@ -25,7 +27,7 @@ const stockInStore = useStockInStore()
 // Load Variables
 const tableOptions = ref({
   page: 1,
-  itemsPerPage: 10,
+  itemsPerPage: -1,
   sortBy: [],
   isLoading: false
 })
@@ -33,68 +35,8 @@ const tableFilters = ref({
   search: '',
   branch_id: null,
   product_id: null,
-  purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
+  purchased_at: null
 })
-const isFormDialogVisible = ref(false)
-const isCodeDialogVisible = ref(false)
-const isConfirmDeleteDialog = ref(false)
-const itemData = ref(null)
-const deleteId = ref('')
-const formAction = ref({
-  ...formActionDefault
-})
-const action = ref('')
-
-// Verified Code
-const onCodeVerified = (isVerified) => {
-  if (action.value === 'update') isFormDialogVisible.value = isVerified
-  if (action.value === 'delete') isConfirmDeleteDialog.value = isVerified
-}
-
-// Trigger Update Btn
-const onUpdate = (item) => {
-  itemData.value = item
-  isCodeDialogVisible.value = true
-  action.value = 'update'
-}
-
-// Trigger Add Btn
-const onAdd = () => {
-  itemData.value = null
-  isFormDialogVisible.value = true
-}
-
-// Trigger Delete Btn
-const onDelete = (id) => {
-  deleteId.value = id
-  isCodeDialogVisible.value = true
-  action.value = 'delete'
-}
-
-// Confirm Delete
-const onConfirmDelete = async () => {
-  // Reset Form Action utils
-  formAction.value = { ...formActionDefault, formProcess: true }
-
-  const { error } = await stockInStore.deleteStockIn(deleteId.value)
-
-  // Turn off processing
-  formAction.value.formProcess = false
-
-  if (error) {
-    // Add Error Message and Status Code
-    formAction.value.formErrorMessage = error.message
-    formAction.value.formStatus = error.status
-
-    return
-  }
-
-  // Add Success Message
-  formAction.value.formSuccessMessage = 'Successfully Deleted Stock.'
-
-  // Retrieve Data
-  onLoadItems(tableOptions.value, tableFilters.value)
-}
 
 // Retrieve Data based on Date
 const onFilterDate = (isCleared = false) => {
@@ -123,11 +65,76 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await stockInStore.getStockInTable({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await stockInStore.getStockInReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
+
+// CSV Data
+const csvData = () => {
+  // Get the headers from utils
+  const headers = tableHeaders.map((header) => header.title).join(',')
+  const addHeaders = [
+    'Unit Cost',
+    'Portion of ID',
+    'Unit Price',
+    'Added Date',
+    'Expiration Date',
+    'Supplier',
+    'Branch',
+    'Remarks'
+  ]
+  const newHeaders = [headers, addHeaders].join(',')
+
+  // Get the reports data and map it to be used as csv data, follow the headers arrangement
+  const rows = stockInStore.stockInReport.map((data) => {
+    return [
+      "'" + getPadLeftText(data.id),
+      generateCSVTrim(data.products.name),
+
+      data.qty + ' ' + data.qty_metric,
+      data.qty_reweighed ? data.qty_reweighed + ' ' + data.qty_metric : '-',
+      data.qty_reweighed
+        ? getPreciseNumber(data.qty - data.qty_reweighed) + ' ' + data.qty_metric
+        : '-',
+
+      data.purchased_at ? generateCSVTrim(date.format(data.purchased_at, 'fullDate')) : '',
+      data.is_portion
+        ? 'Stock Portion'
+        : data.is_segregated
+          ? 'Segregated'
+          : data.is_reweighed
+            ? 'Reweighed'
+            : 'For Re-Weighing',
+
+      data.unit_cost,
+      data.stock_in_id ? "'" + getPadLeftText(data.stock_in_id) : '',
+      data.unit_price ? data.unit_price + ' per ' + data.unit_price_metric : '',
+
+      generateCSVTrim(date.format(data.created_at, 'fullDateTime')),
+      data.expired_at ? generateCSVTrim(date.format(data.expired_at, 'fullDate')) : 'n/a',
+      generateCSVTrim(data.supplier),
+      generateCSVTrim(data.branches.name),
+      generateCSVTrim(data.remarks)
+    ].join(',')
+  })
+
+  // Combine headers and csv data
+  return [newHeaders, ...rows].join('\n')
+}
+
+// Generate CSV
+const onGenerate = () => {
+  const filename = new Date().toISOString() + '-stockin-report'
+
+  generateCSV(filename, csvData())
+}
+
+// If Component is Unloaded
+onUnmounted(() => {
+  stockInStore.$reset()
+})
 
 // Load Functions during component rendering
 onMounted(async () => {
@@ -137,11 +144,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AlertNotification
-    :form-success-message="formAction.formSuccessMessage"
-    :form-error-message="formAction.formErrorMessage"
-  ></AlertNotification>
-
   <v-row>
     <v-col cols="12">
       <!-- eslint-disable vue/valid-v-slot -->
@@ -151,9 +153,10 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="stockInStore.stockInTable"
-        :items-length="stockInStore.stockInTotal"
-        @update:options="onLoadItems"
+        :items="stockInStore.stockInReport"
+        :items-length="stockInStore.stockInReport.length"
+        no-data-text="Use the above filter to display report"
+        hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
       >
@@ -216,8 +219,15 @@ onMounted(async () => {
             </v-col>
 
             <v-col cols="12" sm="3">
-              <v-btn class="my-1" prepend-icon="mdi-plus" color="red-darken-4" block @click="onAdd">
-                Add Stock
+              <v-btn
+                :disabled="stockInStore.stockInReport.length == 0"
+                class="my-1"
+                prepend-icon="mdi-file-delimited"
+                color="red-darken-4"
+                block
+                @click="onGenerate"
+              >
+                Generate CSV
               </v-btn>
             </v-col>
           </v-row>
@@ -269,6 +279,9 @@ onMounted(async () => {
               <p class="text-caption" v-else-if="item.is_portion">
                 <span class="font-weight-bold">Portion of ID:</span>
                 {{ getPadLeftText(item.stock_in_id) }}
+                <br />
+                <span class="font-weight-bold">Unit Price:</span>
+                {{ getMoneyText(item.unit_price) }} per {{ item.unit_price_metric }}
               </p>
             </div>
           </div>
@@ -280,15 +293,25 @@ onMounted(async () => {
           </span>
         </template>
 
-        <template #item.purchased_at="{ item }">
+        <template #item.qty_reweighed="{ item }">
           <span class="font-weight-bold">
-            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
+            {{ item.qty_reweighed ? item.qty_reweighed + ' ' + item.qty_metric : '-' }}
           </span>
         </template>
 
-        <template #item.expired_at="{ item }">
+        <template #item.weight_loss="{ item }">
           <span class="font-weight-bold">
-            {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
+            {{
+              item.qty_reweighed
+                ? getPreciseNumber(item.qty - item.qty_reweighed) + ' ' + item.qty_metric
+                : '-'
+            }}
+          </span>
+        </template>
+
+        <template #item.purchased_at="{ item }">
+          <span class="font-weight-bold">
+            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
           </span>
         </template>
 
@@ -310,6 +333,10 @@ onMounted(async () => {
                   <span class="font-weight-bold">Added Date:</span>
                   {{ date.format(item.created_at, 'fullDateTime') }}
                 </li>
+                <li>
+                  <span class="font-weight-bold">Expiration Date:</span>
+                  {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
+                </li>
                 <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
                 <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
                 <li><span class="font-weight-bold">Remarks:</span> {{ item.remarks }}</li>
@@ -317,54 +344,9 @@ onMounted(async () => {
             </v-tooltip>
           </v-chip>
         </template>
-
-        <template #item.actions="{ item }">
-          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
-            <v-btn
-              variant="text"
-              density="comfortable"
-              @click="onUpdate(item)"
-              :disabled="item.is_portion || item.is_segregated"
-              icon
-            >
-              <v-icon icon="mdi-pencil"></v-icon>
-              <v-tooltip activator="parent" location="top">Edit Stock</v-tooltip>
-            </v-btn>
-
-            <v-btn
-              variant="text"
-              density="comfortable"
-              @click="onDelete(item.id)"
-              :disabled="item.is_segregated"
-              icon
-            >
-              <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
-              <v-tooltip activator="parent" location="top">Delete Stock</v-tooltip>
-            </v-btn>
-          </div>
-        </template>
       </v-data-table-server>
     </v-col>
   </v-row>
-
-  <CodeFormDialog
-    v-model:is-dialog-visible="isCodeDialogVisible"
-    @is-code-verified="onCodeVerified"
-  ></CodeFormDialog>
-
-  <StockInFormDialog
-    v-model:is-dialog-visible="isFormDialogVisible"
-    :item-data="itemData"
-    :table-options="tableOptions"
-    :table-filters="tableFilters"
-  ></StockInFormDialog>
-
-  <ConfirmDialog
-    v-model:is-dialog-visible="isConfirmDeleteDialog"
-    title="Confirm Delete"
-    text="Are you sure you want to delete stock?"
-    @confirm="onConfirmDelete"
-  ></ConfirmDialog>
 </template>
 
 <style scoped>

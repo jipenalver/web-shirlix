@@ -8,7 +8,7 @@ import { formActionDefault } from '@/utils/supabase'
 import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
-import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
+import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
@@ -224,9 +224,9 @@ onMounted(async () => {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption" v-if="item.price_stockin">
-                <span class="font-weight-bold">Stock In Price:</span>
-                {{ getMoneyText(item.price_stockin) }}
+              <p class="text-caption" v-if="item.unit_cost">
+                <span class="font-weight-bold">Unit Cost:</span>
+                {{ getMoneyText(item.unit_cost) }}
               </p>
               <p class="text-caption" v-else-if="item.is_portion">
                 <span class="font-weight-bold">Portion of ID:</span>
@@ -255,7 +255,7 @@ onMounted(async () => {
           <span class="font-weight-bold">
             {{
               item.qty_reweighed
-                ? (item.qty - item.qty_reweighed).toFixed(2) + ' ' + item.qty_metric
+                ? getPreciseNumber(item.qty - item.qty_reweighed) + ' ' + item.qty_metric
                 : '-'
             }}
           </span>
@@ -312,7 +312,7 @@ onMounted(async () => {
               variant="text"
               density="comfortable"
               @click="onUpdateSegregate(item)"
-              :disabled="!item.is_reweighed || item.is_portion || item.is_segregated"
+              :disabled="!item.is_reweighed || item.is_portion"
               icon
             >
               <v-icon icon="mdi-scale"></v-icon>

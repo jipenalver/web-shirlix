@@ -31,7 +31,7 @@ export const useSalesStore = defineStore('sales', () => {
   }
 
   // Retrieve Stocks Table
-  async function getStocks() {
+  async function getStocks({ branch_id }) {
     let query = supabase
       .from('stock_ins')
       .select('*, products( name, image_url )')
@@ -39,7 +39,7 @@ export const useSalesStore = defineStore('sales', () => {
       .order('id', { ascending: true })
       .eq('is_portion', true)
 
-    query = getStockFilter(query)
+    query = getStockFilter(query, { branch_id })
 
     // Execute the query
     const { data } = await query
@@ -49,23 +49,30 @@ export const useSalesStore = defineStore('sales', () => {
   }
 
   // Filter Stocks
-  async function getStockFilter(query) {
-    const { data } = await supabase
-      .from('branches')
-      .select('id')
-      .in('name', authStore.userData.branch.split(','))
+  async function getStockFilter(query, { branch_id }) {
+    if (branch_id) query = query.eq('branch_id', branch_id)
+    // If branch is not set, get the branch(es) of the user
+    else {
+      const { data } = await supabase
+        .from('branches')
+        .select('id')
+        .in('name', authStore.userData.branch.split(','))
 
-    query = query.in(
-      'branch_id',
-      data.map((b) => b.id)
-    )
+      query = query.in(
+        'branch_id',
+        data.map((b) => b.id)
+      )
+    }
 
     return query
   }
 
   // Get Customers
   async function getCustomers() {
-    const { data } = await supabase.from('customers').select()
+    const { data } = await supabase
+      .from('customers')
+      .select()
+      .order('customer', { ascending: true })
 
     customers.value = data
   }
@@ -77,10 +84,7 @@ export const useSalesStore = defineStore('sales', () => {
     // Check if new customer
     let customer_id = null
     if (typeof customer === 'string') {
-      const { data } = await supabase
-        .from('customers')
-        .insert([{ customer_name: customer }])
-        .select()
+      const { data } = await supabase.from('customers').insert([{ customer }]).select()
 
       customer_id = data[0].id
     }
