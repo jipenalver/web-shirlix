@@ -152,9 +152,9 @@ onMounted(async () => {
     <v-card prepend-icon="mdi-scale" title="Stock Segregate">
       <template #subtitle>
         <div class="text-wrap">
-          Stock portioning into cuts or component parts. Please properly input stock portion fields.
+          Stock portioning into cuts or component parts.
           <br />
-          <b class="text-error">THIS ACTION CANNOT BE UNDONE.</b>
+          <b class="text-error">PLEASE DOUBLE CHECK THE INPUTTED VALUES BEFORE SUBMITTING.</b>
         </div>
       </template>
 

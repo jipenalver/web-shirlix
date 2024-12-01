@@ -105,11 +105,14 @@ export const filesExtract = (event) => {
 // 👉 Fix v-date-input datetime shift issue for form
 export const dateShiftFixForm = (formData, dateColumns = []) => {
   dateColumns.forEach((dateColumn) => {
-    if (formData[dateColumn])
+    if (formData[dateColumn]) {
+      const dateValue = new Date(formData[dateColumn])
+
       formData = {
         ...formData,
-        [dateColumn]: formData[dateColumn].toLocaleDateString()
+        [dateColumn]: dateValue.toLocaleDateString()
       }
+    }
   })
 
   return formData

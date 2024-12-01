@@ -224,9 +224,9 @@ onMounted(async () => {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption" v-if="item.price_stockin">
-                <span class="font-weight-bold">Stock In Price:</span>
-                {{ getMoneyText(item.price_stockin) }}
+              <p class="text-caption" v-if="item.unit_cost">
+                <span class="font-weight-bold">Unit Cost:</span>
+                {{ getMoneyText(item.unit_cost) }}
               </p>
               <p class="text-caption" v-else-if="item.is_portion">
                 <span class="font-weight-bold">Portion of ID:</span>
@@ -312,7 +312,7 @@ onMounted(async () => {
               variant="text"
               density="comfortable"
               @click="onUpdateSegregate(item)"
-              :disabled="!item.is_reweighed || item.is_portion || item.is_segregated"
+              :disabled="!item.is_reweighed || item.is_portion"
               icon
             >
               <v-icon icon="mdi-scale"></v-icon>
