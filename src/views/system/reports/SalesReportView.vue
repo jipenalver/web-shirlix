@@ -1,4 +1,5 @@
 <script setup>
+import SalesReportTable from '@/components/system/reports/SalesReportTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -39,7 +40,9 @@ const isDrawerVisible = ref(mobile.value ? false : true)
         </v-card>
 
         <v-card>
-          <v-card-text> </v-card-text>
+          <v-card-text>
+            <SalesReportTable></SalesReportTable>
+          </v-card-text>
         </v-card>
       </v-container>
     </template>
