@@ -8,7 +8,7 @@ import { formActionDefault } from '@/utils/supabase'
 import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
-import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
+import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
@@ -255,7 +255,7 @@ onMounted(async () => {
           <span class="font-weight-bold">
             {{
               item.qty_reweighed
-                ? (item.qty - item.qty_reweighed).toFixed(2) + ' ' + item.qty_metric
+                ? getPreciseNumber(item.qty - item.qty_reweighed) + ' ' + item.qty_metric
                 : '-'
             }}
           </span>

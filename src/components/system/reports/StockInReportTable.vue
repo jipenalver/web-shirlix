@@ -8,7 +8,8 @@ import {
   getMoneyText,
   getPadLeftText,
   generateCSV,
-  generateCSVTrim
+  generateCSVTrim,
+  getPreciseNumber
 } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, onUnmounted, ref } from 'vue'
@@ -89,12 +90,14 @@ const csvData = () => {
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
   const rows = stockInStore.stockInReport.map((data) => {
     return [
-      getPadLeftText(data.id),
+      "'" + getPadLeftText(data.id),
       generateCSVTrim(data.products.name),
 
       data.qty + ' ' + data.qty_metric,
       data.qty_reweighed ? data.qty_reweighed + ' ' + data.qty_metric : '-',
-      data.qty_reweighed ? (data.qty - data.qty_reweighed).toFixed(2) + ' ' + data.qty_metric : '-',
+      data.qty_reweighed
+        ? getPreciseNumber(data.qty - data.qty_reweighed) + ' ' + data.qty_metric
+        : '-',
 
       data.purchased_at ? generateCSVTrim(date.format(data.purchased_at, 'fullDate')) : '',
       data.is_portion
@@ -106,7 +109,7 @@ const csvData = () => {
             : 'For Re-Weighing',
 
       data.unit_cost,
-      data.stock_in_id ? getPadLeftText(data.stock_in_id) : '',
+      data.stock_in_id ? "'" + getPadLeftText(data.stock_in_id) : '',
       data.unit_price ? data.unit_price + ' per ' + data.unit_price_metric : '',
 
       generateCSVTrim(date.format(data.created_at, 'fullDateTime')),
@@ -300,7 +303,7 @@ onMounted(async () => {
           <span class="font-weight-bold">
             {{
               item.qty_reweighed
-                ? (item.qty - item.qty_reweighed).toFixed(2) + ' ' + item.qty_metric
+                ? getPreciseNumber(item.qty - item.qty_reweighed) + ' ' + item.qty_metric
                 : '-'
             }}
           </span>
