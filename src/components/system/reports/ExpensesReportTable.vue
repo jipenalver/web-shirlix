@@ -5,9 +5,11 @@ import { useBranchesStore } from '@/stores/branches'
 import { generateCSV, generateCSVTrim } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
+const { mobile } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
@@ -111,6 +113,8 @@ onMounted(async () => {
         :items-length="expensesStore.expensesReport.length"
         no-data-text="Use the above filter to display report"
         hide-default-footer
+        :hide-default-header="mobile"
+        :mobile="mobile"
       >
         <template #top>
           <v-row dense>

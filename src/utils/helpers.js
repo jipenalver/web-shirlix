@@ -144,5 +144,7 @@ export const generateCSV = (filename, csvData) => {
 
 // 👉 CSV Text Trimming
 export const generateCSVTrim = (string) => {
-  return string.replace(/,/g, ' ').replace(/\s+/g, ' ')
+  if (typeof string !== 'string' || !string.trim()) return ''
+
+  return string.replace(/,/g, ' ').replace(/\s+/g, ' ').trim()
 }

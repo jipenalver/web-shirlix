@@ -34,11 +34,6 @@ export const tableHeaders = [
     key: 'purchased_at',
     align: 'start'
   },
-  {
-    title: 'Expired Date',
-    key: 'expired_at',
-    align: 'start'
-  },
 
   {
     title: 'Status',
