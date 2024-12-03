@@ -1,6 +1,6 @@
 <script setup>
 import { tableHeaders } from './salesReportTableUtils'
-import { useStockInStore } from '@/stores/stockIn'
+import { useSalesStore } from '@/stores/sales'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import {
@@ -22,7 +22,7 @@ const { mobile } = useDisplay()
 // Use Pinia Store
 const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
-const stockInStore = useStockInStore()
+const salesStore = useSalesStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -65,7 +65,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await stockInStore.getStockInReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  // await salesStore.getSales()
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -79,7 +79,7 @@ const onGenerate = () => {
 
 // If Component is Unloaded
 onUnmounted(() => {
-  stockInStore.$reset()
+  //   salesStore.$resetReport()
 })
 
 // Load Functions during component rendering
@@ -99,8 +99,8 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="stockInStore.stockInReport"
-        :items-length="stockInStore.stockInReport.length"
+        :items="salesStore.salesReport"
+        :items-length="salesStore.salesReport.length"
         no-data-text="Use the above filter to display report"
         hide-default-footer
         :hide-default-header="mobile"
@@ -166,7 +166,7 @@ onMounted(async () => {
 
             <v-col cols="12" sm="3">
               <v-btn
-                :disabled="stockInStore.stockInReport.length == 0"
+                :disabled="salesStore.salesReport.length == 0"
                 class="my-1"
                 prepend-icon="mdi-file-delimited"
                 color="red-darken-4"
