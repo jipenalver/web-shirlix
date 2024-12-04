@@ -13,7 +13,7 @@ import ProductsView from '@/views/system/manage-products/ProductsView.vue'
 import StockInView from '@/views/system/inventory/StockInView.vue'
 import StockWeightView from '@/views/system/inventory/StockWeightView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
-import StockInReportView from '@/views/system/reports/StockInReportView.vue'
+import StocksReportView from '@/views/system/reports/StocksReportView.vue'
 import SalesReportView from '@/views/system/reports/SalesReportView.vue'
 
 // 👉 Routes
@@ -108,9 +108,9 @@ export const routes = [
 
   // Reports Page
   {
-    path: '/reports/stockin',
-    name: 'reports-stockin',
-    component: StockInReportView,
+    path: '/reports/stocks',
+    name: 'reports-stocks',
+    component: StocksReportView,
     meta: { requiresAuth: true }
   },
   {

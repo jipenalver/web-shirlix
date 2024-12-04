@@ -1,5 +1,5 @@
 <script setup>
-import StockInReportTable from '@/components/system/reports/StockInReportTable.vue'
+import StocksReportTable from '@/components/system/reports/StocksReportTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -35,13 +35,13 @@ const isDrawerVisible = ref(mobile.value ? false : true)
           </template>
 
           <template #subtitle>
-            <p class="ms-4 text-wrap">Filter and generate stock in reports.</p>
+            <p class="ms-4 text-wrap">Filter and generate stocks report.</p>
           </template>
         </v-card>
 
         <v-card>
           <v-card-text>
-            <StockInReportTable></StockInReportTable>
+            <StocksReportTable></StocksReportTable>
           </v-card-text>
         </v-card>
       </v-container>

@@ -1,5 +1,5 @@
 <script setup>
-import { tableHeaders } from './stockInReportTableUtils'
+import { tableHeaders } from './stocksReportTableUtils'
 import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
@@ -65,7 +65,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await stockInStore.getStockInReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await stockInStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -88,7 +88,7 @@ const csvData = () => {
   const newHeaders = [headers, addHeaders].join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = stockInStore.stockInReport.map((data) => {
+  const rows = stockInStore.stocksReport.map((data) => {
     return [
       "'" + getPadLeftText(data.id),
       generateCSVTrim(data.products.name),
@@ -153,8 +153,8 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="stockInStore.stockInReport"
-        :items-length="stockInStore.stockInReport.length"
+        :items="stockInStore.stocksReport"
+        :items-length="stockInStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
         hide-default-footer
         :hide-default-header="mobile"
@@ -220,7 +220,7 @@ onMounted(async () => {
 
             <v-col cols="12" sm="3">
               <v-btn
-                :disabled="stockInStore.stockInReport.length == 0"
+                :disabled="stockInStore.stocksReport.length == 0"
                 class="my-1"
                 prepend-icon="mdi-file-delimited"
                 color="red-darken-4"

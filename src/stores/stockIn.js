@@ -10,13 +10,13 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   // States
   const stockInTable = ref([])
-  const stockInReport = ref([])
+  const stocksReport = ref([])
   const stockInTotal = ref(0)
 
   // Reset State Action
   function $reset() {
     stockInTable.value = []
-    stockInReport.value = []
+    stocksReport.value = []
     stockInTotal.value = 0
   }
 
@@ -50,7 +50,7 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Retrieve Stock In Report
-  async function getStockInReport(tableOptions, { search, product_id, branch_id, purchased_at }) {
+  async function getStocksReport(tableOptions, { search, product_id, branch_id, purchased_at }) {
     const { column, order } = tablePagination(tableOptions, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 
@@ -65,7 +65,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     const { data } = await query
 
     // Set the retrieved data to state
-    stockInReport.value = data
+    stocksReport.value = data
   }
 
   // Count StockIn
@@ -172,11 +172,11 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   return {
     stockInTable,
-    stockInReport,
+    stocksReport,
     stockInTotal,
     $reset,
     getStockInTable,
-    getStockInReport,
+    getStocksReport,
     addStockIn,
     updateStockIn,
     deleteStockIn,

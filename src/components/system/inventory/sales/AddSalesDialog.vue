@@ -1,7 +1,8 @@
 <script setup>
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
-import { requiredValidator, betweenValidator } from '@/utils/validators'
+import { requiredValidator, betweenValidator, isEmpty } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
 import { useSalesStore } from '@/stores/sales'
 import { ref, watch } from 'vue'
@@ -25,6 +26,8 @@ const formAction = ref({
 })
 const refVForm = ref()
 const salesData = ref(null)
+const isConfirmSoldDialog = ref(false)
+const confirmText = ref('')
 
 // Monitor itemData if it has data
 watch(
@@ -64,10 +67,30 @@ const onSubmit = async () => {
 }
 
 // Trigger Validators
-const onFormSubmit = () => {
-  refVForm.value?.validate().then(({ valid }) => {
-    if (valid) onSubmit()
-  })
+const onFormSubmit = async () => {
+  const validationResult = await refVForm.value?.validate()
+
+  if (!validationResult?.valid) return
+
+  const { cash } = formData.value
+  const { overall_price, customer } = salesData.value
+
+  if (cash >= overall_price) {
+    confirmText.value = 'Do you want to proceed with this transaction?'
+    isConfirmSoldDialog.value = true
+    return
+  }
+
+  if (cash < overall_price) {
+    if (!isEmpty(customer)) {
+      confirmText.value = `The amount ${getMoneyText(cash)} is less than the total amount of ${getMoneyText(overall_price)}. 
+        This will be recorded as a partial payment for customer ${customer}. Do you wish to proceed?`
+      isConfirmSoldDialog.value = true
+    } else {
+      formAction.value.formErrorMessage =
+        'Please add a customer or select an existing customer to proceed if you want to record this as a partial payment.'
+    }
+  }
 }
 
 // Form Reset
@@ -150,10 +173,17 @@ const onFormReset = () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            Confirm Sale
+            Confirm
           </v-btn>
         </v-card-actions>
       </v-form>
     </v-card>
   </v-dialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmSoldDialog"
+    title="Confirm Amount"
+    :text="confirmText"
+    @confirm="onSubmit"
+  ></ConfirmDialog>
 </template>
