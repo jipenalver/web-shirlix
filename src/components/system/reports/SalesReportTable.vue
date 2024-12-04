@@ -2,7 +2,6 @@
 import { tableHeaders } from './salesReportTableUtils'
 import { useSalesStore } from '@/stores/sales'
 import { useBranchesStore } from '@/stores/branches'
-import { useProductsStore } from '@/stores/products'
 import {
   getAvatarText,
   getMoneyText,
@@ -20,7 +19,6 @@ const date = useDate()
 const { mobile } = useDisplay()
 
 // Use Pinia Store
-const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
 const salesStore = useSalesStore()
 
@@ -33,8 +31,8 @@ const tableOptions = ref({
 })
 const tableFilters = ref({
   search: '',
+  customer_id: null,
   branch_id: null,
-  product_id: null,
   created_at: null
 })
 
@@ -85,7 +83,7 @@ onUnmounted(() => {
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
-  if (productsStore.products.length == 0) await productsStore.getProducts()
+  if (salesStore.customers.length == 0) await salesStore.getCustomers()
 })
 </script>
 
@@ -110,11 +108,11 @@ onMounted(async () => {
           <v-row dense>
             <v-col cols="12" sm="4">
               <v-autocomplete
-                v-model="tableFilters.product_id"
-                :items="productsStore.products"
+                v-model="tableFilters.customer_id"
+                :items="salesStore.customers"
                 density="compact"
-                label="Product"
-                item-title="name"
+                label="Customer"
+                item-title="customer"
                 item-value="id"
                 clearable
                 @update:model-value="onFilterItems"

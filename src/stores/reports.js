@@ -3,19 +3,21 @@ import { defineStore } from 'pinia'
 import { supabase, tablePagination } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
 
-export const useStocksStore = defineStore('stocks', () => {
+export const useReportsStore = defineStore('reports', () => {
   // Use Pinia Store
   const authStore = useAuthUserStore()
 
   // States
   const stocksReport = ref([])
+  const salesReport = ref([])
 
   // Reset State Action
   function $reset() {
     stocksReport.value = []
+    salesReport.value = []
   }
 
-  // Retrieve Stock In Report
+  // Retrieve Stocks Report
   async function getStocksReport(tableOptions, { product_id, branch_id }) {
     const { column, order } = tablePagination(tableOptions, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
 
@@ -33,7 +35,7 @@ export const useStocksStore = defineStore('stocks', () => {
     stocksReport.value = data
   }
 
-  // Filter StockIn
+  // Filter Stocks
   async function getStocksFilter(query, { product_id, branch_id }) {
     if (product_id) query = query.eq('product_id', product_id)
 
@@ -54,9 +56,21 @@ export const useStocksStore = defineStore('stocks', () => {
     return query
   }
 
+  // Retrieve Sales
+  async function getSalesReport() {
+    const { data } = await supabase
+      .from('sales')
+      .select('*, sale_products(*, products(name, image_url))')
+      .order('created_at', { ascending: false })
+
+    salesReport.value = data
+  }
+
   return {
     stocksReport,
+    salesReport,
     $reset,
-    getStocksReport
+    getStocksReport,
+    getSalesReport
   }
 })

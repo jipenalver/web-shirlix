@@ -9,7 +9,6 @@ export const useSalesStore = defineStore('sales', () => {
   const authStore = useAuthUserStore()
 
   // States
-  const salesReport = ref([])
   const customers = ref([])
   const stocks = ref([])
   const stocksCart = ref(
@@ -33,11 +32,6 @@ export const useSalesStore = defineStore('sales', () => {
   function $resetCart() {
     stocksCart.value = []
     localStorage.removeItem('stocksCart')
-  }
-
-  // Reset State Stocks
-  function $resetReport() {
-    salesReport.value = []
   }
 
   // Retrieve Stocks Table
@@ -85,16 +79,6 @@ export const useSalesStore = defineStore('sales', () => {
       .order('customer', { ascending: true })
 
     customers.value = data
-  }
-
-  // Get Sales
-  async function getSalesReport() {
-    const { data } = await supabase
-      .from('sales')
-      .select('*, sale_products(*, products(name, image_url))')
-      .order('created_at', { ascending: false })
-
-    salesReport.value = data
   }
 
   // Add Sales
@@ -146,14 +130,11 @@ export const useSalesStore = defineStore('sales', () => {
     stocksCart,
     stocksCartTotal,
     stocksExactTotal,
-    salesReport,
     customers,
     $reset,
     $resetCart,
-    $resetReport,
     getStocks,
     getCustomers,
-    getSalesReport,
     addSales
   }
 })

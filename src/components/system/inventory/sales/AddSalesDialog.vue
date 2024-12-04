@@ -60,7 +60,7 @@ const onSubmit = async () => {
 
     // Reset Cart State
     salesStore.$resetCart()
-    salesStore.getCustomers()
+    await salesStore.getCustomers()
 
     // Emit to Reset Components
     emit('resetCart')

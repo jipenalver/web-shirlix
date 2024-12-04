@@ -1,6 +1,6 @@
 <script setup>
 import { tableHeaders } from './stocksReportTableUtils'
-import { useStocksStore } from '@/stores/stocks'
+import { useReportsStore } from '@/stores/reports'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import {
@@ -19,7 +19,7 @@ const { mobile } = useDisplay()
 // Use Pinia Store
 const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
-const stocksStore = useStocksStore()
+const reportsStore = useReportsStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -54,7 +54,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await stocksStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await reportsStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -66,7 +66,7 @@ const csvData = () => {
   const headers = tableHeaders.map((header) => header.title).join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = stocksStore.stocksReport.map((data) => {
+  const rows = reportsStore.stocksReport.map((data) => {
     return [
       generateCSVTrim(data.products.name),
       data.unit_cost,
@@ -90,7 +90,7 @@ const onGenerate = () => {
 
 // If Component is Unloaded
 onUnmounted(() => {
-  stocksStore.$reset()
+  reportsStore.$reset()
 })
 
 // Load Functions during component rendering
@@ -110,8 +110,8 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="stocksStore.stocksReport"
-        :items-length="stocksStore.stocksReport.length"
+        :items="reportsStore.stocksReport"
+        :items-length="reportsStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
         hide-default-footer
         :hide-default-header="mobile"
@@ -165,7 +165,7 @@ onMounted(async () => {
 
             <v-col cols="12" sm="3">
               <v-btn
-                :disabled="stocksStore.stocksReport.length == 0"
+                :disabled="reportsStore.stocksReport.length == 0"
                 class="my-1"
                 prepend-icon="mdi-file-delimited"
                 color="red-darken-4"

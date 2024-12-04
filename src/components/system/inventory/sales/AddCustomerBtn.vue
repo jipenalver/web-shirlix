@@ -37,8 +37,8 @@ const onFormReset = () => {
 }
 
 // Load Functions during component rendering
-onMounted(() => {
-  if (salesStore.customers.length == 0) salesStore.getCustomers()
+onMounted(async () => {
+  if (salesStore.customers.length == 0) await salesStore.getCustomers()
 })
 </script>
 
