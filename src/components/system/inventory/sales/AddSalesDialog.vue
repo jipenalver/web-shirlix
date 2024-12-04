@@ -26,7 +26,7 @@ const formAction = ref({
 })
 const refVForm = ref()
 const salesData = ref(null)
-const isConfirmSoldDialog = ref(false)
+const isConfirmDialog = ref(false)
 const confirmText = ref('')
 
 // Monitor itemData if it has data
@@ -77,7 +77,7 @@ const onFormSubmit = async () => {
 
   if (cash >= overall_price) {
     confirmText.value = 'Do you want to proceed with this transaction?'
-    isConfirmSoldDialog.value = true
+    isConfirmDialog.value = true
     return
   }
 
@@ -85,7 +85,7 @@ const onFormSubmit = async () => {
     if (!isEmpty(customer)) {
       confirmText.value = `The amount ${getMoneyText(cash)} is less than the total amount of ${getMoneyText(overall_price)}. 
         This will be recorded as a partial payment for customer ${customer}. Do you wish to proceed?`
-      isConfirmSoldDialog.value = true
+      isConfirmDialog.value = true
     } else {
       formAction.value.formErrorMessage =
         'Please add a customer or select an existing customer to proceed if you want to record this as a partial payment.'
@@ -96,6 +96,7 @@ const onFormSubmit = async () => {
 // Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
+  formData.value = { ...formDataDefault }
   emit('update:isDialogVisible', false)
 }
 </script>
@@ -181,7 +182,7 @@ const onFormReset = () => {
   </v-dialog>
 
   <ConfirmDialog
-    v-model:is-dialog-visible="isConfirmSoldDialog"
+    v-model:is-dialog-visible="isConfirmDialog"
     title="Confirm Amount"
     :text="confirmText"
     @confirm="onSubmit"

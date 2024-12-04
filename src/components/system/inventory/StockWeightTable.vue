@@ -312,7 +312,7 @@ onMounted(async () => {
               variant="text"
               density="comfortable"
               @click="onUpdateSegregate(item)"
-              :disabled="!item.is_reweighed || item.is_portion"
+              :disabled="item.is_portion || item.is_segregated"
               icon
             >
               <v-icon icon="mdi-scale"></v-icon>

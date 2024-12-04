@@ -335,7 +335,7 @@ onMounted(async () => {
               variant="text"
               density="comfortable"
               @click="onDelete(item.id)"
-              :disabled="item.is_segregated"
+              :disabled="item.is_portion || item.is_segregated"
               icon
             >
               <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
