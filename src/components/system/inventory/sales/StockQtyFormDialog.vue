@@ -91,7 +91,7 @@ const onFormReset = () => {
                 type="number"
                 min="1"
                 :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
-                hint="Please select correct metric"
+                hint="Please input correct value"
               ></v-text-field>
             </v-col>
 

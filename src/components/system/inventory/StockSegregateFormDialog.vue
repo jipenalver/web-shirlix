@@ -76,8 +76,7 @@ const onAddPortion = () => {
     purchased_at: formData.value.purchased_at,
     expired_at: formData.value.expired_at,
     branch_id: formData.value.branch_id,
-    stock_in_id: formData.value.id,
-    qty: 0
+    stock_in_id: formData.value.id
   })
   getRemainingQty()
 }
@@ -92,7 +91,7 @@ const onRemoveStock = () => {
 const getRemainingQty = () => {
   remainingQty.value = getPreciseNumber(
     (formData.value.qty_reweighed || formData.value.qty) -
-      formData.value.stocks.reduce((acc, cur) => acc + Number(cur.qty || 0), 0)
+      formData.value.stocks.reduce((acc, cur) => acc + Number(cur.qty), 0)
   )
 }
 

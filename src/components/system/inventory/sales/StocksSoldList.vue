@@ -33,6 +33,7 @@ const isConfirmDeleteDialog = ref(false)
 const isConfirmSoldDialog = ref(false)
 const windowSize = ref({ x: 0, y: 0 })
 const soldData = ref(null)
+const resetKey = ref(0)
 
 // Set Discounted Price
 const onDiscountPrice = (item) => {
@@ -87,6 +88,7 @@ const onProceed = () => {
   soldData.value = {
     ...formData.value,
     overall_price: formData.value.discount == 0 ? salesStore.stocksCartTotal : getDiscountedTotal(),
+    exact_price: salesStore.stocksExactTotal,
     stocks: salesStore.stocksCart
   }
 }
@@ -94,6 +96,12 @@ const onProceed = () => {
 // Retrieve Window Size
 const onResize = () => {
   windowSize.value = { x: window.innerWidth, y: window.innerHeight }
+}
+
+// Form Reset
+const onResetForm = () => {
+  formData.value = { ...formDataDefault }
+  resetKey.value++
 }
 
 // Load Functions during component rendering
@@ -106,7 +114,7 @@ onMounted(() => {
   <section v-resize="onResize">
     <v-row dense>
       <v-col cols="12">
-        <AddCustomerBtn @form-data="onAddCustomer"></AddCustomerBtn>
+        <AddCustomerBtn :key="resetKey" @form-data="onAddCustomer"></AddCustomerBtn>
       </v-col>
     </v-row>
 
@@ -171,7 +179,7 @@ onMounted(() => {
 
     <v-row class="position-absolute bottom-0 left-0 right-0 pa-1 mx-1 bg-background" dense>
       <v-col cols="12">
-        <AddDiscountBtn @form-data="onAddDiscount"></AddDiscountBtn>
+        <AddDiscountBtn :key="resetKey" @form-data="onAddDiscount"></AddDiscountBtn>
       </v-col>
 
       <v-divider class="my-3"></v-divider>
@@ -218,6 +226,7 @@ onMounted(() => {
   <AddSalesDialog
     v-model:is-dialog-visible="isConfirmSoldDialog"
     :sold-data="soldData"
+    @reset-cart="onResetForm"
   ></AddSalesDialog>
 </template>
 

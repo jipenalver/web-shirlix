@@ -9,7 +9,7 @@ import { ref, watch } from 'vue'
 
 const props = defineProps(['isDialogVisible', 'soldData'])
 
-const emit = defineEmits(['update:isDialogVisible'])
+const emit = defineEmits(['update:isDialogVisible', 'resetCart'])
 
 // Use Pinia Store
 const salesStore = useSalesStore()
@@ -42,6 +42,9 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
+  if (formData.value.cash < salesData.value.overall_price)
+    salesData.value = { ...salesData.value, payment: formData.value.cash }
+
   const { data, error } = await salesStore.addSales(salesData.value)
 
   if (error) {
@@ -58,6 +61,9 @@ const onSubmit = async () => {
     // Reset Cart State
     salesStore.$resetCart()
     salesStore.getCustomers()
+
+    // Emit to Reset Components
+    emit('resetCart')
 
     // Form Reset and Close Dialog
     setTimeout(() => {
@@ -82,8 +88,8 @@ const onFormSubmit = async () => {
   }
 
   if (cash < overall_price) {
-    if (!isEmpty(customer)) {
-      confirmText.value = `The amount ${getMoneyText(cash)} is less than the total amount of ${getMoneyText(overall_price)}. 
+    if (!isEmpty(customer.trim())) {
+      confirmText.value = `The amount ${getMoneyText(cash)} is less than the total amount of ${getMoneyText(overall_price)}.
         This will be recorded as a partial payment for customer ${customer}. Do you wish to proceed?`
       isConfirmDialog.value = true
     } else {
@@ -116,32 +122,28 @@ const onFormReset = () => {
               <h3>Customer</h3>
 
               <h3>
-                {{ salesData.customer || '-' }}
+                {{ isEmpty(salesData.customer.trim()) ? '-' : salesData.customer }}
               </h3>
             </v-col>
 
             <v-divider class="my-3"></v-divider>
 
             <v-col cols="12" class="d-flex justify-space-between">
-              <h3>Discount</h3>
+              <h3>Total Amount w/o Discount</h3>
 
               <h3>
-                {{
-                  salesData.is_cash_discount
-                    ? getMoneyText(salesData.discount)
-                    : salesData.discount + '%'
-                }}
+                {{ getMoneyText(getPreciseNumber(salesData.exact_price)) }}
               </h3>
             </v-col>
 
             <v-divider class="my-3"></v-divider>
 
             <v-col cols="12" class="d-flex justify-space-between">
-              <h3>Payable Amount</h3>
+              <h1>Payable Amount</h1>
 
-              <h3>
+              <h1>
                 {{ getMoneyText(getPreciseNumber(salesData.overall_price)) }}
-              </h3>
+              </h1>
             </v-col>
 
             <v-divider class="my-3"></v-divider>
@@ -150,11 +152,28 @@ const onFormReset = () => {
               <v-text-field
                 v-model="formData.cash"
                 prepend-inner-icon="mdi-currency-php"
-                label="Name"
+                label="Amount Tendered"
                 type="number"
+                variant="underlined"
                 min="0"
                 :rules="[requiredValidator, betweenValidator(formData.cash, 0.001, 999999.999)]"
+                autofocus
+                reverse
               ></v-text-field>
+            </v-col>
+
+            <v-divider class="my-3"></v-divider>
+
+            <v-col cols="12" class="d-flex justify-space-between">
+              <h2>Change</h2>
+
+              <h2>
+                {{
+                  formData.cash - salesData.overall_price < 0
+                    ? getMoneyText(0)
+                    : getMoneyText(getPreciseNumber(formData.cash - salesData.overall_price))
+                }}
+              </h2>
             </v-col>
           </v-row>
         </v-card-text>
