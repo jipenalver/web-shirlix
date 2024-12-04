@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { supabase } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
 import { computed, ref } from 'vue'
+import { isEmpty } from '@/utils/validators'
 
 export const useSalesStore = defineStore('sales', () => {
   // Use Pinia Store
@@ -99,7 +100,7 @@ export const useSalesStore = defineStore('sales', () => {
 
     // Check if new customer
     let customer_id = null
-    if (typeof customer === 'string') {
+    if (typeof customer === 'string' && !isEmpty(customer)) {
       const { data } = await supabase.from('customers').insert([{ customer }]).select()
 
       customer_id = data[0].id

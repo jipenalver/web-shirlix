@@ -1,5 +1,6 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
+import AddSalesDialog from './AddSalesDialog.vue'
 import AddCustomerBtn from './AddCustomerBtn.vue'
 import AddDiscountBtn from './AddDiscountBtn.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
@@ -31,6 +32,7 @@ const deleteIndex = ref(null)
 const isConfirmDeleteDialog = ref(false)
 const isConfirmSoldDialog = ref(false)
 const windowSize = ref({ x: 0, y: 0 })
+const soldData = ref(null)
 
 // Set Discounted Price
 const onDiscountPrice = (item) => {
@@ -68,7 +70,7 @@ const onAddDiscount = (value) => {
 }
 
 // Calculate Total Overall
-const onCalcTotal = () => {
+const getDiscountedTotal = () => {
   if (formData.value.is_cash_discount)
     return salesStore.stocksCartTotal - Number(formData.value.discount)
   else
@@ -79,37 +81,13 @@ const onCalcTotal = () => {
 }
 
 // Proceed Sales
-const onConfirmProceed = async () => {
-  // Reset Form Action utils
-  formAction.value = { ...formActionDefault, formProcess: true }
+const onProceed = () => {
+  isConfirmSoldDialog.value = true
 
-  const transformedData = {
+  soldData.value = {
     ...formData.value,
-    overall_price: formData.value.discount == 0 ? salesStore.stocksCartTotal : onCalcTotal(),
+    overall_price: formData.value.discount == 0 ? salesStore.stocksCartTotal : getDiscountedTotal(),
     stocks: salesStore.stocksCart
-  }
-
-  const { data, error } = await salesStore.addSales(transformedData)
-
-  if (error) {
-    // Add Error Message and Status Code
-    formAction.value.formErrorMessage = error.message
-    formAction.value.formStatus = error.status
-
-    // Turn off processing
-    formAction.value.formProcess = false
-  } else if (data) {
-    // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Sold Products.'
-
-    // Reset Cart State
-    salesStore.$resetCart()
-    salesStore.getCustomers()
-
-    // Reset Form Action utils
-    setTimeout(() => {
-      formAction.value = { ...formActionDefault }
-    }, 5000)
   }
 }
 
@@ -205,7 +183,7 @@ onMounted(() => {
           {{
             formData.discount == 0
               ? getMoneyText(getPreciseNumber(salesStore.stocksCartTotal))
-              : onCalcTotal()
+              : getMoneyText(getPreciseNumber(getDiscountedTotal()))
           }}
         </h3>
       </v-col>
@@ -217,7 +195,7 @@ onMounted(() => {
           variant="elevated"
           prepend-icon="mdi-location-enter"
           color="red-darken-4"
-          @click="isConfirmSoldDialog = true"
+          @click="onProceed"
           :disabled="formAction.formProcess || salesStore.stocksCart.length == 0"
           :loading="formAction.formProcess"
           block
@@ -237,12 +215,10 @@ onMounted(() => {
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 
-  <ConfirmDialog
+  <AddSalesDialog
     v-model:is-dialog-visible="isConfirmSoldDialog"
-    title="Confirm Stocks Sold"
-    text="Are you sure you want to continue? Please always double check the stocks sold."
-    @confirm="onConfirmProceed"
-  ></ConfirmDialog>
+    :sold-data="soldData"
+  ></AddSalesDialog>
 </template>
 
 <style scoped>

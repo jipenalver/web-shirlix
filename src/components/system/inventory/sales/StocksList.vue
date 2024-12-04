@@ -15,7 +15,7 @@ const listFilters = ref({
   search: '',
   branch_id: null
 })
-const listData = ref([])
+const listStocks = ref([])
 const itemData = ref(null)
 const isFormDialogVisible = ref(false)
 
@@ -57,14 +57,22 @@ const onSearchItems = async () => {
 const onLoadItems = async ({ search, branch_id }) => {
   await salesStore.getStocks({ branch_id })
 
-  listData.value = salesStore.stocks.filter((item) =>
+  // Filter Stocks by Search
+  const filteredStocks = salesStore.stocks.filter((item) =>
     item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase())
   )
+
+  // Remove Duplicates in Stocks
+  const uniqueStocks = Array.from(
+    new Map(filteredStocks.map((item) => [item.products.name.toLowerCase(), item])).values()
+  )
+
+  listStocks.value = uniqueStocks
 }
 
 // Load Functions during component rendering
 onMounted(async () => {
-  if (listData.value.length == 0) onLoadItems(listFilters.value)
+  if (listStocks.value.length == 0) onLoadItems(listFilters.value)
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
 })
 </script>
@@ -104,7 +112,7 @@ onMounted(async () => {
       </v-card>
     </v-col>
 
-    <v-col cols="12" sm="6" md="3" v-for="(item, index) in listData" :key="index">
+    <v-col cols="12" sm="6" md="3" v-for="(item, index) in listStocks" :key="index">
       <v-card @click="onAddQty(item)">
         <v-img
           height="150"
