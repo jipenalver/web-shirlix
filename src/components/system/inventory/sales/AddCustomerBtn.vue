@@ -73,6 +73,7 @@ onMounted(async () => {
         @click:append-inner="onFormReset"
         @click:append="onCancel"
         @update:model-value="onEmitForm"
+        return-object
         hide-details
       ></v-autocomplete>
     </div>

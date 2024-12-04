@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase, tablePagination } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
+import { dateShiftFixValue } from '@/utils/helpers'
 
 export const useReportsStore = defineStore('reports', () => {
   // Use Pinia Store
@@ -57,13 +58,51 @@ export const useReportsStore = defineStore('reports', () => {
   }
 
   // Retrieve Sales
-  async function getSalesReport() {
-    const { data } = await supabase
-      .from('sales')
-      .select('*, sale_products(*, products(name, image_url))')
-      .order('created_at', { ascending: false })
+  async function getSalesReport(tableOptions, { customer_id, branch_id, created_at }) {
+    const { column, order } = tablePagination(tableOptions, 'created_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
 
+    let query = supabase
+      .from('sales')
+      .select('*, customers( customer ), branches( name )')
+      .order(column, { ascending: order })
+
+    query = getSalesFilter(query, { customer_id, branch_id, created_at })
+
+    // Execute the query
+    const { data } = await query
+
+    // Set the retrieved data to state
     salesReport.value = data
+  }
+
+  // Filter Stocks
+  async function getSalesFilter(query, { customer_id, branch_id, created_at }) {
+    if (customer_id) query = query.eq('customer_id', customer_id)
+
+    if (branch_id) query = query.eq('branch_id', branch_id)
+    // If branch is not set, get the branch(es) of the user
+    else {
+      const { data } = await supabase
+        .from('branches')
+        .select('id')
+        .in('name', authStore.userData.branch.split(','))
+
+      query = query.in(
+        'branch_id',
+        data.map((b) => b.id)
+      )
+    }
+
+    if (created_at) {
+      if (created_at.length === 1) query = query.eq('created_at', dateShiftFixValue(created_at[0]))
+      else {
+        query = query
+          .gte('created_at', dateShiftFixValue(created_at[0])) // Greater than or equal to `from` date
+          .lte('created_at', dateShiftFixValue(created_at[created_at.length - 1])) // Less than or equal to `to` date
+      }
+    }
+
+    return query
   }
 
   return {

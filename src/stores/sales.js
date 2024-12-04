@@ -98,7 +98,14 @@ export const useSalesStore = defineStore('sales', () => {
     // Add Sale Report
     const { data } = await supabase
       .from('sales')
-      .insert([{ ...salesData, user_id: authStore.userData.id, customer_id }])
+      .insert([
+        {
+          ...salesData,
+          user_id: authStore.userData.id,
+          customer_id,
+          branch_id: stocks[0].product.branch_id
+        }
+      ])
       .select()
 
     const sale_id = data[0].id

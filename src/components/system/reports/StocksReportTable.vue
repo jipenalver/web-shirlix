@@ -83,7 +83,7 @@ const csvData = () => {
 
 // Generate CSV
 const onGenerate = () => {
-  const filename = new Date().toISOString() + '-stockin-report'
+  const filename = new Date().toISOString() + '-stocks-report'
 
   generateCSV(filename, csvData())
 }

@@ -26,6 +26,7 @@ const formAction = ref({
 })
 const refVForm = ref()
 const salesData = ref(null)
+const customerName = ref('')
 const isConfirmDialog = ref(false)
 const confirmText = ref('')
 
@@ -34,6 +35,12 @@ watch(
   () => props.soldData,
   () => {
     salesData.value = props.soldData
+    const { customer } = salesData.value
+    customerName.value = customer
+      ? typeof customer === 'string'
+        ? customer.trim()
+        : customer.customer
+      : '-'
   }
 )
 
@@ -79,7 +86,7 @@ const onFormSubmit = async () => {
   if (!validationResult?.valid) return
 
   const { cash } = formData.value
-  const { overall_price, customer } = salesData.value
+  const { overall_price } = salesData.value
 
   if (cash >= overall_price) {
     confirmText.value = 'Do you want to proceed with this transaction?'
@@ -88,9 +95,9 @@ const onFormSubmit = async () => {
   }
 
   if (cash < overall_price) {
-    if (!isEmpty(customer.trim())) {
+    if (!isEmpty(customerName.value)) {
       confirmText.value = `The amount ${getMoneyText(cash)} is less than the total amount of ${getMoneyText(overall_price)}.
-        This will be recorded as a partial payment for customer ${customer}. Do you wish to proceed?`
+        This will be recorded as a partial payment for customer ${customerName.value}. Do you wish to proceed?`
       isConfirmDialog.value = true
     } else {
       formAction.value.formErrorMessage =
@@ -122,7 +129,7 @@ const onFormReset = () => {
               <h3>Customer</h3>
 
               <h3>
-                {{ isEmpty(salesData.customer.trim()) ? '-' : salesData.customer }}
+                {{ customerName }}
               </h3>
             </v-col>
 
