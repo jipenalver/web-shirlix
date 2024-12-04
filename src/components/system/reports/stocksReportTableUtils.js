@@ -1,11 +1,6 @@
 // Table Headers
 export const tableHeaders = [
   {
-    title: 'ID',
-    key: 'id',
-    align: 'start'
-  },
-  {
     title: 'Product',
     key: 'products',
     sortable: false,
@@ -13,31 +8,27 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Original Weight / Qty',
-    key: 'qty',
+    title: 'Total Weight / Qty',
+    key: 'qty_total',
+    sortable: false,
     align: 'start'
   },
   {
-    title: 'Re-weighed Weight / Qty',
-    key: 'qty_reweighed',
+    title: 'Sold Weight / Qty',
+    key: 'qty_sold',
+    sortable: false,
     align: 'start'
   },
   {
-    title: 'Weight Loss / Difference',
-    key: 'weight_loss',
+    title: 'Remaining Weight / Qty',
+    key: 'qty_remaining',
     sortable: false,
     align: 'start'
   },
 
   {
-    title: 'Purchased Date',
-    key: 'purchased_at',
-    align: 'start'
-  },
-
-  {
-    title: 'Status',
-    key: 'status',
+    title: 'Branch',
+    key: 'branch_id',
     sortable: false,
     align: 'center'
   }

@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
-import { dateShiftFixValue } from '@/utils/helpers'
+import { supabase, tablePagination } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
 
 export const useStocksStore = defineStore('stocks', () => {
@@ -17,16 +16,15 @@ export const useStocksStore = defineStore('stocks', () => {
   }
 
   // Retrieve Stock In Report
-  async function getStocksReport(tableOptions, { search, product_id, branch_id, purchased_at }) {
+  async function getStocksReport(tableOptions, { product_id, branch_id }) {
     const { column, order } = tablePagination(tableOptions, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
-    search = tableSearch(search) // Handle Search if null turn to empty string
 
     let query = supabase
       .from('stock_ins')
       .select('*, branches( name ), products( name, image_url, description )')
       .order(column, { ascending: order })
 
-    query = getStocksFilter(query, { search, product_id, branch_id, purchased_at })
+    query = getStocksFilter(query, { product_id, branch_id })
 
     // Execute the query
     const { data } = await query
@@ -36,13 +34,7 @@ export const useStocksStore = defineStore('stocks', () => {
   }
 
   // Filter StockIn
-  async function getStocksFilter(query, { search, product_id, branch_id, purchased_at }) {
-    if (search) {
-      if (search.length >= 4 && !isNaN(search))
-        query = query.or('id.eq.' + search + ', stock_in_id.eq.' + search)
-      else query = query.or('supplier.ilike.%' + search + '%, remarks.ilike.%' + search + '%')
-    }
-
+  async function getStocksFilter(query, { product_id, branch_id }) {
     if (product_id) query = query.eq('product_id', product_id)
 
     if (branch_id) query = query.eq('branch_id', branch_id)
@@ -57,16 +49,6 @@ export const useStocksStore = defineStore('stocks', () => {
         'branch_id',
         data.map((b) => b.id)
       )
-    }
-
-    if (purchased_at) {
-      if (purchased_at.length === 1)
-        query = query.eq('purchased_at', dateShiftFixValue(purchased_at[0]))
-      else {
-        query = query
-          .gte('purchased_at', dateShiftFixValue(purchased_at[0])) // Greater than or equal to `from` date
-          .lte('purchased_at', dateShiftFixValue(purchased_at[purchased_at.length - 1])) // Less than or equal to `to` date
-      }
     }
 
     return query

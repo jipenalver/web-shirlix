@@ -1,6 +1,6 @@
 <script setup>
 import { tableHeaders } from './stocksReportTableUtils'
-import { useStockInStore } from '@/stores/stockIn'
+import { useStocksStore } from '@/stores/stocks'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import {
@@ -8,21 +8,18 @@ import {
   getMoneyText,
   getPadLeftText,
   generateCSV,
-  generateCSVTrim,
-  getPreciseNumber
+  generateCSVTrim
 } from '@/utils/helpers'
-import { useDate } from 'vuetify'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
-const date = useDate()
 const { mobile } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
-const stockInStore = useStockInStore()
+const stocksStore = useStocksStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -34,16 +31,8 @@ const tableOptions = ref({
 const tableFilters = ref({
   search: '',
   branch_id: null,
-  product_id: null,
-  purchased_at: null
+  product_id: null
 })
-
-// Retrieve Data based on Date
-const onFilterDate = (isCleared = false) => {
-  if (isCleared) tableFilters.value.purchased_at = null
-
-  onLoadItems(tableOptions.value, tableFilters.value)
-}
 
 // Retrieve Data based on Filter
 const onFilterItems = () => {
@@ -65,7 +54,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await stockInStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await stocksStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -75,53 +64,21 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 const csvData = () => {
   // Get the headers from utils
   const headers = tableHeaders.map((header) => header.title).join(',')
-  const addHeaders = [
-    'Unit Cost',
-    'Portion of ID',
-    'Unit Price',
-    'Added Date',
-    'Expiration Date',
-    'Supplier',
-    'Branch',
-    'Remarks'
-  ]
-  const newHeaders = [headers, addHeaders].join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = stockInStore.stocksReport.map((data) => {
+  const rows = stocksStore.stocksReport.map((data) => {
     return [
-      "'" + getPadLeftText(data.id),
       generateCSVTrim(data.products.name),
-
-      data.qty + ' ' + data.qty_metric,
-      data.qty_reweighed ? data.qty_reweighed + ' ' + data.qty_metric : '-',
-      data.qty_reweighed
-        ? getPreciseNumber(data.qty - data.qty_reweighed) + ' ' + data.qty_metric
-        : '-',
-
-      data.purchased_at ? generateCSVTrim(date.format(data.purchased_at, 'fullDate')) : '',
-      data.is_portion
-        ? 'Stock Portion'
-        : data.is_segregated
-          ? 'Segregated'
-          : data.is_reweighed
-            ? 'Reweighed'
-            : 'For Re-Weighing',
-
       data.unit_cost,
       data.stock_in_id ? "'" + getPadLeftText(data.stock_in_id) : '',
       data.unit_price ? data.unit_price + ' per ' + data.unit_price_metric : '',
 
-      generateCSVTrim(date.format(data.created_at, 'fullDateTime')),
-      data.expired_at ? generateCSVTrim(date.format(data.expired_at, 'fullDate')) : 'n/a',
-      generateCSVTrim(data.supplier),
-      generateCSVTrim(data.branches.name),
-      generateCSVTrim(data.remarks)
+      generateCSVTrim(data.branches.name)
     ].join(',')
   })
 
   // Combine headers and csv data
-  return [newHeaders, ...rows].join('\n')
+  return [headers, ...rows].join('\n')
 }
 
 // Generate CSV
@@ -133,7 +90,7 @@ const onGenerate = () => {
 
 // If Component is Unloaded
 onUnmounted(() => {
-  stockInStore.$reset()
+  stocksStore.$reset()
 })
 
 // Load Functions during component rendering
@@ -153,8 +110,8 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="stockInStore.stocksReport"
-        :items-length="stockInStore.stocksReport.length"
+        :items="stocksStore.stocksReport"
+        :items-length="stocksStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
         hide-default-footer
         :hide-default-header="mobile"
@@ -162,7 +119,7 @@ onMounted(async () => {
       >
         <template #top>
           <v-row dense>
-            <v-col cols="12" sm="4">
+            <v-col cols="12" sm="6">
               <v-autocomplete
                 v-model="tableFilters.product_id"
                 :items="productsStore.products"
@@ -175,7 +132,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" sm="4">
+            <v-col cols="12" sm="6">
               <v-autocomplete
                 v-model="tableFilters.branch_id"
                 :items="branchesStore.branches"
@@ -186,18 +143,6 @@ onMounted(async () => {
                 clearable
                 @update:model-value="onFilterItems"
               ></v-autocomplete>
-            </v-col>
-
-            <v-col cols="12" sm="4">
-              <v-date-input
-                v-model="tableFilters.purchased_at"
-                density="compact"
-                label="Date Purchased"
-                multiple="range"
-                clearable
-                @click:clear="onFilterDate(true)"
-                @update:model-value="onFilterDate(false)"
-              ></v-date-input>
             </v-col>
           </v-row>
 
@@ -211,7 +156,7 @@ onMounted(async () => {
                 v-model="tableFilters.search"
                 density="compact"
                 prepend-inner-icon="mdi-magnify"
-                placeholder="Search by ID, Supplier or Remarks"
+                placeholder="Search Name"
                 clearable
                 @click:clear="onSearchItems"
                 @input="onSearchItems"
@@ -220,7 +165,7 @@ onMounted(async () => {
 
             <v-col cols="12" sm="3">
               <v-btn
-                :disabled="stockInStore.stocksReport.length == 0"
+                :disabled="stocksStore.stocksReport.length == 0"
                 class="my-1"
                 prepend-icon="mdi-file-delimited"
                 color="red-darken-4"
@@ -233,12 +178,6 @@ onMounted(async () => {
           </v-row>
 
           <v-divider class="my-5"></v-divider>
-        </template>
-
-        <template #item.id="{ item }">
-          <span class="font-weight-bold">
-            {{ getPadLeftText(item.id) }}
-          </span>
         </template>
 
         <template #item.products="{ item }">
@@ -287,62 +226,22 @@ onMounted(async () => {
           </div>
         </template>
 
-        <template #item.qty="{ item }">
-          <span class="font-weight-bold">
-            {{ item.qty + ' ' + item.qty_metric }}
-          </span>
+        <template #item.qty_total="{ item }">
+          <span class="font-weight-bold"> </span>
         </template>
 
-        <template #item.qty_reweighed="{ item }">
-          <span class="font-weight-bold">
-            {{ item.qty_reweighed ? item.qty_reweighed + ' ' + item.qty_metric : '-' }}
-          </span>
+        <template #item.qty_sold="{ item }">
+          <span class="font-weight-bold"> </span>
         </template>
 
-        <template #item.weight_loss="{ item }">
-          <span class="font-weight-bold">
-            {{
-              item.qty_reweighed
-                ? getPreciseNumber(item.qty - item.qty_reweighed) + ' ' + item.qty_metric
-                : '-'
-            }}
-          </span>
+        <template #item.qty_remaining="{ item }">
+          <span class="font-weight-bold"> </span>
         </template>
 
-        <template #item.purchased_at="{ item }">
+        <template #item.branch_id="{ item }">
           <span class="font-weight-bold">
-            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
+            {{ item.branches.name }}
           </span>
-        </template>
-
-        <template #item.status="{ item }">
-          <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
-            {{
-              item.is_portion
-                ? 'Stock Portion'
-                : item.is_segregated
-                  ? 'Segregated'
-                  : item.is_reweighed
-                    ? 'Reweighed'
-                    : 'For Re-Weighing'
-            }}
-
-            <v-tooltip activator="parent" location="top" open-on-click>
-              <ul class="ms-2">
-                <li>
-                  <span class="font-weight-bold">Added Date:</span>
-                  {{ date.format(item.created_at, 'fullDateTime') }}
-                </li>
-                <li>
-                  <span class="font-weight-bold">Expiration Date:</span>
-                  {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
-                </li>
-                <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
-                <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
-                <li><span class="font-weight-bold">Remarks:</span> {{ item.remarks }}</li>
-              </ul>
-            </v-tooltip>
-          </v-chip>
         </template>
       </v-data-table-server>
     </v-col>

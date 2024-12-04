@@ -10,13 +10,11 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   // States
   const stockInTable = ref([])
-  const stocksReport = ref([])
   const stockInTotal = ref(0)
 
   // Reset State Action
   function $reset() {
     stockInTable.value = []
-    stocksReport.value = []
     stockInTotal.value = 0
   }
 
@@ -47,25 +45,6 @@ export const useStockInStore = defineStore('stockIn', () => {
     // Set the retrieved data to state
     stockInTable.value = data
     stockInTotal.value = count
-  }
-
-  // Retrieve Stock In Report
-  async function getStocksReport(tableOptions, { search, product_id, branch_id, purchased_at }) {
-    const { column, order } = tablePagination(tableOptions, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
-    search = tableSearch(search) // Handle Search if null turn to empty string
-
-    let query = supabase
-      .from('stock_ins')
-      .select('*, branches( name ), products( name, image_url, description )')
-      .order(column, { ascending: order })
-
-    query = getStockInFilter(query, { search, product_id, branch_id, purchased_at })
-
-    // Execute the query
-    const { data } = await query
-
-    // Set the retrieved data to state
-    stocksReport.value = data
   }
 
   // Count StockIn
@@ -172,11 +151,9 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   return {
     stockInTable,
-    stocksReport,
     stockInTotal,
     $reset,
     getStockInTable,
-    getStocksReport,
     addStockIn,
     updateStockIn,
     deleteStockIn,
