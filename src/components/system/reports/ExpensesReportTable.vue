@@ -112,6 +112,7 @@ onMounted(async () => {
         :items="expensesStore.expensesReport"
         :items-length="expensesStore.expensesReport.length"
         no-data-text="Use the above filter to display report"
+        @update:sort-by="onLoadItems"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"

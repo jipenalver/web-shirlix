@@ -63,7 +63,9 @@ export const useReportsStore = defineStore('reports', () => {
 
     let query = supabase
       .from('sales')
-      .select('*, customers( customer ), branches( name )')
+      .select(
+        '*, customers( customer ), branches( name ), sale_products( products(name, image_url), qty, discounted_price, unit_price, is_cash_discount, discount), customer_payments( payment )'
+      )
       .order(column, { ascending: order })
 
     query = getSalesFilter(query, { customer_id, branch_id, created_at })

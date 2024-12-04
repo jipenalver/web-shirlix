@@ -3,7 +3,7 @@ import { tableHeaders } from './salesReportTableUtils'
 import { useReportsStore } from '@/stores/reports'
 import { useSalesStore } from '@/stores/sales'
 import { useBranchesStore } from '@/stores/branches'
-import { getMoneyText, getPadLeftText } from '@/utils/helpers'
+import { generateCSV, generateCSVTrim, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
@@ -29,6 +29,21 @@ const tableFilters = ref({
   branch_id: null,
   created_at: null
 })
+const itemData = ref(null)
+const isViewProductsDialog = ref(false)
+const isViewPaymentsDialog = ref(false)
+
+// View Products
+const onViewProducts = (item) => {
+  itemData.value = item
+  isViewProductsDialog.value = true
+}
+
+// View Payments
+const onViewPayments = (item) => {
+  itemData.value = item
+  isViewPaymentsDialog.value = true
+}
 
 // Retrieve Data based on Date
 const onFilterDate = (isCleared = false) => {
@@ -53,10 +68,36 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   tableOptions.value.isLoading = false
 }
 
+// CSV Data
+const csvData = () => {
+  // Get the headers from utils
+  const headers = tableHeaders
+    .slice(0, -1)
+    .map((header) => header.title)
+    .join(',')
+
+  // Get the reports data and map it to be used as csv data, follow the headers arrangement
+  const rows = reportsStore.salesReport.map((data) => {
+    return [
+      "'" + getPadLeftText(data.id),
+      data.overall_price,
+      data.is_cash_discount ? data.discount : data.discount + '%',
+      data.exact_price,
+      data.customers.customer ? generateCSVTrim(data.customers.customer) : '-',
+      data.branches.name ? generateCSVTrim(data.branches.name) : '-',
+      data.created_at ? generateCSVTrim(date.format(data.created_at, 'fullDateTime')) : ''
+    ].join(',')
+  })
+
+  // Combine headers and csv data
+  return [headers, ...rows].join('\n')
+}
+
 // Generate CSV
 const onGenerate = () => {
-  // const filename = new Date().toISOString() + '-sales-report'
-  // generateCSV(filename, csvData())
+  const filename = new Date().toISOString() + '-sales-report'
+
+  generateCSV(filename, csvData())
 }
 
 // If Component is Unloaded
@@ -84,6 +125,7 @@ onMounted(async () => {
         :items="reportsStore.salesReport"
         :items-length="reportsStore.salesReport.length"
         no-data-text="Use the above filter to display report"
+        @update:sort-by="onLoadItems"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -166,7 +208,7 @@ onMounted(async () => {
         <template #item.discount="{ item }">
           <div>
             <h4>
-              {{ item.is_cash_discount ? 'Cash' : 'Percentage' }}:
+              {{ item.is_cash_discount ? 'Cash' : 'Percent' }}: <br />
               {{ item.is_cash_discount ? getMoneyText(item.discount) : item.discount + '%' }}
             </h4>
           </div>
@@ -194,6 +236,20 @@ onMounted(async () => {
           <span class="font-weight-bold">
             {{ item.created_at ? date.format(item.created_at, 'fullDateTime') : '' }}
           </span>
+        </template>
+
+        <template #item.actions="{ item }">
+          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
+            <v-btn variant="text" density="comfortable" @click="onViewProducts(item)" icon>
+              <v-icon icon="mdi-view-list"></v-icon>
+              <v-tooltip activator="parent" location="top">View Sold Products</v-tooltip>
+            </v-btn>
+
+            <v-btn variant="text" density="comfortable" @click="onViewPayments(item)" icon>
+              <v-icon icon="mdi-account-credit-card" color="red-darken-4"></v-icon>
+              <v-tooltip activator="parent" location="top">View Payments</v-tooltip>
+            </v-btn>
+          </div>
         </template>
       </v-data-table-server>
     </v-col>

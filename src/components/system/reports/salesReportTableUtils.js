@@ -39,7 +39,7 @@ export const tableHeaders = [
   {
     title: 'Sold Date',
     key: 'created_at',
-    align: 'start'
+    align: 'center'
   },
   {
     title: 'Actions',
