@@ -1,16 +1,9 @@
 <script setup>
 import { tableHeaders } from './salesReportTableUtils'
+import { useReportsStore } from '@/stores/reports'
 import { useSalesStore } from '@/stores/sales'
 import { useBranchesStore } from '@/stores/branches'
-import { useProductsStore } from '@/stores/products'
-import {
-  getAvatarText,
-  getMoneyText,
-  getPadLeftText,
-  //   generateCSV,
-  //   generateCSVTrim,
-  getPreciseNumber
-} from '@/utils/helpers'
+import { generateCSV, generateCSVTrim, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import { useDate } from 'vuetify'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
@@ -20,9 +13,9 @@ const date = useDate()
 const { mobile } = useDisplay()
 
 // Use Pinia Store
-const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
 const salesStore = useSalesStore()
+const reportsStore = useReportsStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -32,11 +25,25 @@ const tableOptions = ref({
   isLoading: false
 })
 const tableFilters = ref({
-  search: '',
+  customer_id: null,
   branch_id: null,
-  product_id: null,
   created_at: null
 })
+const itemData = ref(null)
+const isViewProductsDialog = ref(false)
+const isViewPaymentsDialog = ref(false)
+
+// View Products
+const onViewProducts = (item) => {
+  itemData.value = item
+  isViewProductsDialog.value = true
+}
+
+// View Payments
+const onViewPayments = (item) => {
+  itemData.value = item
+  isViewPaymentsDialog.value = true
+}
 
 // Retrieve Data based on Date
 const onFilterDate = (isCleared = false) => {
@@ -50,42 +57,58 @@ const onFilterItems = () => {
   onLoadItems(tableOptions.value, tableFilters.value)
 }
 
-// Retrieve Data based on Search
-const onSearchItems = () => {
-  if (
-    tableFilters.value.search?.length >= 4 ||
-    tableFilters.value.search?.length == 0 ||
-    tableFilters.value.search === null
-  )
-    onLoadItems(tableOptions.value, tableFilters.value)
-}
-
 // Load Tables Data
 const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  // await salesStore.getSales()
+  await reportsStore.getSalesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
 }
 
+// CSV Data
+const csvData = () => {
+  // Get the headers from utils
+  const headers = tableHeaders
+    .slice(0, -1)
+    .map((header) => header.title)
+    .join(',')
+
+  // Get the reports data and map it to be used as csv data, follow the headers arrangement
+  const rows = reportsStore.salesReport.map((data) => {
+    return [
+      "'" + getPadLeftText(data.id),
+      data.overall_price,
+      data.is_cash_discount ? data.discount : data.discount + '%',
+      data.exact_price,
+      data.customers.customer ? generateCSVTrim(data.customers.customer) : '-',
+      data.branches.name ? generateCSVTrim(data.branches.name) : '-',
+      data.created_at ? generateCSVTrim(date.format(data.created_at, 'fullDateTime')) : ''
+    ].join(',')
+  })
+
+  // Combine headers and csv data
+  return [headers, ...rows].join('\n')
+}
+
 // Generate CSV
 const onGenerate = () => {
-  //   const filename = new Date().toISOString() + '-stockin-report'
-  //   generateCSV(filename, csvData())
+  const filename = new Date().toISOString() + '-sales-report'
+
+  generateCSV(filename, csvData())
 }
 
 // If Component is Unloaded
 onUnmounted(() => {
-  //   salesStore.$resetReport()
+  reportsStore.$reset()
 })
 
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
-  if (productsStore.products.length == 0) await productsStore.getProducts()
+  if (salesStore.customers.length == 0) await salesStore.getCustomers()
 })
 </script>
 
@@ -99,9 +122,10 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="salesStore.salesReport"
-        :items-length="salesStore.salesReport.length"
+        :items="reportsStore.salesReport"
+        :items-length="reportsStore.salesReport.length"
         no-data-text="Use the above filter to display report"
+        @update:sort-by="onLoadItems"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -110,11 +134,11 @@ onMounted(async () => {
           <v-row dense>
             <v-col cols="12" sm="4">
               <v-autocomplete
-                v-model="tableFilters.product_id"
-                :items="productsStore.products"
+                v-model="tableFilters.customer_id"
+                :items="salesStore.customers"
                 density="compact"
-                label="Product"
-                item-title="name"
+                label="Customer"
+                item-title="customer"
                 item-value="id"
                 clearable
                 @update:model-value="onFilterItems"
@@ -152,21 +176,9 @@ onMounted(async () => {
           <v-row dense>
             <v-spacer></v-spacer>
 
-            <v-col cols="12" sm="5">
-              <v-text-field
-                v-model="tableFilters.search"
-                density="compact"
-                prepend-inner-icon="mdi-magnify"
-                placeholder="Search by ID"
-                clearable
-                @click:clear="onSearchItems"
-                @input="onSearchItems"
-              ></v-text-field>
-            </v-col>
-
             <v-col cols="12" sm="3">
               <v-btn
-                :disabled="salesStore.salesReport.length == 0"
+                :disabled="reportsStore.salesReport.length == 0"
                 class="my-1"
                 prepend-icon="mdi-file-delimited"
                 color="red-darken-4"
@@ -187,71 +199,36 @@ onMounted(async () => {
           </span>
         </template>
 
-        <template #item.products="{ item }">
-          <div
-            class="td-first"
-            :class="mobile ? '' : 'd-flex align-center'"
-            :style="mobile ? 'height: auto' : 'height: 100px'"
-          >
-            <div class="me-2">
-              <v-img
-                v-if="item.products.image_url"
-                class="rounded-circle td-first-img"
-                :class="mobile ? 'ml-auto my-2' : ''"
-                color="red-darken-4"
-                aspect-ratio="1"
-                :src="item.products.image_url"
-                alt="Product Picture"
-                cover
-              >
-              </v-img>
+        <template #item.overall_price="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.overall_price) }}
+          </span>
+        </template>
 
-              <v-avatar v-else color="red-darken-4" size="x-large">
-                <span class="text-h5">
-                  {{ getAvatarText(item.products.name) }}
-                </span>
-              </v-avatar>
-            </div>
-
-            <div>
-              <span class="font-weight-bold">
-                {{ item.products.name }}
-              </span>
-              <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption" v-if="item.unit_cost">
-                <span class="font-weight-bold">Unit Cost:</span>
-                {{ getMoneyText(item.unit_cost) }}
-              </p>
-              <p class="text-caption" v-else-if="item.is_portion">
-                <span class="font-weight-bold">Portion of ID:</span>
-                {{ getPadLeftText(item.stock_in_id) }}
-                <br />
-                <span class="font-weight-bold">Unit Price:</span>
-                {{ getMoneyText(item.unit_price) }} per {{ item.unit_price_metric }}
-              </p>
-            </div>
+        <template #item.discount="{ item }">
+          <div>
+            <h4>
+              {{ item.is_cash_discount ? 'Cash' : 'Percent' }}: <br />
+              {{ item.is_cash_discount ? getMoneyText(item.discount) : item.discount + '%' }}
+            </h4>
           </div>
         </template>
 
-        <template #item.qty="{ item }">
+        <template #item.exact_price="{ item }">
           <span class="font-weight-bold">
-            {{ item.qty + ' ' + item.qty_metric }}
+            {{ getMoneyText(item.exact_price) }}
           </span>
         </template>
 
-        <template #item.qty_reweighed="{ item }">
-          <span class="font-weight-bold">
-            {{ item.qty_reweighed ? item.qty_reweighed + ' ' + item.qty_metric : '-' }}
+        <template #item.customer_id="{ item }">
+          <span>
+            {{ item.customers?.customer ?? '-' }}
           </span>
         </template>
 
-        <template #item.weight_loss="{ item }">
-          <span class="font-weight-bold">
-            {{
-              item.qty_reweighed
-                ? getPreciseNumber(item.qty - item.qty_reweighed) + ' ' + item.qty_metric
-                : '-'
-            }}
+        <template #item.branch_id="{ item }">
+          <span>
+            {{ item.branches?.name ?? '-' }}
           </span>
         </template>
 
@@ -261,47 +238,20 @@ onMounted(async () => {
           </span>
         </template>
 
-        <template #item.status="{ item }">
-          <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
-            {{
-              item.is_portion
-                ? 'Stock Portion'
-                : item.is_segregated
-                  ? 'Segregated'
-                  : item.is_reweighed
-                    ? 'Reweighed'
-                    : 'For Re-Weighing'
-            }}
+        <template #item.actions="{ item }">
+          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
+            <v-btn variant="text" density="comfortable" @click="onViewProducts(item)" icon>
+              <v-icon icon="mdi-view-list"></v-icon>
+              <v-tooltip activator="parent" location="top">View Sold Products</v-tooltip>
+            </v-btn>
 
-            <v-tooltip activator="parent" location="top" open-on-click>
-              <ul class="ms-2">
-                <li>
-                  <span class="font-weight-bold">Added Date:</span>
-                  {{ date.format(item.created_at, 'fullDateTime') }}
-                </li>
-                <li>
-                  <span class="font-weight-bold">Expiration Date:</span>
-                  {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
-                </li>
-                <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
-                <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
-                <li><span class="font-weight-bold">Remarks:</span> {{ item.remarks }}</li>
-              </ul>
-            </v-tooltip>
-          </v-chip>
+            <v-btn variant="text" density="comfortable" @click="onViewPayments(item)" icon>
+              <v-icon icon="mdi-account-credit-card" color="red-darken-4"></v-icon>
+              <v-tooltip activator="parent" location="top">View Payments</v-tooltip>
+            </v-btn>
+          </div>
         </template>
       </v-data-table-server>
     </v-col>
   </v-row>
 </template>
-
-<style scoped>
-.td-first {
-  height: 100px;
-  min-width: 200px;
-}
-
-.td-first-img {
-  width: 65px;
-}
-</style>

@@ -1,25 +1,14 @@
 // Table Headers
 export const tableHeaders = [
   {
-    title: 'ID',
-    key: 'sale_id',
-    align: 'start'
-  },
-  {
-    title: 'Product',
-    key: 'products',
-    sortable: false,
+    title: 'Sale ID',
+    key: 'id',
     align: 'start'
   },
 
   {
-    title: 'Weight / Qty',
-    key: 'qty',
-    align: 'start'
-  },
-  {
-    title: 'Total Price',
-    key: 'total_price',
+    title: 'Paid Amount',
+    key: 'overall_price',
     align: 'start'
   },
   {
@@ -28,16 +17,33 @@ export const tableHeaders = [
     sortable: false,
     align: 'start'
   },
-
   {
-    title: 'Sold Date & Time',
-    key: 'created_at',
+    title: 'Amount w/o Discount',
+    key: 'exact_price',
     align: 'start'
   },
 
   {
-    title: 'More Details',
-    key: 'details',
+    title: 'Customer',
+    key: 'customer_id',
+    sortable: false,
+    align: 'start'
+  },
+  {
+    title: 'Branch',
+    key: 'branch_id',
+    sortable: false,
+    align: 'start'
+  },
+
+  {
+    title: 'Sold Date',
+    key: 'created_at',
+    align: 'center'
+  },
+  {
+    title: 'Actions',
+    key: 'actions',
     sortable: false,
     align: 'center'
   }

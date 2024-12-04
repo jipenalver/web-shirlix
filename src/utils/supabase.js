@@ -35,9 +35,8 @@ export const tablePagination = (
   defaultColumn = 'id',
   isAscending = true
 ) => {
-  const [column, order] = sortBy[0]
-    ? [sortBy[0].key, sortBy[0].order === 'asc']
-    : [defaultColumn, isAscending]
+  const [column, order] =
+    sortBy && sortBy[0] ? [sortBy[0].key, sortBy[0].order === 'asc'] : [defaultColumn, isAscending]
 
   if (itemsPerPage === -1) {
     const rangeStart = 0
