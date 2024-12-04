@@ -1,8 +1,9 @@
 <script setup>
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator } from '@/utils/validators'
+import { requiredValidator, betweenValidator } from '@/utils/validators'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
@@ -47,6 +48,7 @@ const formAction = ref({
 const refVForm = ref()
 const imgPreview = ref('/images/img-product.png')
 const remainingQty = ref(0)
+const isConfirmDialog = ref(false)
 
 // Monitor itemData if it has data
 watch(
@@ -76,19 +78,19 @@ const onAddPortion = () => {
     branch_id: formData.value.branch_id,
     stock_in_id: formData.value.id
   })
-  calcRemainingQty()
+  getRemainingQty()
 }
 
 // Remove Stock Portion
 const onRemoveStock = () => {
-  if (formData.value.stocks.length != 1) formData.value.stocks.pop()
-  calcRemainingQty()
+  if (formData.value.stocks.length > 1) formData.value.stocks.splice(-1, 1)
+  getRemainingQty()
 }
 
 // Calculate remaining qty
-const calcRemainingQty = () => {
+const getRemainingQty = () => {
   remainingQty.value = getPreciseNumber(
-    formData.value.qty_reweighed -
+    (formData.value.qty_reweighed || formData.value.qty) -
       formData.value.stocks.reduce((acc, cur) => acc + Number(cur.qty), 0)
   )
 }
@@ -126,7 +128,7 @@ const onSubmit = async () => {
 // Trigger Validators
 const onFormSubmit = () => {
   refVForm.value?.validate().then(({ valid }) => {
-    if (valid) onSubmit()
+    if (valid) isConfirmDialog.value = true
   })
 }
 
@@ -154,7 +156,7 @@ onMounted(async () => {
         <div class="text-wrap">
           Stock portioning into cuts or component parts.
           <br />
-          <b class="text-error">PLEASE DOUBLE CHECK THE INPUTTED VALUES BEFORE SUBMITTING.</b>
+          <b class="text-error">Please review the entered values carefully before submitting.</b>
         </div>
       </template>
 
@@ -293,8 +295,9 @@ onMounted(async () => {
                       type="number"
                       min="0"
                       :max="remainingQty"
-                      :rules="[requiredValidator]"
+                      :rules="[requiredValidator, betweenValidator(value.qty, 0.001, 999999.999)]"
                       hint="Please input correct value"
+                      @update:model-value="getRemainingQty()"
                     ></v-text-field>
                   </v-col>
 
@@ -314,7 +317,10 @@ onMounted(async () => {
                       label="Unit Price Per"
                       type="number"
                       min="0"
-                      :rules="[requiredValidator]"
+                      :rules="[
+                        requiredValidator,
+                        betweenValidator(value.unit_price, 0.001, 999999.999)
+                      ]"
                     ></v-text-field>
                   </v-col>
 
@@ -353,4 +359,11 @@ onMounted(async () => {
       </v-form>
     </v-card>
   </v-dialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmDialog"
+    title="Confirm Segregation"
+    text="Are you sure you want to proceed with the segregation? This action cannot be undone."
+    @confirm="onSubmit"
+  ></ConfirmDialog>
 </template>

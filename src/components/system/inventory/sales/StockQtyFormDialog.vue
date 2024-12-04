@@ -4,14 +4,10 @@ import { betweenValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { getMoneyText } from '@/utils/helpers'
 import { ref, watch } from 'vue'
-import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'itemData'])
 
 const emit = defineEmits(['update:isDialogVisible', 'quantity'])
-
-// Utilize pre-defined vue functions
-const { mdAndDown } = useDisplay()
 
 // Load Variables
 const formDataDefault = {
@@ -68,12 +64,7 @@ const onFormReset = () => {
 </script>
 
 <template>
-  <v-dialog
-    :max-width="mdAndDown ? undefined : '600'"
-    :model-value="props.isDialogVisible"
-    :fullscreen="mdAndDown"
-    persistent
-  >
+  <v-dialog max-width="500" :model-value="props.isDialogVisible" persistent>
     <v-card prepend-icon="mdi-weight" :title="formData.name" subtitle="Weight / Qty">
       <template #append>
         <b>
@@ -100,7 +91,7 @@ const onFormReset = () => {
                 type="number"
                 min="1"
                 :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
-                hint="Please select correct metric"
+                hint="Please input correct value"
               ></v-text-field>
             </v-col>
 

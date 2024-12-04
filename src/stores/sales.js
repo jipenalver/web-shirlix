@@ -2,12 +2,14 @@ import { defineStore } from 'pinia'
 import { supabase } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
 import { computed, ref } from 'vue'
+import { isEmpty } from '@/utils/validators'
 
 export const useSalesStore = defineStore('sales', () => {
   // Use Pinia Store
   const authStore = useAuthUserStore()
 
   // States
+  const salesReport = ref([])
   const customers = ref([])
   const stocks = ref([])
   const stocksCart = ref(
@@ -17,6 +19,9 @@ export const useSalesStore = defineStore('sales', () => {
   // Getters
   const stocksCartTotal = computed(() => {
     return stocksCart.value.reduce((acc, item) => acc + item.discounted_price, 0)
+  })
+  const stocksExactTotal = computed(() => {
+    return stocksCart.value.reduce((acc, item) => acc + item.total_price, 0)
   })
 
   // Reset State Stocks
@@ -28,6 +33,11 @@ export const useSalesStore = defineStore('sales', () => {
   function $resetCart() {
     stocksCart.value = []
     localStorage.removeItem('stocksCart')
+  }
+
+  // Reset State Stocks
+  function $resetReport() {
+    salesReport.value = []
   }
 
   // Retrieve Stocks Table
@@ -77,13 +87,23 @@ export const useSalesStore = defineStore('sales', () => {
     customers.value = data
   }
 
+  // Get Sales
+  async function getSalesReport() {
+    const { data } = await supabase
+      .from('sales')
+      .select('*, sale_products(*, products(name, image_url))')
+      .order('created_at', { ascending: false })
+
+    salesReport.value = data
+  }
+
   // Add Sales
   async function addSales(formData) {
-    const { stocks, customer, ...salesData } = formData
+    const { stocks, customer, payment, ...salesData } = formData
 
     // Check if new customer
     let customer_id = null
-    if (typeof customer === 'string') {
+    if (typeof customer === 'string' && !isEmpty(customer.trim())) {
       const { data } = await supabase.from('customers').insert([{ customer }]).select()
 
       customer_id = data[0].id
@@ -97,6 +117,8 @@ export const useSalesStore = defineStore('sales', () => {
       .insert([{ ...salesData, user_id: authStore.userData.id, customer_id }])
       .select()
 
+    const sale_id = data[0].id
+
     // Re-mapped Sold Products
     const stockFormData = stocks.map((stock) => {
       return {
@@ -106,9 +128,14 @@ export const useSalesStore = defineStore('sales', () => {
         discount: stock.discount,
         discounted_price: stock.discounted_price,
         product_id: stock.product.product_id,
-        sale_id: data[0].id
+        unit_price: stock.product.unit_price,
+        sale_id
       }
     })
+
+    // Add Payment if partial amount
+    if (payment)
+      await supabase.from('customer_payments').insert([{ sale_id, customer_id, payment }]).select()
 
     // Add Sold Products
     return await supabase.from('sale_products').insert(stockFormData).select()
@@ -118,11 +145,15 @@ export const useSalesStore = defineStore('sales', () => {
     stocks,
     stocksCart,
     stocksCartTotal,
+    stocksExactTotal,
+    salesReport,
     customers,
     $reset,
     $resetCart,
+    $resetReport,
     getStocks,
     getCustomers,
+    getSalesReport,
     addSales
   }
 })

@@ -111,6 +111,7 @@ const onFormSubmit = () => {
 // Form Reset
 const onFormReset = () => {
   formAction.value = { ...formActionDefault }
+  formData.value = { ...formDataDefault }
   emit('update:isDialogVisible', false)
 }
 

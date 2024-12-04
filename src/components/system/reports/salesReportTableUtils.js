@@ -2,7 +2,7 @@
 export const tableHeaders = [
   {
     title: 'ID',
-    key: 'id',
+    key: 'sale_id',
     align: 'start'
   },
   {
@@ -13,31 +13,31 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Original Weight / Qty',
+    title: 'Weight / Qty',
     key: 'qty',
     align: 'start'
   },
   {
-    title: 'Re-weighed Weight / Qty',
-    key: 'qty_reweighed',
+    title: 'Total Price',
+    key: 'total_price',
     align: 'start'
   },
   {
-    title: 'Weight Loss / Difference',
-    key: 'weight_loss',
+    title: 'Discount',
+    key: 'discount',
     sortable: false,
     align: 'start'
   },
 
   {
-    title: 'Purchased Date',
-    key: 'purchased_at',
+    title: 'Sold Date & Time',
+    key: 'created_at',
     align: 'start'
   },
 
   {
-    title: 'Status',
-    key: 'status',
+    title: 'More Details',
+    key: 'details',
     sortable: false,
     align: 'center'
   }

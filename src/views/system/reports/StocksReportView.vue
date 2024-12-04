@@ -1,5 +1,5 @@
 <script setup>
-import StockInReportTable from '@/components/system/reports/StockInReportTable.vue'
+import StocksReportTable from '@/components/system/reports/StocksReportTable.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import { ref } from 'vue'
@@ -26,22 +26,22 @@ const isDrawerVisible = ref(mobile.value ? false : true)
         <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['Reports', 'Stock In']">
+              <v-breadcrumbs :items="['Reports', 'Stocks']">
                 <template #prepend>
-                  <v-icon icon="mdi-cash-plus" size="small" class="me-1"></v-icon>
+                  <v-icon icon="mdi-poll" size="small" class="me-1"></v-icon>
                 </template>
               </v-breadcrumbs>
             </span>
           </template>
 
           <template #subtitle>
-            <p class="ms-4 text-wrap">Filter and generate stock in reports.</p>
+            <p class="ms-4 text-wrap">Filter and generate stocks report.</p>
           </template>
         </v-card>
 
         <v-card>
           <v-card-text>
-            <StockInReportTable></StockInReportTable>
+            <StocksReportTable></StocksReportTable>
           </v-card-text>
         </v-card>
       </v-container>
