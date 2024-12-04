@@ -64,7 +64,9 @@ const onLoadItems = async ({ search, branch_id }) => {
 
   // Remove Duplicates in Stocks
   const uniqueStocks = Array.from(
-    new Map(filteredStocks.map((item) => [item.products.name.toLowerCase(), item])).values()
+    new Map(
+      filteredStocks.map((item) => [`${item.products.name.toLowerCase()}|${item.unit_price}`, item])
+    ).values()
   )
 
   listStocks.value = uniqueStocks

@@ -31,7 +31,6 @@ watch(
   () => props.soldData,
   () => {
     salesData.value = props.soldData
-    console.log(salesData.value)
   }
 )
 
@@ -57,10 +56,10 @@ const onSubmit = async () => {
     salesStore.$resetCart()
     salesStore.getCustomers()
 
-    // Reset Form Action utils
+    // Form Reset and Close Dialog
     setTimeout(() => {
-      formAction.value = { ...formActionDefault }
-    }, 5000)
+      onFormReset()
+    }, 2500)
   }
 }
 

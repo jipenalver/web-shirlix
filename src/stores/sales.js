@@ -85,13 +85,13 @@ export const useSalesStore = defineStore('sales', () => {
   }
 
   // Get Sales
-  async function getSales() {
+  async function getSalesReport() {
     const { data } = await supabase
       .from('sales')
       .select('*, sale_products(*, products(name, image_url))')
       .order('created_at', { ascending: false })
 
-    console.log(data)
+    salesReport.value = data
   }
 
   // Add Sales
@@ -142,7 +142,7 @@ export const useSalesStore = defineStore('sales', () => {
     $resetReport,
     getStocks,
     getCustomers,
-    getSales,
+    getSalesReport,
     addSales
   }
 })

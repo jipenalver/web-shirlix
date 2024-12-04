@@ -48,7 +48,7 @@ onMounted(() => {
       <v-text-field
         v-if="isKeyboardBtnClicked"
         v-model="formData.customer"
-        label="New Customer Name"
+        label="Input Customer Name"
         density="compact"
         prepend-inner-icon="mdi-account-tie"
         append-icon="mdi-close"
