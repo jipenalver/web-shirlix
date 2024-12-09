@@ -7,8 +7,8 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Paid Amount',
-    key: 'overall_price',
+    title: 'Gross Amount',
+    key: 'exact_price',
     align: 'start'
   },
   {
@@ -18,8 +18,13 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Amount w/o Discount',
-    key: 'exact_price',
+    title: 'Paid Amount',
+    key: 'overall_price',
+    align: 'start'
+  },
+  {
+    title: 'Balance',
+    key: 'balance',
     align: 'start'
   },
 
