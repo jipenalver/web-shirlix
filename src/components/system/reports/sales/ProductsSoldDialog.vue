@@ -85,17 +85,17 @@ const onClose = () => {
 
           <v-list-item lines="two">
             <template #title>
-              <h3>
+              <h2>
                 {{
                   props.soldData.customer_payments.length === 0
                     ? 'Full Payment'
                     : 'Partial Payment(s)'
                 }}
-              </h3>
+              </h2>
             </template>
 
             <template #append>
-              <h3>
+              <h2>
                 {{
                   props.soldData.customer_payments.length === 0
                     ? getMoneyText(props.soldData.overall_price)
@@ -103,17 +103,17 @@ const onClose = () => {
                         getAccumulatedNumber(props.soldData.customer_payments, 'payment')
                       )
                 }}
-              </h3>
+              </h2>
             </template>
           </v-list-item>
 
           <v-list-item v-if="props.soldData.customer_payments.length > 0" lines="two">
             <template #title>
-              <h3>Balance</h3>
+              <h1>Balance</h1>
             </template>
 
             <template #append>
-              <h3>
+              <h1>
                 {{
                   getMoneyText(
                     getPreciseNumber(
@@ -122,7 +122,7 @@ const onClose = () => {
                     )
                   )
                 }}
-              </h3>
+              </h1>
             </template>
           </v-list-item>
         </v-list>

@@ -4,17 +4,23 @@ import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator, betweenValidator } from '@/utils/validators'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { formActionDefault } from '@/utils/supabase.js'
+import { useReportsStore } from '@/stores/reports'
+import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'soldData'])
+const props = defineProps(['isDialogVisible', 'soldData', 'tableOptions', 'tableFilters'])
 
 const emit = defineEmits(['update:isDialogVisible'])
 
 // Utilize pre-defined vue functions
 const date = useDate()
 const { mdAndDown } = useDisplay()
+
+// Use Pinia Store
+const salesStore = useSalesStore()
+const reportsStore = useReportsStore()
 
 // Load Variables
 const formDataDefault = {
@@ -30,9 +36,9 @@ const refVForm = ref()
 const isConfirmDialog = ref(false)
 const confirmText = ref('')
 
-// Calculate change
-const getBalance = () => {
-  return (
+// Calculate balance
+const getPaymentBalance = () => {
+  return getPreciseNumber(
     props.soldData.overall_price - getAccumulatedNumber(props.soldData.customer_payments, 'payment')
   )
 }
@@ -41,6 +47,34 @@ const getBalance = () => {
 const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
+
+  const paymentData = {
+    sale_id: props.soldData.id,
+    customer_id: props.soldData.branches.id,
+    payment:
+      formData.value.payment < getPaymentBalance() ? formData.value.payment : getPaymentBalance()
+  }
+
+  const { data, error } = await salesStore.addPayment(paymentData)
+
+  if (error) {
+    // Add Error Message and Status Code
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+
+    // Turn off processing
+    formAction.value.formProcess = false
+  } else if (data) {
+    // Add Success Message
+    formAction.value.formSuccessMessage = 'Successfully Added Payment.'
+
+    await reportsStore.getSalesReport(props.tableOptions, props.tableFilters)
+
+    // Form Reset and Close Dialog
+    setTimeout(() => {
+      onFormReset()
+    }, 2500)
+  }
 }
 
 // Trigger Validators
@@ -51,14 +85,14 @@ const onFormSubmit = async () => {
 
   const { payment } = formData.value
 
-  if (payment >= getBalance()) {
+  if (payment >= getPaymentBalance()) {
     confirmText.value = 'Do you want to proceed with this transaction?'
     isConfirmDialog.value = true
     return
   }
 
-  if (payment < getBalance()) {
-    confirmText.value = `The amount ${getMoneyText(payment)} is less than the total amount of ${getMoneyText(getBalance())}.
+  if (payment < getPaymentBalance()) {
+    confirmText.value = `The amount ${getMoneyText(payment)} is less than the total amount of ${getMoneyText(getPaymentBalance())}.
         This will be recorded as a partial payment for customer ${props.soldData.customers.customer}. Do you wish to proceed?`
     isConfirmDialog.value = true
   }
@@ -128,7 +162,7 @@ const onFormReset = () => {
 
               <template #append>
                 <h1>
-                  {{ getMoneyText(getPreciseNumber(getBalance())) }}
+                  {{ getMoneyText(getPaymentBalance()) }}
                 </h1>
               </template>
             </v-list-item>
@@ -157,9 +191,9 @@ const onFormReset = () => {
               <template #append>
                 <h2>
                   {{
-                    formData.payment - getBalance() < 0
+                    formData.payment - getPaymentBalance() < 0
                       ? getMoneyText(0)
-                      : getMoneyText(getPreciseNumber(formData.payment - getBalance()))
+                      : getMoneyText(getPreciseNumber(formData.payment - getPaymentBalance()))
                   }}
                 </h2>
               </template>

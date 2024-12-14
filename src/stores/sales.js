@@ -132,6 +132,11 @@ export const useSalesStore = defineStore('sales', () => {
     return await supabase.from('sale_products').insert(stockFormData).select()
   }
 
+  // Add Payment
+  async function addPayment(formData) {
+    return await supabase.from('customer_payments').insert([formData]).select()
+  }
+
   return {
     stocks,
     stocksCart,
@@ -142,6 +147,7 @@ export const useSalesStore = defineStore('sales', () => {
     $resetCart,
     getStocks,
     getCustomers,
-    addSales
+    addSales,
+    addPayment
   }
 })

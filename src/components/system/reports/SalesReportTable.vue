@@ -99,9 +99,8 @@ const csvData = () => {
   const rows = reportsStore.salesReport.map((item) => {
     return [
       "'" + getPadLeftText(item.id),
-      item.overall_price,
-      item.discount === 0 ? '-' : item.is_cash_discount ? item.discount : item.discount + '%',
       item.exact_price,
+      item.overall_price,
       item.customer_payments.length === 0
         ? '-'
         : getPreciseNumber(
@@ -224,27 +223,15 @@ onMounted(async () => {
           </span>
         </template>
 
+        <template #item.exact_price="{ item }">
+          <span>
+            {{ getMoneyText(item.exact_price) }}
+          </span>
+        </template>
+
         <template #item.overall_price="{ item }">
           <span class="font-weight-bold">
             {{ getMoneyText(item.overall_price) }}
-          </span>
-        </template>
-
-        <template #item.discount="{ item }">
-          <span>
-            {{
-              item.discount === 0
-                ? '-'
-                : item.is_cash_discount
-                  ? getMoneyText(item.discount)
-                  : item.discount + '%'
-            }}
-          </span>
-        </template>
-
-        <template #item.exact_price="{ item }">
-          <span class="font-weight-bold">
-            {{ getMoneyText(item.exact_price) }}
           </span>
         </template>
 
@@ -314,5 +301,7 @@ onMounted(async () => {
   <CustomerPaymentsDialog
     v-model:is-dialog-visible="isViewPaymentsDialog"
     :sold-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
   ></CustomerPaymentsDialog>
 </template>

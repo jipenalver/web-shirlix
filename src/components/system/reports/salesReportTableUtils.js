@@ -12,11 +12,6 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Discount',
-    key: 'discount',
-    align: 'start'
-  },
-  {
     title: 'Tendered Amount',
     key: 'overall_price',
     align: 'start'
