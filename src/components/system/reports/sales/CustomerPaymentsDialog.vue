@@ -36,7 +36,7 @@ const refVForm = ref()
 const isConfirmDialog = ref(false)
 const confirmText = ref('')
 
-// Calculate balance
+// Calculate Balance
 const getPaymentBalance = () => {
   return getPreciseNumber(
     props.soldData.overall_price - getAccumulatedNumber(props.soldData.customer_payments, 'payment')
@@ -126,6 +126,18 @@ const onFormReset = () => {
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-list>
+            <v-list-item lines="two">
+              <template #title>
+                <h3>Customer</h3>
+              </template>
+
+              <template #append>
+                <h3>
+                  {{ props.soldData.customers.customer }}
+                </h3>
+              </template>
+            </v-list-item>
+
             <v-list-item
               lines="two"
               v-for="(item, index) in props.soldData.customer_payments"
@@ -143,15 +155,15 @@ const onFormReset = () => {
 
             <v-list-item lines="two">
               <template #title>
-                <h3>Partial Payment(s)</h3>
+                <h2>{{ getPaymentBalance() === 0 ? 'Full Payment' : 'Partial Payment(s)' }}</h2>
               </template>
 
               <template #append>
-                <h3>
+                <h2>
                   {{
                     getMoneyText(getAccumulatedNumber(props.soldData.customer_payments, 'payment'))
                   }}
-                </h3>
+                </h2>
               </template>
             </v-list-item>
 
@@ -167,37 +179,42 @@ const onFormReset = () => {
               </template>
             </v-list-item>
 
-            <v-divider thickness="2"></v-divider>
+            <section v-if="getPaymentBalance() !== 0">
+              <v-divider thickness="2"></v-divider>
 
-            <v-list-item lines="two">
-              <v-text-field
-                v-model="formData.payment"
-                prepend-inner-icon="mdi-currency-php"
-                label="Pay Amount"
-                type="number"
-                variant="underlined"
-                min="0"
-                :rules="[requiredValidator, betweenValidator(formData.payment, 0.001, 999999.999)]"
-                autofocus
-                reverse
-              ></v-text-field>
-            </v-list-item>
+              <v-list-item lines="two">
+                <v-text-field
+                  v-model="formData.payment"
+                  prepend-inner-icon="mdi-currency-php"
+                  label="Pay Amount"
+                  type="number"
+                  variant="underlined"
+                  min="0"
+                  :rules="[
+                    requiredValidator,
+                    betweenValidator(formData.payment, 0.001, 999999.999)
+                  ]"
+                  autofocus
+                  reverse
+                ></v-text-field>
+              </v-list-item>
 
-            <v-list-item lines="two">
-              <template #title>
-                <h2>Change</h2>
-              </template>
+              <v-list-item lines="two">
+                <template #title>
+                  <h2>Change</h2>
+                </template>
 
-              <template #append>
-                <h2>
-                  {{
-                    formData.payment - getPaymentBalance() < 0
-                      ? getMoneyText(0)
-                      : getMoneyText(getPreciseNumber(formData.payment - getPaymentBalance()))
-                  }}
-                </h2>
-              </template>
-            </v-list-item>
+                <template #append>
+                  <h2>
+                    {{
+                      formData.payment - getPaymentBalance() < 0
+                        ? getMoneyText(0)
+                        : getMoneyText(getPreciseNumber(formData.payment - getPaymentBalance()))
+                    }}
+                  </h2>
+                </template>
+              </v-list-item>
+            </section>
           </v-list>
         </v-card-text>
 
@@ -207,6 +224,7 @@ const onFormReset = () => {
           <v-btn text="Close" variant="plain" prepend-icon="mdi-close" @click="onFormReset"></v-btn>
 
           <v-btn
+            v-if="getPaymentBalance() !== 0"
             prepend-icon="mdi-pencil"
             color="red-darken-4"
             type="submit"

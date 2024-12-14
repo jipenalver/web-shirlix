@@ -9,6 +9,13 @@ const emit = defineEmits(['update:isDialogVisible'])
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
 
+// Calculate Balance
+const getPaymentBalance = () => {
+  return getPreciseNumber(
+    props.soldData.overall_price - getAccumulatedNumber(props.soldData.customer_payments, 'payment')
+  )
+}
+
 // Close Dialog
 const onClose = () => {
   emit('update:isDialogVisible', false)
@@ -87,7 +94,7 @@ const onClose = () => {
             <template #title>
               <h2>
                 {{
-                  props.soldData.customer_payments.length === 0
+                  props.soldData.customer_payments.length === 0 || getPaymentBalance() === 0
                     ? 'Full Payment'
                     : 'Partial Payment(s)'
                 }}

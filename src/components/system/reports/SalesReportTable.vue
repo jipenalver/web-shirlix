@@ -42,6 +42,13 @@ const itemData = ref(null)
 const isViewProductsDialog = ref(false)
 const isViewPaymentsDialog = ref(false)
 
+// Calculate Balance
+const getPaymentBalance = (item) => {
+  return getPreciseNumber(
+    item.overall_price - getAccumulatedNumber(item.customer_payments, 'payment')
+  )
+}
+
 // View Products
 const onViewProducts = (item) => {
   itemData.value = item
@@ -101,11 +108,7 @@ const csvData = () => {
       "'" + getPadLeftText(item.id),
       item.exact_price,
       item.overall_price,
-      item.customer_payments.length === 0
-        ? '-'
-        : getPreciseNumber(
-            item.overall_price - getAccumulatedNumber(item.customer_payments, 'payment')
-          ),
+      item.customer_payments.length === 0 ? '-' : getPaymentBalance(item),
       item.created_at ? generateCSVTrim(date.format(item.created_at, 'fullDateTime')) : '',
       item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid',
       generateCSVTrim(item.branches.name),
@@ -237,15 +240,7 @@ onMounted(async () => {
 
         <template #item.balance="{ item }">
           <span class="font-weight-bold">
-            {{
-              item.customer_payments.length === 0
-                ? '-'
-                : getMoneyText(
-                    getPreciseNumber(
-                      item.overall_price - getAccumulatedNumber(item.customer_payments, 'payment')
-                    )
-                  )
-            }}
+            {{ item.customer_payments.length === 0 ? '-' : getMoneyText(getPaymentBalance(item)) }}
           </span>
         </template>
 
@@ -257,7 +252,11 @@ onMounted(async () => {
 
         <template #item.status="{ item }">
           <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
-            {{ item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid' }}
+            {{
+              item.customer_payments.length === 0 || getPaymentBalance(item) === 0
+                ? 'Fully Paid'
+                : 'Partially Paid'
+            }}
 
             <v-tooltip activator="parent" location="top" open-on-click>
               <ul class="ms-2">
