@@ -1,5 +1,5 @@
 <script setup>
-import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
+import { getAccumulatedNumber, getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDialogVisible', 'soldData'])
@@ -100,10 +100,7 @@ const onClose = () => {
                   props.soldData.customer_payments.length === 0
                     ? getMoneyText(props.soldData.overall_price)
                     : getMoneyText(
-                        props.soldData.customer_payments.reduce(
-                          (total, item) => total + item.payment,
-                          0
-                        )
+                        getAccumulatedNumber(props.soldData.customer_payments, 'payment')
                       )
                 }}
               </h3>
@@ -121,10 +118,7 @@ const onClose = () => {
                   getMoneyText(
                     getPreciseNumber(
                       props.soldData.overall_price -
-                        props.soldData.customer_payments.reduce(
-                          (total, item) => total + item.payment,
-                          0
-                        )
+                        getAccumulatedNumber(props.soldData.customer_payments, 'payment')
                     )
                   )
                 }}

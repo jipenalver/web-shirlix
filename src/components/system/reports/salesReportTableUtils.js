@@ -17,7 +17,7 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Paid Amount',
+    title: 'Tendered Amount',
     key: 'overall_price',
     align: 'start'
   },

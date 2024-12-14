@@ -2,10 +2,12 @@
 import {
   generateCSV,
   generateCSVTrim,
+  getAccumulatedNumber,
   getMoneyText,
   getPadLeftText,
   getPreciseNumber
 } from '@/utils/helpers'
+import CustomerPaymentsDialog from './sales/CustomerPaymentsDialog.vue'
 import ProductsSoldDialog from './sales/ProductsSoldDialog.vue'
 import { tableHeaders } from './salesReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
@@ -103,8 +105,7 @@ const csvData = () => {
       item.customer_payments.length === 0
         ? '-'
         : getPreciseNumber(
-            item.overall_price -
-              item.customer_payments.reduce((total, item) => total + item.payment, 0)
+            item.overall_price - getAccumulatedNumber(item.customer_payments, 'payment')
           ),
       item.created_at ? generateCSVTrim(date.format(item.created_at, 'fullDateTime')) : '',
       item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid',
@@ -254,8 +255,7 @@ onMounted(async () => {
                 ? '-'
                 : getMoneyText(
                     getPreciseNumber(
-                      item.overall_price -
-                        item.customer_payments.reduce((total, item) => total + item.payment, 0)
+                      item.overall_price - getAccumulatedNumber(item.customer_payments, 'payment')
                     )
                   )
             }}
@@ -310,4 +310,9 @@ onMounted(async () => {
     v-model:is-dialog-visible="isViewProductsDialog"
     :sold-data="itemData"
   ></ProductsSoldDialog>
+
+  <CustomerPaymentsDialog
+    v-model:is-dialog-visible="isViewPaymentsDialog"
+    :sold-data="itemData"
+  ></CustomerPaymentsDialog>
 </template>
