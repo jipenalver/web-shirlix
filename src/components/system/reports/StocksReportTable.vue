@@ -60,6 +60,17 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   tableOptions.value.isLoading = false
 }
 
+// Load Tables Data
+const onLoadSortItems = async (sortBy) => {
+  // Trigger Loading
+  tableOptions.value.isLoading = true
+
+  await reportsStore.getStocksReport({ sortBy }, tableFilters.value)
+
+  // Trigger Loading
+  tableOptions.value.isLoading = false
+}
+
 // CSV Data
 const csvData = () => {
   // Get the headers from utils
@@ -113,6 +124,7 @@ onMounted(async () => {
         :items="reportsStore.stocksReport"
         :items-length="reportsStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
+        @update:sort-by="onLoadSortItems"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"

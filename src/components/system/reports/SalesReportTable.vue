@@ -6,6 +6,7 @@ import {
   getPadLeftText,
   getPreciseNumber
 } from '@/utils/helpers'
+import ProductsSoldDialog from './sales/ProductsSoldDialog.vue'
 import { tableHeaders } from './salesReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useReportsStore } from '@/stores/reports'
@@ -285,11 +286,17 @@ onMounted(async () => {
         <template #item.actions="{ item }">
           <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
             <v-btn variant="text" density="comfortable" @click="onViewProducts(item)" icon>
-              <v-icon icon="mdi-view-list"></v-icon>
+              <v-icon icon="mdi-receipt-text"></v-icon>
               <v-tooltip activator="parent" location="top">View Sold Products</v-tooltip>
             </v-btn>
 
-            <v-btn variant="text" density="comfortable" @click="onViewPayments(item)" icon>
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onViewPayments(item)"
+              :disabled="item.customer_payments.length == 0"
+              icon
+            >
               <v-icon icon="mdi-account-credit-card" color="red-darken-4"></v-icon>
               <v-tooltip activator="parent" location="top">View Payments</v-tooltip>
             </v-btn>
@@ -298,4 +305,9 @@ onMounted(async () => {
       </v-data-table-server>
     </v-col>
   </v-row>
+
+  <ProductsSoldDialog
+    v-model:is-dialog-visible="isViewProductsDialog"
+    :sold-data="itemData"
+  ></ProductsSoldDialog>
 </template>
