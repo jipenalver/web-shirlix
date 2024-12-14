@@ -1,11 +1,11 @@
 <script setup>
+import { generateCSV, generateCSVTrim } from '@/utils/helpers'
 import { tableHeaders } from './expensesReportTableUtils'
 import { useExpensesStore } from '@/stores/expenses'
 import { useBranchesStore } from '@/stores/branches'
-import { generateCSV, generateCSVTrim } from '@/utils/helpers'
-import { useDate } from 'vuetify'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
@@ -61,19 +61,30 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   tableOptions.value.isLoading = false
 }
 
+// Load Tables Data
+const onLoadSortItems = async (sortBy) => {
+  // Trigger Loading
+  tableOptions.value.isLoading = true
+
+  await expensesStore.getExpensesReport({ sortBy }, tableFilters.value)
+
+  // Trigger Loading
+  tableOptions.value.isLoading = false
+}
+
 // CSV Data
 const csvData = () => {
   // Get the headers from utils
   const headers = tableHeaders.map((header) => header.title).join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = expensesStore.expensesReport.map((data) => {
+  const rows = expensesStore.expensesReport.map((item) => {
     return [
-      generateCSVTrim(data.name),
-      data.amount,
-      generateCSVTrim(data.description),
-      generateCSVTrim(data.branches.name),
-      data.spent_at ? generateCSVTrim(date.format(data.spent_at, 'fullDate')) : ''
+      generateCSVTrim(item.name),
+      item.amount,
+      generateCSVTrim(item.description),
+      generateCSVTrim(item.branches.name),
+      item.spent_at ? generateCSVTrim(date.format(item.spent_at, 'fullDate')) : ''
     ].join(',')
   })
 
@@ -112,7 +123,7 @@ onMounted(async () => {
         :items="expensesStore.expensesReport"
         :items-length="expensesStore.expensesReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="onLoadItems"
+        @update:sort-by="onLoadSortItems"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"

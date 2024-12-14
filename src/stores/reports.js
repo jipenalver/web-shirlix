@@ -1,8 +1,8 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import { supabase, tablePagination } from '@/utils/supabase'
-import { useAuthUserStore } from './authUser'
 import { dateShiftFixValue } from '@/utils/helpers'
+import { useAuthUserStore } from './authUser'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useReportsStore = defineStore('reports', () => {
   // Use Pinia Store
@@ -64,7 +64,7 @@ export const useReportsStore = defineStore('reports', () => {
     let query = supabase
       .from('sales')
       .select(
-        '*, customers( customer ), branches( name ), sale_products( products(name, image_url), qty, discounted_price, unit_price, is_cash_discount, discount), customer_payments( payment )'
+        '*, customers( customer ), branches( name ), sale_products( products(name, image_url), qty, discounted_price, unit_price, is_cash_discount, discount), customer_payments( payment, created_at )'
       )
       .order(column, { ascending: order })
 

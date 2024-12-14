@@ -34,6 +34,11 @@ export const getPreciseNumber = (value) => {
   return Math.round(value * 100) / 100
 }
 
+// 👉 Accumulated Number
+export const getAccumulatedNumber = (object, key) => {
+  return object.reduce((acc, cur) => acc + cur[key], 0)
+}
+
 // 👉 Alpha-numeric Random Code
 export const getRandomCode = (length = 6) => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
