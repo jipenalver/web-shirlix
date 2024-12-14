@@ -1,8 +1,8 @@
 <script setup>
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import AlertNotification from '@/components/common/AlertNotification.vue'
-import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { requiredValidator, betweenValidator, isEmpty } from '@/utils/validators'
+import AlertNotification from '@/components/common/AlertNotification.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { formActionDefault } from '@/utils/supabase.js'
 import { useSalesStore } from '@/stores/sales'
 import { ref, watch } from 'vue'
@@ -16,7 +16,7 @@ const salesStore = useSalesStore()
 
 // Load Variables
 const formDataDefault = {
-  cash: 0
+  cash: ''
 }
 const formData = ref({
   ...formDataDefault
