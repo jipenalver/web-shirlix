@@ -1,12 +1,18 @@
 <script setup>
+import {
+  generateCSV,
+  generateCSVTrim,
+  getMoneyText,
+  getPadLeftText,
+  getPreciseNumber
+} from '@/utils/helpers'
 import { tableHeaders } from './salesReportTableUtils'
-import { useReportsStore } from '@/stores/reports'
-import { useSalesStore } from '@/stores/sales'
 import { useBranchesStore } from '@/stores/branches'
-import { generateCSV, generateCSVTrim, getMoneyText, getPadLeftText } from '@/utils/helpers'
-import { useDate } from 'vuetify'
+import { useReportsStore } from '@/stores/reports'
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
@@ -68,29 +74,46 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   tableOptions.value.isLoading = false
 }
 
+// Load Tables Data
+const onLoadSortItems = async (sortBy) => {
+  // Trigger Loading
+  tableOptions.value.isLoading = true
+
+  await reportsStore.getSalesReport({ sortBy }, tableFilters.value)
+
+  // Trigger Loading
+  tableOptions.value.isLoading = false
+}
+
 // CSV Data
 const csvData = () => {
   // Get the headers from utils
-  const headers = tableHeaders
-    .slice(0, -1)
-    .map((header) => header.title)
-    .join(',')
+  const headers = tableHeaders.slice(0, -1).map((header) => header.title)
+  const addHeaders = ['Branch', 'Customer']
+  const newHeaders = [...headers, ...addHeaders].join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = reportsStore.salesReport.map((data) => {
+  const rows = reportsStore.salesReport.map((item) => {
     return [
-      "'" + getPadLeftText(data.id),
-      data.overall_price,
-      data.is_cash_discount ? data.discount : data.discount + '%',
-      data.exact_price,
-      data.customers.customer ? generateCSVTrim(data.customers.customer) : '-',
-      data.branches.name ? generateCSVTrim(data.branches.name) : '-',
-      data.created_at ? generateCSVTrim(date.format(data.created_at, 'fullDateTime')) : ''
+      "'" + getPadLeftText(item.id),
+      item.overall_price,
+      item.discount === 0 ? '-' : item.is_cash_discount ? item.discount : item.discount + '%',
+      item.exact_price,
+      item.customer_payments.length === 0
+        ? '-'
+        : getPreciseNumber(
+            item.overall_price -
+              item.customer_payments.reduce((total, item) => total + item.payment, 0)
+          ),
+      item.created_at ? generateCSVTrim(date.format(item.created_at, 'fullDateTime')) : '',
+      item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid',
+      generateCSVTrim(item.branches.name),
+      generateCSVTrim(item.customers?.customer)
     ].join(',')
   })
 
   // Combine headers and csv data
-  return [headers, ...rows].join('\n')
+  return [newHeaders, ...rows].join('\n')
 }
 
 // Generate CSV
@@ -125,7 +148,7 @@ onMounted(async () => {
         :items="reportsStore.salesReport"
         :items-length="reportsStore.salesReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="onLoadItems"
+        @update:sort-by="onLoadSortItems"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -206,12 +229,15 @@ onMounted(async () => {
         </template>
 
         <template #item.discount="{ item }">
-          <div>
-            <h4>
-              {{ item.is_cash_discount ? 'Cash' : 'Percent' }}: <br />
-              {{ item.is_cash_discount ? getMoneyText(item.discount) : item.discount + '%' }}
-            </h4>
-          </div>
+          <span>
+            {{
+              item.discount === 0
+                ? '-'
+                : item.is_cash_discount
+                  ? getMoneyText(item.discount)
+                  : item.discount + '%'
+            }}
+          </span>
         </template>
 
         <template #item.exact_price="{ item }">
@@ -220,15 +246,18 @@ onMounted(async () => {
           </span>
         </template>
 
-        <template #item.customer_id="{ item }">
-          <span>
-            {{ item.customers?.customer ?? '-' }}
-          </span>
-        </template>
-
-        <template #item.branch_id="{ item }">
-          <span>
-            {{ item.branches?.name ?? '-' }}
+        <template #item.balance="{ item }">
+          <span class="font-weight-bold">
+            {{
+              item.customer_payments.length === 0
+                ? '-'
+                : getMoneyText(
+                    getPreciseNumber(
+                      item.overall_price -
+                        item.customer_payments.reduce((total, item) => total + item.payment, 0)
+                    )
+                  )
+            }}
           </span>
         </template>
 
@@ -236,6 +265,21 @@ onMounted(async () => {
           <span class="font-weight-bold">
             {{ item.created_at ? date.format(item.created_at, 'fullDateTime') : '' }}
           </span>
+        </template>
+
+        <template #item.status="{ item }">
+          <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
+            {{ item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid' }}
+
+            <v-tooltip activator="parent" location="top" open-on-click>
+              <ul class="ms-2">
+                <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
+                <li>
+                  <span class="font-weight-bold">Customer:</span> {{ item.customers?.customer }}
+                </li>
+              </ul>
+            </v-tooltip>
+          </v-chip>
         </template>
 
         <template #item.actions="{ item }">

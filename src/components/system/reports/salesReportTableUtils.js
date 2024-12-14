@@ -14,7 +14,6 @@ export const tableHeaders = [
   {
     title: 'Discount',
     key: 'discount',
-    sortable: false,
     align: 'start'
   },
   {
@@ -25,18 +24,6 @@ export const tableHeaders = [
   {
     title: 'Balance',
     key: 'balance',
-    align: 'start'
-  },
-
-  {
-    title: 'Customer',
-    key: 'customer_id',
-    sortable: false,
-    align: 'start'
-  },
-  {
-    title: 'Branch',
-    key: 'branch_id',
     sortable: false,
     align: 'start'
   },
@@ -44,6 +31,13 @@ export const tableHeaders = [
   {
     title: 'Sold Date',
     key: 'created_at',
+    align: 'center'
+  },
+
+  {
+    title: 'Status',
+    key: 'status',
+    sortable: false,
     align: 'center'
   },
   {
