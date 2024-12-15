@@ -20,7 +20,7 @@ export const useReportsStore = defineStore('reports', () => {
 
   // Retrieve Stocks Report
   async function getStocksReport(tableOptions, { search, product_id, branch_id, purchased_at }) {
-    const { column, order } = tablePagination(tableOptions, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
+    const { column, order } = tablePagination(tableOptions, 'created_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 
     let query = supabase

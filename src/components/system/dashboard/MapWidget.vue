@@ -1,11 +1,7 @@
 <script setup>
-import leaflet from 'leaflet'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useGeolocation } from '@vueuse/core'
-import { useAuthUserStore } from '@/stores/authUser'
-
-// Use Pinia Store
-const authStore = useAuthUserStore()
+import leaflet from 'leaflet'
 
 // Utilize pre-defined vue functions; GeoLocation
 const { coords, locatedAt, resume, pause } = useGeolocation({
@@ -17,7 +13,6 @@ const { coords, locatedAt, resume, pause } = useGeolocation({
 // Load Variables
 let map
 let marker
-const isSuperAdmin = authStore.userRole === 'Super Administrator'
 const defaultLatLng = [8.95555279469484, 125.59780764933492] // CSU Coords
 const isTrackingPause = ref(false)
 
@@ -98,7 +93,7 @@ onMounted(() => {
     </template>
 
     <v-card-text>
-      <div id="map" :style="isSuperAdmin ? 'height: 225px' : 'height: 618px'"></div>
+      <div id="map"></div>
     </v-card-text>
   </v-card>
 </template>
@@ -106,6 +101,6 @@ onMounted(() => {
 <style scoped>
 #map {
   width: 100%;
-  height: 225px;
+  height: 260px;
 }
 </style>

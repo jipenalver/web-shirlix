@@ -121,6 +121,7 @@ export const useSalesStore = defineStore('sales', () => {
         product_id: stock.product.product_id,
         unit_price: stock.product.unit_price,
         stock_in_id: stock.id,
+        branch_id: stock.product.branch_id,
         sale_id
       }
     })
