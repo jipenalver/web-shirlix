@@ -1,4 +1,4 @@
-import { supabase, tablePagination } from '@/utils/supabase'
+import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { dateShiftFixValue } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
@@ -19,15 +19,17 @@ export const useReportsStore = defineStore('reports', () => {
   }
 
   // Retrieve Stocks Report
-  async function getStocksReport(tableOptions, { product_id, branch_id }) {
-    const { column, order } = tablePagination(tableOptions, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
+  async function getStocksReport(tableOptions, { search, product_id, branch_id, purchased_at }) {
+    const { column, order } = tablePagination(tableOptions, 'created_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
+    search = tableSearch(search) // Handle Search if null turn to empty string
 
     let query = supabase
       .from('stock_ins')
-      .select('*, branches( name ), products( name, image_url, description )')
+      .select('*, branches( name ), products( name, image_url, description ), sale_products( qty )')
       .order(column, { ascending: order })
+      .eq('is_portion', true)
 
-    query = getStocksFilter(query, { product_id, branch_id })
+    query = getStocksFilter(query, { search, product_id, branch_id, purchased_at })
 
     // Execute the query
     const { data } = await query
@@ -37,7 +39,13 @@ export const useReportsStore = defineStore('reports', () => {
   }
 
   // Filter Stocks
-  async function getStocksFilter(query, { product_id, branch_id }) {
+  async function getStocksFilter(query, { search, product_id, branch_id, purchased_at }) {
+    if (search) {
+      if (search.length >= 4 && !isNaN(search))
+        query = query.or('id.eq.' + search + ', stock_in_id.eq.' + search)
+      else query = query.or('supplier.ilike.%' + search + '%, remarks.ilike.%' + search + '%')
+    }
+
     if (product_id) query = query.eq('product_id', product_id)
 
     if (branch_id) query = query.eq('branch_id', branch_id)
@@ -52,6 +60,16 @@ export const useReportsStore = defineStore('reports', () => {
         'branch_id',
         data.map((b) => b.id)
       )
+    }
+
+    if (purchased_at) {
+      if (purchased_at.length === 1)
+        query = query.eq('purchased_at', dateShiftFixValue(purchased_at[0]))
+      else {
+        query = query
+          .gte('purchased_at', dateShiftFixValue(purchased_at[0])) // Greater than or equal to `from` date
+          .lte('purchased_at', dateShiftFixValue(purchased_at[purchased_at.length - 1])) // Less than or equal to `to` date
+      }
     }
 
     return query

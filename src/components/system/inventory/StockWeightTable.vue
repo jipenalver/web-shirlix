@@ -1,17 +1,17 @@
 <script setup>
+import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
+import AlertNotification from '@/components/common/AlertNotification.vue'
 import StockSegregateFormDialog from './StockSegregateFormDialog.vue'
 import StockWeightFormDialog from './StockWeightFormDialog.vue'
-import CodeFormDialog from './CodeFormDialog.vue'
-import AlertNotification from '@/components/common/AlertNotification.vue'
 import { tableHeaders } from './stockWeightTableUtils'
-import { formActionDefault } from '@/utils/supabase'
-import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
-import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
-import { useDate } from 'vuetify'
+import { formActionDefault } from '@/utils/supabase'
+import { useStockInStore } from '@/stores/stockIn'
+import CodeFormDialog from './CodeFormDialog.vue'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
@@ -197,7 +197,7 @@ onMounted(async () => {
           <div
             class="td-first"
             :class="mobile ? '' : 'd-flex align-center'"
-            :style="mobile ? 'height: auto' : 'height: 100px'"
+            :style="mobile ? 'height: auto' : ''"
           >
             <div class="me-2">
               <v-img
@@ -233,7 +233,7 @@ onMounted(async () => {
                 {{ getPadLeftText(item.stock_in_id) }}
                 <br />
                 <span class="font-weight-bold">Unit Price:</span>
-                {{ getMoneyText(item.unit_price) }} per {{ item.unit_price_metric }}
+                {{ getMoneyText(item.unit_price) }} / {{ item.unit_price_metric }}
               </p>
             </div>
           </div>
@@ -281,7 +281,7 @@ onMounted(async () => {
                 </li>
                 <li>
                   <span class="font-weight-bold">Purchased Date:</span>
-                  {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
+                  {{ date.format(item.purchased_at, 'fullDate') }}
                 </li>
                 <li>
                   <span class="font-weight-bold">Expiration Date:</span>

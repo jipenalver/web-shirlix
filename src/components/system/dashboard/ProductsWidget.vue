@@ -1,12 +1,14 @@
 <script setup>
+import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
 import NotAcceptableUI from '@/components/errors/NotAcceptableUI.vue'
+import { baseColors, otherOptions } from './productsWidgetUtils'
 import { useBranchesStore } from '@/stores/branches'
-import { ref, onMounted, watch } from 'vue'
+import { useProductsStore } from '@/stores/products'
+import { ref, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
-const props = defineProps(['theme'])
-
 // Use Pinia Store
+const productsStore = useProductsStore()
 const branchesStore = useBranchesStore()
 
 // Utilize pre-defined vue functions
@@ -16,53 +18,39 @@ const { xs } = useDisplay()
 const chartFilters = ref({
   branch_id: null
 })
-const themeVal = ref('')
-
-// Monitor theme if it has data
-watch(
-  () => props.theme,
-  () => {
-    themeVal.value = props.theme
+const isGraphLoading = ref(false)
+const series = ref([
+  {
+    name: 'Quantity',
+    data: []
   }
-)
+])
+
+// Calculate Stock Remaining
+const getStockRemaining = (item) => {
+  return getPreciseNumber(
+    getAccumulatedNumber(item.stock_ins, 'qty_reweighed') -
+      getAccumulatedNumber(item.sale_products, 'qty')
+  )
+}
+
+// Generate Colors
+const getColors = () => {
+  const colors = []
+
+  for (let i = 0; i < productsStore.productsGraph.length; i++)
+    colors.push(baseColors[i % baseColors.length])
+
+  return colors
+}
 
 // Bar Chart Options
 const barOptions = {
-  chart: {
-    height: 350,
-    type: 'bar',
-    toolbar: {
-      show: false
-    }
-  },
-  colors: ['#2E93fA', '#66DA26', '#546E7A', '#E91E63', '#FF9800'],
-  plotOptions: {
-    bar: {
-      columnWidth: '45%',
-      distributed: true
-    }
-  },
-  dataLabels: {
-    enabled: true
-  },
-  legend: {
-    show: true,
-    labels: {
-      colors: '#C62828'
-    }
-  },
+  ...otherOptions,
+  colors: getColors(),
   xaxis: {
     type: 'category',
-    categories: [
-      ['John', 'Doe'],
-      ['Joe', 'Smith'],
-      ['Jake', 'Williams'],
-      'Amber',
-      ['Peter', 'Brown'],
-      ['Mary', 'Evans'],
-      ['David', 'Wilson'],
-      ['Lily', 'Roberts']
-    ],
+    categories: productsStore.productsGraph.map((item) => item.name),
     labels: {
       style: {
         colors: '#C62828',
@@ -77,43 +65,29 @@ const barOptions = {
       }
     }
   },
-  yaxis: {
-    labels: {
-      style: {
-        colors: '#C62828',
-        fontSize: '14px',
-        fontWeight: 'bold'
-      }
-    },
-    title: {
-      text: 'Quantity',
-      style: {
-        color: '#C62828'
-      }
-    }
-  },
-  theme: {
-    mode: themeVal.value
-  },
+
   tooltip: {
-    theme: themeVal.value
+    theme: ''
   }
 }
 
-// Charts Series of Qtys
-const series = [
-  {
-    name: 'Quantity',
-    data: [21, 22, 10, 28, 16, 21, 13, 30]
-  }
-]
-
 // Retrieve Data based on Filter
-const onFilterItems = () => {}
+const updateGraph = async () => {
+  isGraphLoading.value = true
+  await productsStore.getProductsByBranch(chartFilters.value.branch_id)
+
+  series.value[0].data = productsStore.productsGraph.map((item) => {
+    return getStockRemaining(item) > 0 ? getStockRemaining(item) : 0
+  })
+  isGraphLoading.value = false
+}
 
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
+  chartFilters.value.branch_id = branchesStore.branches[0].id
+
+  await updateGraph()
 })
 </script>
 
@@ -124,19 +98,26 @@ onMounted(async () => {
     </v-card-text>
   </v-card>
 
-  <v-card v-else title="Product Inventory Level" subtitle="Quantity per product">
+  <v-card
+    v-else
+    title="Product Inventory Level"
+    subtitle="Quantity per product"
+    :loading="isGraphLoading"
+    :disabled="isGraphLoading"
+  >
     <template #append>
       <v-autocomplete
-        width="200px"
+        width="250px"
         v-model="chartFilters.branch_id"
         :items="branchesStore.branches"
+        prepend-icon="mdi-store"
         density="compact"
         label="Branch"
         item-title="name"
         item-value="id"
         variant="outlined"
-        clearable
-        @update:model-value="onFilterItems"
+        hide-details
+        @update:model-value="updateGraph"
       ></v-autocomplete>
     </template>
 

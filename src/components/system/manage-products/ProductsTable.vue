@@ -152,7 +152,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
           <div
             class="td-first"
             :class="mobile ? '' : 'd-flex align-center'"
-            :style="mobile ? 'height: auto' : 'height: 100px'"
+            :style="mobile ? 'height: auto' : ''"
           >
             <div class="me-2">
               <v-img
@@ -182,7 +182,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 
         <template #item.created_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.created_at ? date.format(item.created_at, 'fullDate') : '' }}
+            {{ date.format(item.created_at, 'fullDate') }}
           </span>
         </template>
 

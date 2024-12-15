@@ -1,19 +1,23 @@
 <script setup>
-import { tableHeaders } from './stocksReportTableUtils'
-import { useReportsStore } from '@/stores/reports'
-import { useBranchesStore } from '@/stores/branches'
-import { useProductsStore } from '@/stores/products'
 import {
   getAvatarText,
   getMoneyText,
   getPadLeftText,
   generateCSV,
-  generateCSVTrim
+  generateCSVTrim,
+  getAccumulatedNumber,
+  getPreciseNumber
 } from '@/utils/helpers'
+import { tableHeaders } from './stocksReportTableUtils'
+import { useBranchesStore } from '@/stores/branches'
+import { useProductsStore } from '@/stores/products'
+import { useReportsStore } from '@/stores/reports'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
+const date = useDate()
 const { mobile } = useDisplay()
 
 // Use Pinia Store
@@ -31,8 +35,21 @@ const tableOptions = ref({
 const tableFilters = ref({
   search: '',
   branch_id: null,
-  product_id: null
+  product_id: null,
+  purchased_at: null
 })
+
+// Calculate Stock Remaining
+const getStockRemaining = (item) => {
+  return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+}
+
+// Retrieve Data based on Date
+const onFilterDate = (isCleared = false) => {
+  if (isCleared) tableFilters.value.purchased_at = null
+
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
 
 // Retrieve Data based on Filter
 const onFilterItems = () => {
@@ -60,36 +77,35 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   tableOptions.value.isLoading = false
 }
 
-// Load Tables Data
-const onLoadSortItems = async (sortBy) => {
-  // Trigger Loading
-  tableOptions.value.isLoading = true
-
-  await reportsStore.getStocksReport({ sortBy }, tableFilters.value)
-
-  // Trigger Loading
-  tableOptions.value.isLoading = false
-}
-
 // CSV Data
 const csvData = () => {
   // Get the headers from utils
-  const headers = tableHeaders.map((header) => header.title).join(',')
+  const headers = tableHeaders.map((header) => header.title)
+  const addHeaders = ['Unit Price', 'Added Date', 'Purchased Date', 'Supplier', 'Branch', 'Remarks']
+  const newHeaders = [...headers, ...addHeaders].join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = reportsStore.stocksReport.map((data) => {
+  const rows = reportsStore.stocksReport.map((item) => {
     return [
-      generateCSVTrim(data.products.name),
-      data.unit_cost,
-      data.stock_in_id ? "'" + getPadLeftText(data.stock_in_id) : '',
-      data.unit_price ? data.unit_price + ' per ' + data.unit_price_metric : '',
+      "'" + getPadLeftText(item.id),
+      generateCSVTrim(item.products.name),
+      item.qty_reweighed + ' ' + item.qty_metric,
+      getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric,
+      getStockRemaining(item) + ' ' + item.qty_metric,
+      item.expired_at ? generateCSVTrim(date.format(item.expired_at, 'fullDate')) : 'n/a',
+      getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock',
 
-      generateCSVTrim(data.branches.name)
+      item.unit_price,
+      generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
+      generateCSVTrim(date.format(item.purchased_at, 'fullDate')),
+      generateCSVTrim(item.supplier),
+      generateCSVTrim(item.branches.name),
+      generateCSVTrim(item.remarks)
     ].join(',')
   })
 
   // Combine headers and csv data
-  return [headers, ...rows].join('\n')
+  return [newHeaders, ...rows].join('\n')
 }
 
 // Generate CSV
@@ -124,14 +140,14 @@ onMounted(async () => {
         :items="reportsStore.stocksReport"
         :items-length="reportsStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="onLoadSortItems"
+        @update:sort-by="(sortBy) => onLoadItems({ sortBy }, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
       >
         <template #top>
           <v-row dense>
-            <v-col cols="12" sm="6">
+            <v-col cols="12" sm="4">
               <v-autocomplete
                 v-model="tableFilters.product_id"
                 :items="productsStore.products"
@@ -144,7 +160,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" sm="6">
+            <v-col cols="12" sm="4">
               <v-autocomplete
                 v-model="tableFilters.branch_id"
                 :items="branchesStore.branches"
@@ -155,6 +171,18 @@ onMounted(async () => {
                 clearable
                 @update:model-value="onFilterItems"
               ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" sm="4">
+              <v-date-input
+                v-model="tableFilters.purchased_at"
+                density="compact"
+                label="Date Purchased"
+                multiple="range"
+                clearable
+                @click:clear="onFilterDate(true)"
+                @update:model-value="onFilterDate(false)"
+              ></v-date-input>
             </v-col>
           </v-row>
 
@@ -168,7 +196,7 @@ onMounted(async () => {
                 v-model="tableFilters.search"
                 density="compact"
                 prepend-inner-icon="mdi-magnify"
-                placeholder="Search Name"
+                placeholder="Search by ID, Supplier or Remarks"
                 clearable
                 @click:clear="onSearchItems"
                 @input="onSearchItems"
@@ -192,11 +220,17 @@ onMounted(async () => {
           <v-divider class="my-5"></v-divider>
         </template>
 
+        <template #item.id="{ item }">
+          <span class="font-weight-bold">
+            {{ getPadLeftText(item.id) }}
+          </span>
+        </template>
+
         <template #item.products="{ item }">
           <div
             class="td-first"
             :class="mobile ? '' : 'd-flex align-center'"
-            :style="mobile ? 'height: auto' : 'height: 100px'"
+            :style="mobile ? 'height: auto' : ''"
           >
             <div class="me-2">
               <v-img
@@ -232,28 +266,60 @@ onMounted(async () => {
                 {{ getPadLeftText(item.stock_in_id) }}
                 <br />
                 <span class="font-weight-bold">Unit Price:</span>
-                {{ getMoneyText(item.unit_price) }} per {{ item.unit_price_metric }}
+                {{ getMoneyText(item.unit_price) }} / {{ item.unit_price_metric }}
               </p>
             </div>
           </div>
         </template>
 
-        <template #item.qty_total="{ item }">
-          <span class="font-weight-bold"> </span>
+        <template #item.qty_reweighed="{ item }">
+          <span class="font-weight-bold">
+            {{ item.qty_reweighed + ' ' + item.qty_metric }}
+          </span>
         </template>
 
         <template #item.qty_sold="{ item }">
-          <span class="font-weight-bold"> </span>
+          <span class="font-weight-black">
+            {{ getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric }}
+          </span>
         </template>
 
         <template #item.qty_remaining="{ item }">
-          <span class="font-weight-bold"> </span>
+          <span class="font-weight-black">
+            {{ getStockRemaining(item) + ' ' + item.qty_metric }}
+          </span>
         </template>
 
-        <template #item.branch_id="{ item }">
+        <template #item.expired_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.branches.name }}
+            {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
           </span>
+        </template>
+
+        <template #item.status="{ item }">
+          <v-chip
+            class="font-weight-bold cursor-pointer"
+            prepend-icon="mdi-information"
+            :color="getStockRemaining(item) > 0 ? undefined : 'error'"
+          >
+            {{ getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock' }}
+
+            <v-tooltip activator="parent" location="top" open-on-click>
+              <ul class="ms-2">
+                <li>
+                  <span class="font-weight-bold">Added Date:</span>
+                  {{ date.format(item.created_at, 'fullDateTime') }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Purchased Date:</span>
+                  {{ date.format(item.purchased_at, 'fullDate') }}
+                </li>
+                <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
+                <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
+                <li><span class="font-weight-bold">Remarks:</span> {{ item.remarks }}</li>
+              </ul>
+            </v-tooltip>
+          </v-chip>
         </template>
       </v-data-table-server>
     </v-col>

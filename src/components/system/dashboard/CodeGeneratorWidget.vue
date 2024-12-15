@@ -161,7 +161,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 
       <template #item.created_at="{ item }">
         <span class="font-weight-bold">
-          {{ item.created_at ? date.format(item.created_at, 'fullDateTime') : '' }}
+          {{ date.format(item.created_at, 'fullDateTime') }}
         </span>
       </template>
     </v-data-table-server>

@@ -12,14 +12,29 @@ const authStore = useAuthUserStore()
 </script>
 
 <template>
-  <v-card>
+  <v-card :height="mdAndDown ? undefined : '370px'">
+    <template #title>
+      <span class="text-h6 font-weight-bold">
+        <v-breadcrumbs :items="['System', 'Dashboard']">
+          <template #prepend>
+            <v-icon icon="mdi-view-dashboard" size="small" class="me-1"></v-icon>
+          </template>
+        </v-breadcrumbs>
+      </span>
+    </template>
+
+    <template #subtitle>
+      <p class="ms-4 text-wrap">View Product Inventory Level and Other Admin Widgets.</p>
+    </template>
+
+    <v-divider class="my-3" thickness="2"></v-divider>
+
     <v-card-text>
       <v-row>
-        <v-col cols="12" sm="4" :class="mdAndDown ? 'd-flex align-center' : ''">
+        <v-col cols="12" sm="4" class="d-flex align-center">
           <v-img
-            :class="!mdAndDown ? 'mx-auto' : ''"
             :src="props.theme == 'light' ? '/images/logo-shop.png' : '/images/logo-shop-dark.png'"
-            :width="mdAndDown ? '80%' : '60%'"
+            :width="mdAndDown ? '80%' : '100%'"
           ></v-img>
         </v-col>
 

@@ -1,13 +1,13 @@
 <script setup>
 import CodeGeneratorWidget from '@/components/system/dashboard/CodeGeneratorWidget.vue'
-import MapWidget from '@/components/system/dashboard/MapWidget.vue'
-import WelcomeWidget from '@/components/system/dashboard/WelcomeWidget.vue'
-import ProductsWidget from '@/components/system/dashboard/ProductsWidget.vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
+import ProductsWidget from '@/components/system/dashboard/ProductsWidget.vue'
+import WelcomeWidget from '@/components/system/dashboard/WelcomeWidget.vue'
+import MapWidget from '@/components/system/dashboard/MapWidget.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
 import { useAuthUserStore } from '@/stores/authUser'
-import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
 // Use Pinia Store
 const authStore = useAuthUserStore()
@@ -39,24 +39,20 @@ const onThemeUpdate = (value) => {
     <template #content>
       <v-container fluid>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" :md="isSuperAdmin ? 7 : false">
             <WelcomeWidget :theme="theme"></WelcomeWidget>
           </v-col>
 
-          <v-col cols="12" md="8">
-            <ProductsWidget :theme="theme"></ProductsWidget>
+          <v-col cols="12" md="5" v-if="isSuperAdmin">
+            <CodeGeneratorWidget></CodeGeneratorWidget>
           </v-col>
 
-          <v-col cols="12" md="4">
-            <v-row>
-              <v-col cols="12" v-if="isSuperAdmin">
-                <CodeGeneratorWidget></CodeGeneratorWidget>
-              </v-col>
+          <v-col cols="12">
+            <ProductsWidget></ProductsWidget>
+          </v-col>
 
-              <v-col cols="12">
-                <MapWidget></MapWidget>
-              </v-col>
-            </v-row>
+          <v-col cols="12">
+            <MapWidget></MapWidget>
           </v-col>
         </v-row>
       </v-container>

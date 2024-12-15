@@ -84,17 +84,6 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   tableOptions.value.isLoading = false
 }
 
-// Load Tables Data
-const onLoadSortItems = async (sortBy) => {
-  // Trigger Loading
-  tableOptions.value.isLoading = true
-
-  await reportsStore.getSalesReport({ sortBy }, tableFilters.value)
-
-  // Trigger Loading
-  tableOptions.value.isLoading = false
-}
-
 // CSV Data
 const csvData = () => {
   // Get the headers from utils
@@ -104,12 +93,15 @@ const csvData = () => {
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
   const rows = reportsStore.salesReport.map((item) => {
+    const discount = getPreciseNumber(item.exact_price - item.overall_price)
+
     return [
       "'" + getPadLeftText(item.id),
       item.exact_price,
+      discount === 0 ? '-' : discount,
       item.overall_price,
       item.customer_payments.length === 0 ? '-' : getPaymentBalance(item),
-      item.created_at ? generateCSVTrim(date.format(item.created_at, 'fullDateTime')) : '',
+      generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
       item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid',
       generateCSVTrim(item.branches.name),
       generateCSVTrim(item.customers?.customer)
@@ -152,7 +144,7 @@ onMounted(async () => {
         :items="reportsStore.salesReport"
         :items-length="reportsStore.salesReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="onLoadSortItems"
+        @update:sort-by="(sortBy) => onLoadItems({ sortBy }, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -221,19 +213,33 @@ onMounted(async () => {
         </template>
 
         <template #item.id="{ item }">
-          <span class="font-weight-bold">
-            {{ getPadLeftText(item.id) }}
-          </span>
+          <div
+            class="td-first"
+            :class="mobile ? '' : 'd-flex align-center'"
+            :style="mobile ? 'height: auto' : ''"
+          >
+            <span class="font-weight-bold">
+              {{ getPadLeftText(item.id) }}
+            </span>
+          </div>
         </template>
 
         <template #item.exact_price="{ item }">
-          <span>
+          <span class="font-weight-bold">
             {{ getMoneyText(item.exact_price) }}
           </span>
         </template>
 
+        <template #item.discount="{ item }">
+          {{
+            getPreciseNumber(item.exact_price - item.overall_price) === 0
+              ? '-'
+              : getMoneyText(getPreciseNumber(item.exact_price - item.overall_price))
+          }}
+        </template>
+
         <template #item.overall_price="{ item }">
-          <span class="font-weight-bold">
+          <span class="font-weight-black">
             {{ getMoneyText(item.overall_price) }}
           </span>
         </template>
@@ -246,7 +252,7 @@ onMounted(async () => {
 
         <template #item.created_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.created_at ? date.format(item.created_at, 'fullDateTime') : '' }}
+            {{ date.format(item.created_at, 'fullDateTime') }}
           </span>
         </template>
 
@@ -304,3 +310,9 @@ onMounted(async () => {
     :table-filters="tableFilters"
   ></CustomerPaymentsDialog>
 </template>
+
+<style scoped>
+.td-first {
+  height: 75px;
+}
+</style>

@@ -1,19 +1,21 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { getSlugText } from '@/utils/helpers'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useProductsStore = defineStore('products', () => {
   // States
   const productsTable = ref([])
-  const products = ref([])
   const productsTotal = ref(0)
+  const products = ref([])
+  const productsGraph = ref([])
 
   // Reset State Action
   function $reset() {
     productsTable.value = []
-    products.value = []
     productsTotal.value = 0
+    products.value = []
+    productsGraph.value = []
   }
 
   // Retrieve Products Table
@@ -54,6 +56,22 @@ export const useProductsStore = defineStore('products', () => {
 
     // Set the retrieved data to state
     products.value = data
+  }
+
+  // Retrieve Products
+  async function getProductsByBranch(branch_id) {
+    const { data } = await supabase
+      .from('products')
+      .select(
+        'name, stock_ins( qty_reweighed, branch_id, is_portion ), sale_products( qty, branch_id )'
+      )
+      .eq('stock_ins.branch_id', branch_id)
+      .eq('stock_ins.is_portion', true)
+      .eq('sale_products.branch_id', branch_id)
+      .order('name', { ascending: true })
+
+    // Set the retrieved data to state
+    productsGraph.value = data
   }
 
   // Add Products
@@ -101,11 +119,13 @@ export const useProductsStore = defineStore('products', () => {
 
   return {
     productsTable,
-    products,
     productsTotal,
+    products,
+    productsGraph,
     $reset,
     getProductsTable,
     getProducts,
+    getProductsByBranch,
     addProduct,
     updateProduct,
     deleteProduct,
