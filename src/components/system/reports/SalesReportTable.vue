@@ -74,22 +74,12 @@ const onFilterItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }, isSorting = false) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await reportsStore.getSalesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
-
-  // Trigger Loading
-  tableOptions.value.isLoading = false
-}
-
-// Load Tables Data
-const onLoadSortItems = async (sortBy) => {
-  // Trigger Loading
-  tableOptions.value.isLoading = true
-
-  await reportsStore.getSalesReport({ sortBy }, tableFilters.value)
+  if (isSorting) await reportsStore.getSalesReport({ sortBy }, tableFilters.value)
+  else await reportsStore.getSalesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -155,7 +145,7 @@ onMounted(async () => {
         :items="reportsStore.salesReport"
         :items-length="reportsStore.salesReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="onLoadSortItems"
+        @update:sort-by="(sortBy) => onLoadItems(sortBy, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"

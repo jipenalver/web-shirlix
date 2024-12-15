@@ -1,17 +1,17 @@
 <script setup>
-import CodeFormDialog from './CodeFormDialog.vue'
+import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import StockInFormDialog from './StockInFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { tableHeaders } from './stockInTableUtils'
+import StockInFormDialog from './StockInFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase'
-import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
-import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
-import { useDate } from 'vuetify'
+import { tableHeaders } from './stockInTableUtils'
+import { useStockInStore } from '@/stores/stockIn'
+import CodeFormDialog from './CodeFormDialog.vue'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
@@ -282,7 +282,7 @@ onMounted(async () => {
 
         <template #item.purchased_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
+            {{ date.format(item.purchased_at, 'fullDate') }}
           </span>
         </template>
 

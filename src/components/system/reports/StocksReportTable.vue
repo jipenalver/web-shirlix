@@ -1,8 +1,4 @@
 <script setup>
-import { tableHeaders } from './stocksReportTableUtils'
-import { useReportsStore } from '@/stores/reports'
-import { useBranchesStore } from '@/stores/branches'
-import { useProductsStore } from '@/stores/products'
 import {
   getAvatarText,
   getMoneyText,
@@ -10,10 +6,16 @@ import {
   generateCSV,
   generateCSVTrim
 } from '@/utils/helpers'
+import { tableHeaders } from './stocksReportTableUtils'
+import { useBranchesStore } from '@/stores/branches'
+import { useProductsStore } from '@/stores/products'
+import { useReportsStore } from '@/stores/reports'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
+const date = useDate()
 const { mobile } = useDisplay()
 
 // Use Pinia Store
@@ -50,22 +52,12 @@ const onSearchItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }, isSorting = false) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await reportsStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
-
-  // Trigger Loading
-  tableOptions.value.isLoading = false
-}
-
-// Load Tables Data
-const onLoadSortItems = async (sortBy) => {
-  // Trigger Loading
-  tableOptions.value.isLoading = true
-
-  await reportsStore.getStocksReport({ sortBy }, tableFilters.value)
+  if (isSorting) await reportsStore.getStocksReport({ sortBy }, tableFilters.value)
+  else await reportsStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -124,7 +116,7 @@ onMounted(async () => {
         :items="reportsStore.stocksReport"
         :items-length="reportsStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="onLoadSortItems"
+        @update:sort-by="(sortBy) => onLoadItems(sortBy, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -192,6 +184,12 @@ onMounted(async () => {
           <v-divider class="my-5"></v-divider>
         </template>
 
+        <template #item.id="{ item }">
+          <span class="font-weight-bold">
+            {{ getPadLeftText(item.id) }}
+          </span>
+        </template>
+
         <template #item.products="{ item }">
           <div
             class="td-first"
@@ -238,8 +236,10 @@ onMounted(async () => {
           </div>
         </template>
 
-        <template #item.qty_total="{ item }">
-          <span class="font-weight-bold"> </span>
+        <template #item.qty_reweighed="{ item }">
+          <span class="font-weight-bold">
+            {{ item.qty_reweighed + ' ' + item.qty_metric }}
+          </span>
         </template>
 
         <template #item.qty_sold="{ item }">
@@ -250,10 +250,38 @@ onMounted(async () => {
           <span class="font-weight-bold"> </span>
         </template>
 
-        <template #item.branch_id="{ item }">
+        <template #item.purchased_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.branches.name }}
+            {{ date.format(item.purchased_at, 'fullDate') }}
           </span>
+        </template>
+
+        <template #item.expired_at="{ item }">
+          <span class="font-weight-bold">
+            {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
+          </span>
+        </template>
+
+        <template #item.status="{ item }">
+          <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
+            Sold Out
+
+            <v-tooltip activator="parent" location="top" open-on-click>
+              <ul class="ms-2">
+                <li>
+                  <span class="font-weight-bold">Added Date:</span>
+                  {{ date.format(item.created_at, 'fullDateTime') }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Purchased Date:</span>
+                  {{ date.format(item.purchased_at, 'fullDate') }}
+                </li>
+                <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
+                <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
+                <li><span class="font-weight-bold">Remarks:</span> {{ item.remarks }}</li>
+              </ul>
+            </v-tooltip>
+          </v-chip>
         </template>
       </v-data-table-server>
     </v-col>

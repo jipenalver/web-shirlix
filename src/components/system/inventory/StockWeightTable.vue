@@ -1,17 +1,17 @@
 <script setup>
+import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
+import AlertNotification from '@/components/common/AlertNotification.vue'
 import StockSegregateFormDialog from './StockSegregateFormDialog.vue'
 import StockWeightFormDialog from './StockWeightFormDialog.vue'
-import CodeFormDialog from './CodeFormDialog.vue'
-import AlertNotification from '@/components/common/AlertNotification.vue'
 import { tableHeaders } from './stockWeightTableUtils'
-import { formActionDefault } from '@/utils/supabase'
-import { useStockInStore } from '@/stores/stockIn'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
-import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
-import { useDate } from 'vuetify'
+import { formActionDefault } from '@/utils/supabase'
+import { useStockInStore } from '@/stores/stockIn'
+import CodeFormDialog from './CodeFormDialog.vue'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
@@ -281,7 +281,7 @@ onMounted(async () => {
                 </li>
                 <li>
                   <span class="font-weight-bold">Purchased Date:</span>
-                  {{ item.purchased_at ? date.format(item.purchased_at, 'fullDate') : '' }}
+                  {{ date.format(item.purchased_at, 'fullDate') }}
                 </li>
                 <li>
                   <span class="font-weight-bold">Expiration Date:</span>
