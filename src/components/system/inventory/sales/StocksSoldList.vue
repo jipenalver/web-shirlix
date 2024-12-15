@@ -1,11 +1,11 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import AddSalesDialog from './AddSalesDialog.vue'
-import AddCustomerBtn from './AddCustomerBtn.vue'
-import AddDiscountBtn from './AddDiscountBtn.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { formActionDefault } from '@/utils/supabase.js'
+import AddSalesDialog from './AddSalesDialog.vue'
+import AddCustomerBtn from './AddCustomerBtn.vue'
+import AddDiscountBtn from './AddDiscountBtn.vue'
 import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
 import { ref, onMounted } from 'vue'
@@ -34,6 +34,17 @@ const isConfirmSoldDialog = ref(false)
 const windowSize = ref({ x: 0, y: 0 })
 const soldData = ref(null)
 const resetKey = ref(0)
+
+// Calculate Total Overall
+const getDiscountedTotal = () => {
+  if (formData.value.is_cash_discount)
+    return salesStore.stocksCartTotal - Number(formData.value.discount)
+  else
+    return (
+      salesStore.stocksCartTotal -
+      salesStore.stocksCartTotal * (Number(formData.value.discount) / 100)
+    )
+}
 
 // Set Discounted Price
 const onDiscountPrice = (item) => {
@@ -68,17 +79,6 @@ const onAddCustomer = (value) => {
 const onAddDiscount = (value) => {
   formData.value.discount = value.discount
   formData.value.is_cash_discount = value.is_cash_discount
-}
-
-// Calculate Total Overall
-const getDiscountedTotal = () => {
-  if (formData.value.is_cash_discount)
-    return salesStore.stocksCartTotal - Number(formData.value.discount)
-  else
-    return (
-      salesStore.stocksCartTotal -
-      salesStore.stocksCartTotal * (Number(formData.value.discount) / 100)
-    )
 }
 
 // Proceed Sales
@@ -133,7 +133,7 @@ onMounted(() => {
               v-bind="props"
               :prepend-avatar="mdAndDown ? undefined : item.product.products.image_url"
               :title="item.product.products.name"
-              :subtitle="`${item.qty} x ${getMoneyText(item.product.unit_price)} per ${item.product.unit_price_metric}`"
+              :subtitle="`${item.qty} x ${getMoneyText(item.product.unit_price)} / ${item.product.unit_price_metric}`"
             >
               <template #append>
                 <div class="me-1">

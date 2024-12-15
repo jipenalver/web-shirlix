@@ -4,7 +4,9 @@ import {
   getMoneyText,
   getPadLeftText,
   generateCSV,
-  generateCSVTrim
+  generateCSVTrim,
+  getAccumulatedNumber,
+  getPreciseNumber
 } from '@/utils/helpers'
 import { tableHeaders } from './stocksReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
@@ -37,6 +39,11 @@ const tableFilters = ref({
   purchased_at: null
 })
 
+// Calculate Stock Remaining
+const getStockRemaining = (item) => {
+  return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+}
+
 // Retrieve Data based on Date
 const onFilterDate = (isCleared = false) => {
   if (isCleared) tableFilters.value.purchased_at = null
@@ -60,12 +67,11 @@ const onSearchItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }, isSorting = false) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  if (isSorting) await reportsStore.getStocksReport({ sortBy }, tableFilters.value)
-  else await reportsStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await reportsStore.getStocksReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -74,22 +80,32 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }, isSorting = false) =>
 // CSV Data
 const csvData = () => {
   // Get the headers from utils
-  const headers = tableHeaders.map((header) => header.title).join(',')
+  const headers = tableHeaders.map((header) => header.title)
+  const addHeaders = ['Unit Price', 'Added Date', 'Purchased Date', 'Supplier', 'Branch', 'Remarks']
+  const newHeaders = [...headers, ...addHeaders].join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = reportsStore.stocksReport.map((data) => {
+  const rows = reportsStore.stocksReport.map((item) => {
     return [
-      generateCSVTrim(data.products.name),
-      data.unit_cost,
-      data.stock_in_id ? "'" + getPadLeftText(data.stock_in_id) : '',
-      data.unit_price ? data.unit_price + ' per ' + data.unit_price_metric : '',
+      "'" + getPadLeftText(item.id),
+      generateCSVTrim(item.products.name),
+      item.qty_reweighed + ' ' + item.qty_metric,
+      getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric,
+      getStockRemaining(item) + ' ' + item.qty_metric,
+      item.expired_at ? generateCSVTrim(date.format(item.expired_at, 'fullDate')) : 'n/a',
+      getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock',
 
-      generateCSVTrim(data.branches.name)
+      item.unit_price,
+      generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
+      generateCSVTrim(date.format(item.purchased_at, 'fullDate')),
+      generateCSVTrim(item.supplier),
+      generateCSVTrim(item.branches.name),
+      generateCSVTrim(item.remarks)
     ].join(',')
   })
 
   // Combine headers and csv data
-  return [headers, ...rows].join('\n')
+  return [newHeaders, ...rows].join('\n')
 }
 
 // Generate CSV
@@ -124,7 +140,7 @@ onMounted(async () => {
         :items="reportsStore.stocksReport"
         :items-length="reportsStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="(sortBy) => onLoadItems(sortBy, true)"
+        @update:sort-by="(sortBy) => onLoadItems({ sortBy }, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -250,7 +266,7 @@ onMounted(async () => {
                 {{ getPadLeftText(item.stock_in_id) }}
                 <br />
                 <span class="font-weight-bold">Unit Price:</span>
-                {{ getMoneyText(item.unit_price) }} per {{ item.unit_price_metric }}
+                {{ getMoneyText(item.unit_price) }} / {{ item.unit_price_metric }}
               </p>
             </div>
           </div>
@@ -263,16 +279,14 @@ onMounted(async () => {
         </template>
 
         <template #item.qty_sold="{ item }">
-          <span> </span>
+          <span class="font-weight-black">
+            {{ getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric }}
+          </span>
         </template>
 
         <template #item.qty_remaining="{ item }">
-          <span class="font-weight-bold"> </span>
-        </template>
-
-        <template #item.purchased_at="{ item }">
-          <span class="font-weight-bold">
-            {{ date.format(item.purchased_at, 'fullDate') }}
+          <span class="font-weight-black">
+            {{ getStockRemaining(item) + ' ' + item.qty_metric }}
           </span>
         </template>
 
@@ -283,8 +297,12 @@ onMounted(async () => {
         </template>
 
         <template #item.status="{ item }">
-          <v-chip class="font-weight-bold cursor-pointer" prepend-icon="mdi-information">
-            Sold Out
+          <v-chip
+            class="font-weight-bold cursor-pointer"
+            prepend-icon="mdi-information"
+            :color="getStockRemaining(item) > 0 ? undefined : 'error'"
+          >
+            {{ getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock' }}
 
             <v-tooltip activator="parent" location="top" open-on-click>
               <ul class="ms-2">

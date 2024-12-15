@@ -51,12 +51,11 @@ const onSearchItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }, isSorting = false) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  if (isSorting) await expensesStore.getExpensesReport({ sortBy }, tableFilters.value)
-  else await expensesStore.getExpensesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await expensesStore.getExpensesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -113,7 +112,7 @@ onMounted(async () => {
         :items="expensesStore.expensesReport"
         :items-length="expensesStore.expensesReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="(sortBy) => onLoadItems(sortBy, true)"
+        @update:sort-by="(sortBy) => onLoadItems({ sortBy }, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"

@@ -74,12 +74,11 @@ const onFilterItems = () => {
 }
 
 // Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }, isSorting = false) => {
+const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  if (isSorting) await reportsStore.getSalesReport({ sortBy }, tableFilters.value)
-  else await reportsStore.getSalesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await reportsStore.getSalesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -102,7 +101,7 @@ const csvData = () => {
       discount === 0 ? '-' : discount,
       item.overall_price,
       item.customer_payments.length === 0 ? '-' : getPaymentBalance(item),
-      item.created_at ? generateCSVTrim(date.format(item.created_at, 'fullDateTime')) : '',
+      generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
       item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid',
       generateCSVTrim(item.branches.name),
       generateCSVTrim(item.customers?.customer)
@@ -145,7 +144,7 @@ onMounted(async () => {
         :items="reportsStore.salesReport"
         :items-length="reportsStore.salesReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="(sortBy) => onLoadItems(sortBy, true)"
+        @update:sort-by="(sortBy) => onLoadItems({ sortBy }, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -232,13 +231,11 @@ onMounted(async () => {
         </template>
 
         <template #item.discount="{ item }">
-          <span>
-            {{
-              getPreciseNumber(item.exact_price - item.overall_price) === 0
-                ? '-'
-                : getMoneyText(getPreciseNumber(item.exact_price - item.overall_price))
-            }}
-          </span>
+          {{
+            getPreciseNumber(item.exact_price - item.overall_price) === 0
+              ? '-'
+              : getMoneyText(getPreciseNumber(item.exact_price - item.overall_price))
+          }}
         </template>
 
         <template #item.overall_price="{ item }">
@@ -255,7 +252,7 @@ onMounted(async () => {
 
         <template #item.created_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.created_at ? date.format(item.created_at, 'fullDateTime') : '' }}
+            {{ date.format(item.created_at, 'fullDateTime') }}
           </span>
         </template>
 

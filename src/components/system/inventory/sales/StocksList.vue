@@ -1,12 +1,21 @@
 <script setup>
+import {
+  getAccumulatedNumber,
+  getMoneyText,
+  getPadLeftText,
+  getPreciseNumber
+} from '@/utils/helpers'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import StockQtyFormDialog from './StockQtyFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase.js'
 import { useBranchesStore } from '@/stores/branches'
 import { useSalesStore } from '@/stores/sales'
-import { getMoneyText } from '@/utils/helpers'
 import { tableSearch } from '@/utils/supabase'
 import { onMounted, ref } from 'vue'
+import { useDate } from 'vuetify'
+
+// Utilize pre-defined vue functions
+const date = useDate()
 
 // Use Pinia Store
 const salesStore = useSalesStore()
@@ -24,6 +33,11 @@ const listStocks = ref([])
 const isListLoading = ref(false)
 const itemData = ref(null)
 const isFormDialogVisible = ref(false)
+
+// Calculate Stock Remaining
+const getStockRemaining = (item) => {
+  return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+}
 
 // Add Weight / Qty
 const onAddQty = (item) => {
@@ -74,21 +88,13 @@ const onLoadItems = async ({ search, branch_id }) => {
   await salesStore.getStocks({ branch_id })
 
   // Filter Stocks by Search
-  const filteredStocks = salesStore.stocks.filter((item) =>
-    item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase())
+  const filteredStocks = salesStore.stocks.filter(
+    (item) =>
+      item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase()) &&
+      getStockRemaining(item) > 0
   )
 
-  // Remove Duplicates in Stocks
-  const uniqueStocks = Array.from(
-    new Map(
-      filteredStocks.map((item) => [
-        `${item.products.name.toLowerCase()}|${item.unit_price}|${item.branch_id}`,
-        item
-      ])
-    ).values()
-  )
-
-  listStocks.value = uniqueStocks
+  listStocks.value = filteredStocks
   isListLoading.value = false
 }
 
@@ -154,13 +160,42 @@ onMounted(async () => {
           <b>{{ item.products ? item.products.name : 'n/a' }}</b>
         </v-card-title>
 
-        <v-card-subtitle class="text-center font-weight-bold mb-3">
-          {{
-            item.unit_price
-              ? getMoneyText(item.unit_price) + ' per ' + item.unit_price_metric
-              : 'n/a'
-          }}
-        </v-card-subtitle>
+        <v-card-text class="text-center">
+          <div class="font-weight-black">
+            {{ getMoneyText(item.unit_price) + ' / ' + item.unit_price_metric }}
+          </div>
+
+          <div class="mt-1">
+            <span class="font-weight-bold">
+              {{
+                item.sale_products.length === 0
+                  ? item.qty_reweighed + ' ' + item.qty_metric
+                  : getStockRemaining(item) + ' ' + item.qty_metric
+              }}
+            </span>
+
+            <v-chip class="mx-n2 cursor-pointer" density="compact" variant="text">
+              <v-icon icon="mdi-information" size="small"></v-icon>
+
+              <v-tooltip activator="parent" location="top" open-on-click>
+                <ul class="ms-2">
+                  <li>
+                    <span class="font-weight-bold">Stock ID:</span> {{ getPadLeftText(item.id) }}
+                  </li>
+                  <li>
+                    <span class="font-weight-bold">Purchased Date:</span>
+                    {{ date.format(item.purchased_at, 'fullDate') }}
+                  </li>
+                  <li>
+                    <span class="font-weight-bold">Expiration Date:</span>
+                    {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
+                  </li>
+                  <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
+                </ul>
+              </v-tooltip>
+            </v-chip>
+          </div>
+        </v-card-text>
       </v-card>
     </v-col>
   </v-row>

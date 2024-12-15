@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia'
-import { supabase } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
-import { computed, ref } from 'vue'
 import { isEmpty } from '@/utils/validators'
+import { supabase } from '@/utils/supabase'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useSalesStore = defineStore('sales', () => {
   // Use Pinia Store
@@ -38,7 +38,7 @@ export const useSalesStore = defineStore('sales', () => {
   async function getStocks({ branch_id }) {
     let query = supabase
       .from('stock_ins')
-      .select('*, products( name, image_url )')
+      .select('*, products( name, image_url ), sale_products( qty )')
       .order('name', { referencedTable: 'products', ascending: true })
       .order('id', { ascending: true })
       .eq('is_portion', true)
@@ -120,6 +120,7 @@ export const useSalesStore = defineStore('sales', () => {
         discounted_price: stock.discounted_price,
         product_id: stock.product.product_id,
         unit_price: stock.product.unit_price,
+        stock_in_id: stock.id,
         sale_id
       }
     })

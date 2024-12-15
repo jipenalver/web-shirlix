@@ -1,7 +1,7 @@
 // Table Headers
 export const tableHeaders = [
   {
-    title: 'ID',
+    title: 'Stock ID',
     key: 'id',
     align: 'start'
   },
