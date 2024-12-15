@@ -33,8 +33,16 @@ const tableOptions = ref({
 const tableFilters = ref({
   search: '',
   branch_id: null,
-  product_id: null
+  product_id: null,
+  purchased_at: null
 })
+
+// Retrieve Data based on Date
+const onFilterDate = (isCleared = false) => {
+  if (isCleared) tableFilters.value.purchased_at = null
+
+  onLoadItems(tableOptions.value, tableFilters.value)
+}
 
 // Retrieve Data based on Filter
 const onFilterItems = () => {
@@ -123,7 +131,7 @@ onMounted(async () => {
       >
         <template #top>
           <v-row dense>
-            <v-col cols="12" sm="6">
+            <v-col cols="12" sm="4">
               <v-autocomplete
                 v-model="tableFilters.product_id"
                 :items="productsStore.products"
@@ -136,7 +144,7 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12" sm="6">
+            <v-col cols="12" sm="4">
               <v-autocomplete
                 v-model="tableFilters.branch_id"
                 :items="branchesStore.branches"
@@ -147,6 +155,18 @@ onMounted(async () => {
                 clearable
                 @update:model-value="onFilterItems"
               ></v-autocomplete>
+            </v-col>
+
+            <v-col cols="12" sm="4">
+              <v-date-input
+                v-model="tableFilters.purchased_at"
+                density="compact"
+                label="Date Purchased"
+                multiple="range"
+                clearable
+                @click:clear="onFilterDate(true)"
+                @update:model-value="onFilterDate(false)"
+              ></v-date-input>
             </v-col>
           </v-row>
 
@@ -160,7 +180,7 @@ onMounted(async () => {
                 v-model="tableFilters.search"
                 density="compact"
                 prepend-inner-icon="mdi-magnify"
-                placeholder="Search Name"
+                placeholder="Search by ID, Supplier or Remarks"
                 clearable
                 @click:clear="onSearchItems"
                 @input="onSearchItems"
@@ -243,7 +263,7 @@ onMounted(async () => {
         </template>
 
         <template #item.qty_sold="{ item }">
-          <span class="font-weight-bold"> </span>
+          <span> </span>
         </template>
 
         <template #item.qty_remaining="{ item }">
