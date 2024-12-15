@@ -70,7 +70,7 @@ const onFormReset = () => {
         <b>
           {{
             formData.unit_price
-              ? getMoneyText(formData.unit_price) + ' per ' + formData.unit_price_metric
+              ? getMoneyText(formData.unit_price) + ' / ' + formData.unit_price_metric
               : 'n/a'
           }}
         </b>

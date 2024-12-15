@@ -25,7 +25,7 @@ export const useReportsStore = defineStore('reports', () => {
 
     let query = supabase
       .from('stock_ins')
-      .select('*, branches( name ), products( name, image_url, description )')
+      .select('*, branches( name ), products( name, image_url, description ), sale_products( qty )')
       .order(column, { ascending: order })
       .eq('is_portion', true)
 

@@ -33,7 +33,7 @@ export const tableHeaders = [
   {
     title: 'Expired Date',
     key: 'expired_at',
-    align: 'start'
+    align: 'center'
   },
 
   {

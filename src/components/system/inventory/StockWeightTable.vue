@@ -233,7 +233,7 @@ onMounted(async () => {
                 {{ getPadLeftText(item.stock_in_id) }}
                 <br />
                 <span class="font-weight-bold">Unit Price:</span>
-                {{ getMoneyText(item.unit_price) }} per {{ item.unit_price_metric }}
+                {{ getMoneyText(item.unit_price) }} / {{ item.unit_price_metric }}
               </p>
             </div>
           </div>
