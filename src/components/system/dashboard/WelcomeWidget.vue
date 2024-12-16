@@ -24,7 +24,7 @@ const authStore = useAuthUserStore()
     </template>
 
     <template #subtitle>
-      <p class="ms-4 text-wrap">View Product Inventory Level and Other Admin Widgets.</p>
+      <p class="ms-4 text-wrap">View product inventory level and other administrative widgets.</p>
     </template>
 
     <v-divider class="my-3" thickness="2"></v-divider>

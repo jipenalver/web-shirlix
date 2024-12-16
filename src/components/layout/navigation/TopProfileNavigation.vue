@@ -1,15 +1,19 @@
 <script setup>
 import { supabase, formActionDefault } from '@/utils/supabase'
+import { useAuthUserStore } from '@/stores/authUser'
+import { useBranchesStore } from '@/stores/branches'
+import { useProductsStore } from '@/stores/products'
 import { getAvatarText } from '@/utils/helpers'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import { useAuthUserStore } from '@/stores/authUser'
 
 // Utilize pre-defined vue functions
 const router = useRouter()
 
 // Use Pinia Store
 const authStore = useAuthUserStore()
+const productsStore = useProductsStore()
+const branchesStore = useBranchesStore()
 
 // Load Variables
 const formAction = ref({
@@ -32,6 +36,8 @@ const onLogout = async () => {
   // Reset State
   setTimeout(() => {
     authStore.$reset()
+    branchesStore.$reset()
+    productsStore.$reset()
   }, 2500)
   // Redirect to homepage
   router.replace('/')

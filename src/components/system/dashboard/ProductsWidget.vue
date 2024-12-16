@@ -63,7 +63,7 @@ onMounted(async () => {
   chartFilters.value.branch_id = branchesStore.branches[0].id
 
   await updateGraph()
-  setTimeout(() => (isDataLoading.value = true), 2000)
+  setTimeout(() => (isDataLoading.value = false), 2000)
 })
 </script>
 
@@ -101,7 +101,7 @@ onMounted(async () => {
 
     <v-card-text>
       <apexchart
-        v-if="isDataLoading"
+        v-if="!isDataLoading"
         type="bar"
         width="100%"
         :options="barOptions"
