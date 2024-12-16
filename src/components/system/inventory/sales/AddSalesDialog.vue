@@ -1,6 +1,6 @@
 <script setup>
-import { requiredValidator, betweenValidator, isEmpty } from '@/utils/validators'
 import AlertNotification from '@/components/common/AlertNotification.vue'
+import { requiredValidator, betweenValidator } from '@/utils/validators'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { formActionDefault } from '@/utils/supabase.js'
@@ -68,6 +68,7 @@ const onSubmit = async () => {
     // Reset Cart State
     salesStore.$resetCart()
     await salesStore.getCustomers()
+    await salesStore.getStocks({ branch_id: salesData.value.stocks[0].product.branch_id })
 
     // Emit to Reset Components
     emit('resetCart')
@@ -95,7 +96,7 @@ const onFormSubmit = async () => {
   }
 
   if (cash < overall_price) {
-    if (!isEmpty(customerName.value)) {
+    if (customerName.value !== '-') {
       confirmText.value = `The amount ${getMoneyText(cash)} is less than the total amount of ${getMoneyText(overall_price)}.
         This will be recorded as a partial payment for customer ${customerName.value}. Do you wish to proceed?`
       isConfirmDialog.value = true

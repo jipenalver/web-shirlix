@@ -12,7 +12,7 @@ const authStore = useAuthUserStore()
 </script>
 
 <template>
-  <v-card :height="mdAndDown ? undefined : '370px'">
+  <v-card :min-height="mdAndDown ? undefined : '370px'">
     <template #title>
       <span class="text-h6 font-weight-bold">
         <v-breadcrumbs :items="['System', 'Dashboard']">

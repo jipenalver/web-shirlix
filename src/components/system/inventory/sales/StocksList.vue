@@ -10,7 +10,6 @@ import StockQtyFormDialog from './StockQtyFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase.js'
 import { useBranchesStore } from '@/stores/branches'
 import { useSalesStore } from '@/stores/sales'
-import { tableSearch } from '@/utils/supabase'
 import { onMounted, ref } from 'vue'
 import { useDate } from 'vuetify'
 
@@ -29,8 +28,6 @@ const listFilters = ref({
 const formAction = ref({
   ...formActionDefault
 })
-const listStocks = ref([])
-const isListLoading = ref(false)
 const itemData = ref(null)
 const isFormDialogVisible = ref(false)
 
@@ -83,26 +80,18 @@ const onSearchItems = async () => {
 
 // Load List Data
 const onLoadItems = async ({ search, branch_id }) => {
-  formAction.value = { ...formActionDefault }
-  isListLoading.value = true
-  await salesStore.getStocks({ branch_id })
+  formAction.value = { ...formActionDefault, formProcess: true }
 
-  // Filter Stocks by Search
-  const filteredStocks = salesStore.stocks.filter(
-    (item) =>
-      item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase()) &&
-      getStockRemaining(item) > 0
-  )
+  await salesStore.getStocks({ search, branch_id })
 
-  listStocks.value = filteredStocks
-  isListLoading.value = false
+  formAction.value.formProcess = false
 }
 
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
   listFilters.value.branch_id = branchesStore.branches[0].id
-  if (listStocks.value.length == 0) onLoadItems(listFilters.value)
+  await onLoadItems(listFilters.value)
 })
 </script>
 
@@ -133,7 +122,6 @@ onMounted(async () => {
                 density="compact"
                 item-title="name"
                 item-value="id"
-                clearable
                 @update:model-value="onFilterItems"
                 hide-details
               ></v-autocomplete
@@ -148,8 +136,12 @@ onMounted(async () => {
       </v-card>
     </v-col>
 
-    <v-col cols="12" sm="6" md="3" v-for="(item, index) in listStocks" :key="index">
-      <v-card @click="onAddQty(item)" :loading="isListLoading" :disabled="isListLoading">
+    <v-col cols="12" sm="6" md="3" v-for="(item, index) in salesStore.stocks" :key="index">
+      <v-card
+        @click="onAddQty(item)"
+        :loading="formAction.formProcess"
+        :disabled="formAction.formProcess"
+      >
         <v-img
           height="150"
           :src="item.products ? item.products.image_url : '/images/img-product.png'"

@@ -1,6 +1,7 @@
+import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
+import { supabase, tableSearch } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
 import { isEmpty } from '@/utils/validators'
-import { supabase } from '@/utils/supabase'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -35,7 +36,7 @@ export const useSalesStore = defineStore('sales', () => {
   }
 
   // Retrieve Stocks Table
-  async function getStocks({ branch_id }) {
+  async function getStocks({ search, branch_id }) {
     let query = supabase
       .from('stock_ins')
       .select('*, products( name, image_url ), sale_products( qty )')
@@ -48,8 +49,12 @@ export const useSalesStore = defineStore('sales', () => {
     // Execute the query
     const { data } = await query
 
-    // Set the retrieved data to state
-    stocks.value = data
+    // Set the retrieved data to state; Filter Stocks by Search and Stock Remaining
+    stocks.value = data.filter(
+      (item) =>
+        item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase()) &&
+        getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
+    )
   }
 
   // Filter Stocks
@@ -120,7 +125,7 @@ export const useSalesStore = defineStore('sales', () => {
         discounted_price: stock.discounted_price,
         product_id: stock.product.product_id,
         unit_price: stock.product.unit_price,
-        stock_in_id: stock.id,
+        stock_in_id: stock.product.id,
         branch_id: stock.product.branch_id,
         sale_id
       }
