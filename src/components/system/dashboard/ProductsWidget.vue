@@ -1,9 +1,10 @@
 <script setup>
+import { baseColors, defaultOptions, defaultSeries } from './productsWidgetUtils'
 import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
 import NotAcceptableUI from '@/components/errors/NotAcceptableUI.vue'
-import { baseColors, otherOptions } from './productsWidgetUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
+import { formActionDefault } from '@/utils/supabase'
 import { ref, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -18,13 +19,10 @@ const { xs } = useDisplay()
 const chartFilters = ref({
   branch_id: null
 })
-const isGraphLoading = ref(false)
-const series = ref([
-  {
-    name: 'Quantity',
-    data: []
-  }
-])
+const isDataLoading = ref(true)
+const formAction = ref({ ...formActionDefault })
+const barOptions = ref({ ...defaultOptions })
+const series = ref([...defaultSeries])
 
 // Calculate Stock Remaining
 const getStockRemaining = (item) => {
@@ -44,42 +42,19 @@ const getColors = () => {
   return colors
 }
 
-// Bar Chart Options
-const barOptions = {
-  ...otherOptions,
-  colors: getColors(),
-  xaxis: {
-    type: 'category',
-    categories: productsStore.productsGraph.map((item) => item.name),
-    labels: {
-      style: {
-        colors: '#C62828',
-        fontSize: '12px',
-        fontWeight: 'bold'
-      }
-    },
-    title: {
-      text: 'Products',
-      style: {
-        color: '#C62828'
-      }
-    }
-  },
-
-  tooltip: {
-    theme: ''
-  }
-}
-
 // Retrieve Data based on Filter
 const updateGraph = async () => {
-  isGraphLoading.value = true
+  formAction.value = { ...formActionDefault, formProcess: true }
   await productsStore.getProductsByBranch(chartFilters.value.branch_id)
 
   series.value[0].data = productsStore.productsGraph.map((item) => {
     return getStockRemaining(item) > 0 ? getStockRemaining(item) : 0
   })
-  isGraphLoading.value = false
+
+  barOptions.value.colors = getColors()
+  barOptions.value.xaxis.categories = productsStore.productsGraph.map((item) => item.name)
+
+  formAction.value.formProcess = false
 }
 
 // Load Functions during component rendering
@@ -88,6 +63,7 @@ onMounted(async () => {
   chartFilters.value.branch_id = branchesStore.branches[0].id
 
   await updateGraph()
+  setTimeout(() => (isDataLoading.value = false), 2000)
 })
 </script>
 
@@ -102,8 +78,8 @@ onMounted(async () => {
     v-else
     title="Product Inventory Level"
     subtitle="Quantity per product"
-    :loading="isGraphLoading"
-    :disabled="isGraphLoading"
+    :loading="formAction.formProcess"
+    :disabled="formAction.formProcess"
   >
     <template #append>
       <v-autocomplete
@@ -117,12 +93,20 @@ onMounted(async () => {
         item-value="id"
         variant="outlined"
         hide-details
+        :loading="isDataLoading"
+        :disabled="isDataLoading"
         @update:model-value="updateGraph"
       ></v-autocomplete>
     </template>
 
     <v-card-text>
-      <apexchart type="bar" width="100%" :options="barOptions" :series="series"></apexchart>
+      <apexchart
+        v-if="!isDataLoading"
+        type="bar"
+        width="100%"
+        :options="barOptions"
+        :series="series"
+      ></apexchart>
     </v-card-text>
   </v-card>
 </template>

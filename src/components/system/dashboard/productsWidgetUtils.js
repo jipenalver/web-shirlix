@@ -1,12 +1,18 @@
 export const baseColors = ['#2E93fA', '#66DA26', '#546E7A', '#E91E63', '#FF9800']
 
-export const otherOptions = {
+export const defaultOptions = {
   chart: {
     height: 350,
     type: 'bar',
     toolbar: {
       show: false
+    },
+    zoom: {
+      enabled: false
     }
+  },
+  tooltip: {
+    theme: ''
   },
   plotOptions: {
     bar: {
@@ -37,5 +43,30 @@ export const otherOptions = {
         color: '#C62828'
       }
     }
+  },
+  colors: [],
+  xaxis: {
+    type: 'category',
+    categories: [],
+    labels: {
+      style: {
+        colors: '#C62828',
+        fontSize: '12px',
+        fontWeight: 'bold'
+      }
+    },
+    title: {
+      text: 'Products',
+      style: {
+        color: '#C62828'
+      }
+    }
   }
 }
+
+export const defaultSeries = [
+  {
+    name: 'Quantity',
+    data: []
+  }
+]
