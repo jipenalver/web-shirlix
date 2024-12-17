@@ -1,15 +1,15 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import ExpensesFormDialog from './ExpensesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { tableHeaders } from './expensesTableUtils'
+import ExpensesFormDialog from './ExpensesFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase'
 import { useBranchesStore } from '@/stores/branches'
 import { useExpensesStore } from '@/stores/expenses'
+import { tableHeaders } from './expensesTableUtils'
 import { getMoneyText } from '@/utils/helpers'
-import { useDate } from 'vuetify'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
@@ -204,7 +204,9 @@ onMounted(async () => {
         </template>
 
         <template #item.amount="{ item }">
-          {{ getMoneyText(item.amount) }}
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.amount) }}
+          </span>
         </template>
 
         <template #item.branches="{ item }">

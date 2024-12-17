@@ -1,8 +1,14 @@
 <script setup>
-import { generateCSV, generateCSVTrim, getMoneyText } from '@/utils/helpers'
-import { tableHeaders } from './expensesReportTableUtils'
-import { useExpensesStore } from '@/stores/expenses'
+import {
+  generateCSV,
+  generateCSVTrim,
+  getAccumulatedNumber,
+  getMoneyText,
+  getPreciseNumber
+} from '@/utils/helpers'
+import { tableHeaders } from './summaryReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
+import { useSummaryStore } from '@/stores/summary'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useDate } from 'vuetify'
@@ -13,7 +19,7 @@ const { mobile } = useDisplay()
 
 // Use Pinia Store
 const branchesStore = useBranchesStore()
-const expensesStore = useExpensesStore()
+const summaryStore = useSummaryStore()
 
 // Load Variables
 const tableOptions = ref({
@@ -23,14 +29,14 @@ const tableOptions = ref({
   isLoading: false
 })
 const tableFilters = ref({
-  search: '',
+  customer_id: null,
   branch_id: null,
-  spent_at: null
+  date_range: null
 })
 
 // Retrieve Data based on Date
 const onFilterDate = (isCleared = false) => {
-  if (isCleared) tableFilters.value.spent_at = null
+  if (isCleared) tableFilters.value.date_range = null
 
   onLoadItems(tableOptions.value, tableFilters.value)
 }
@@ -40,22 +46,12 @@ const onFilterItems = () => {
   onLoadItems(tableOptions.value, tableFilters.value)
 }
 
-// Retrieve Data based on Search
-const onSearchItems = () => {
-  if (
-    tableFilters.value.search?.length >= 3 ||
-    tableFilters.value.search?.length == 0 ||
-    tableFilters.value.search === null
-  )
-    onLoadItems(tableOptions.value, tableFilters.value)
-}
-
 // Load Tables Data
 const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
   // Trigger Loading
   tableOptions.value.isLoading = true
 
-  await expensesStore.getExpensesReport({ page, itemsPerPage, sortBy }, tableFilters.value)
+  await summaryStore.getSummaryReport({ page, itemsPerPage, sortBy }, tableFilters.value)
 
   // Trigger Loading
   tableOptions.value.isLoading = false
@@ -67,13 +63,14 @@ const csvData = () => {
   const headers = tableHeaders.map((header) => header.title).join(',')
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
-  const rows = expensesStore.expensesReport.map((item) => {
+  const rows = summaryStore.summaryReport.map((item) => {
     return [
-      generateCSVTrim(item.name),
-      item.amount,
-      generateCSVTrim(item.description),
-      generateCSVTrim(item.branches.name),
-      item.spent_at ? generateCSVTrim(date.format(item.spent_at, 'fullDate')) : ''
+      generateCSVTrim(date.format(item.date, 'fullDate')),
+      item.inventory,
+      item.sales,
+      item.receivable,
+      item.expenses,
+      getPreciseNumber(item.sales - item.expenses)
     ].join(',')
   })
 
@@ -83,14 +80,14 @@ const csvData = () => {
 
 // Generate CSV
 const onGenerate = () => {
-  const filename = new Date().toISOString() + '-expenditures-report'
+  const filename = new Date().toISOString() + '-summary-report'
 
   generateCSV(filename, csvData())
 }
 
 // If Component is Unloaded
 onUnmounted(() => {
-  expensesStore.$reset()
+  summaryStore.$reset()
 })
 
 // Load Functions during component rendering
@@ -109,10 +106,10 @@ onMounted(async () => {
         v-model:sort-by="tableOptions.sortBy"
         :loading="tableOptions.isLoading"
         :headers="tableHeaders"
-        :items="expensesStore.expensesReport"
-        :items-length="expensesStore.expensesReport.length"
-        no-data-text="Use the above filter to display report"
+        :items="summaryStore.summaryReport"
+        :items-length="summaryStore.summaryReport.length"
         @update:sort-by="(sortBy) => onLoadItems({ sortBy })"
+        no-data-text="Use the above filter to display report"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -134,9 +131,9 @@ onMounted(async () => {
 
             <v-col cols="12" sm="6">
               <v-date-input
-                v-model="tableFilters.spent_at"
+                v-model="tableFilters.date_range"
                 density="compact"
-                label="Date Spent"
+                label="Date Range"
                 multiple="range"
                 clearable
                 @click:clear="onFilterDate(true)"
@@ -148,23 +145,58 @@ onMounted(async () => {
           <v-divider class="mb-5"></v-divider>
 
           <v-row dense>
-            <v-spacer></v-spacer>
+            <v-col cols="6" sm="3">
+              <ul class="ms-5">
+                <li>
+                  Inventory: <br v-if="mobile" />
+                  <b>
+                    {{
+                      getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'inventory'))
+                    }}
+                  </b>
+                </li>
+                <li>
+                  Gross Profit: <br v-if="mobile" />
+                  <b>
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'sales')) }}
+                  </b>
+                </li>
+              </ul>
+            </v-col>
 
-            <v-col cols="12" sm="5">
-              <v-text-field
-                v-model="tableFilters.search"
-                density="compact"
-                prepend-inner-icon="mdi-magnify"
-                placeholder="Search"
-                clearable
-                @click:clear="onSearchItems"
-                @input="onSearchItems"
-              ></v-text-field>
+            <v-col cols="6" sm="3">
+              <ul class="ms-5">
+                <li>
+                  Receivable: <br v-if="mobile" />
+                  <b>
+                    {{
+                      getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'receivable'))
+                    }}
+                  </b>
+                </li>
+                <li>
+                  Expenses: <br v-if="mobile" />
+                  <b>
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'expenses')) }}
+                  </b>
+                </li>
+              </ul>
+            </v-col>
+
+            <v-col cols="12" sm="3" class="d-flex align-center">
+              <ul class="ms-5">
+                <li>
+                  Net Profit: <br v-if="mobile" />
+                  <b class="font-weight-black">
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'profit')) }}
+                  </b>
+                </li>
+              </ul>
             </v-col>
 
             <v-col cols="12" sm="3">
               <v-btn
-                :disabled="expensesStore.expensesReport.length == 0"
+                :disabled="summaryStore.summaryReport.length == 0"
                 class="my-1"
                 prepend-icon="mdi-file-delimited"
                 color="red-darken-4"
@@ -179,31 +211,45 @@ onMounted(async () => {
           <v-divider class="my-5"></v-divider>
         </template>
 
-        <template #item.name="{ item }">
+        <template #item.date="{ item }">
           <div
             class="td-first"
             :class="mobile ? '' : 'd-flex align-center'"
             :style="mobile ? 'height: auto' : ''"
           >
             <span class="font-weight-bold">
-              {{ item.name }}
+              {{ date.format(item.date, 'fullDate') }}
             </span>
           </div>
         </template>
 
-        <template #item.amount="{ item }">
-          <span class="font-weight-black">
-            {{ getMoneyText(item.amount) }}
+        <template #item.inventory="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.inventory) }}
           </span>
         </template>
 
-        <template #item.branches="{ item }">
-          {{ item.branches.name }}
+        <template #item.profit_gross="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.sales) }}
+          </span>
         </template>
 
-        <template #item.spent_at="{ item }">
+        <template #item.receivable="{ item }">
           <span class="font-weight-bold">
-            {{ item.spent_at ? date.format(item.spent_at, 'fullDate') : '' }}
+            {{ getMoneyText(item.receivable) }}
+          </span>
+        </template>
+
+        <template #item.expenses="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.expenses) }}
+          </span>
+        </template>
+
+        <template #item.profit_net="{ item }">
+          <span class="font-weight-black">
+            {{ getMoneyText(item.profit) }}
           </span>
         </template>
       </v-data-table-server>

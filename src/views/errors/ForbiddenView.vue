@@ -1,7 +1,7 @@
 <script setup>
-import { useAuthUserStore } from '@/stores/authUser'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import { useAuthUserStore } from '@/stores/authUser'
 import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -15,14 +15,9 @@ const authStore = useAuthUserStore()
 const isLoggedIn = ref(false)
 const isDrawerVisible = ref(mobile.value ? false : true)
 
-// Get Authentication status from supabase
-const getLoggedStatus = async () => {
-  isLoggedIn.value = await authStore.isAuthenticated()
-}
-
 // Load Functions during component rendering
-onMounted(() => {
-  getLoggedStatus()
+onMounted(async () => {
+  isLoggedIn.value = await authStore.isAuthenticated()
 })
 </script>
 

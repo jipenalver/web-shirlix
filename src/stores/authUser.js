@@ -1,11 +1,12 @@
+import { supabase } from '@/utils/supabase'
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { supabase } from '@/utils/supabase'
 
 export const useAuthUserStore = defineStore('authUser', () => {
   // States
   const userData = ref(null)
   const authPages = ref([])
+  const authBranchIds = ref([])
 
   // Getters
   // Computed Properties; Use for getting the state but not modifying its reactive state
@@ -17,6 +18,7 @@ export const useAuthUserStore = defineStore('authUser', () => {
   function $reset() {
     userData.value = null
     authPages.value = []
+    authBranchIds.value = []
   }
 
   // Actions
@@ -59,6 +61,16 @@ export const useAuthUserStore = defineStore('authUser', () => {
 
     // Set the retrieved data to state
     authPages.value = data[0].pages.map((p) => p.page)
+  }
+
+  // Retrieve Branch Ids
+  async function getAuthBranchIds() {
+    const { data } = await supabase
+      .from('branches')
+      .select('id')
+      .in('name', userData.value.branch.split(','))
+
+    authBranchIds.value = data.map((b) => b.id)
   }
 
   // Update User Information
@@ -118,10 +130,12 @@ export const useAuthUserStore = defineStore('authUser', () => {
     userData,
     userRole,
     authPages,
+    authBranchIds,
     $reset,
     isAuthenticated,
     getUserInformation,
     getAuthPages,
+    getAuthBranchIds,
     updateUserInformation,
     updateUserImage
   }

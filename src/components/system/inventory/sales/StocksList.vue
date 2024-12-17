@@ -46,7 +46,7 @@ const onAddQty = (item) => {
     return
   }
 
-  itemData.value = item
+  itemData.value = { ...item, stock_remaining: getStockRemaining(item) }
   isFormDialogVisible.value = true
 }
 

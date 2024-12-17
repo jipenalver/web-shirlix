@@ -90,7 +90,10 @@ const onFormReset = () => {
                 label="Weight / Qty"
                 type="number"
                 min="1"
-                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
+                :rules="[
+                  requiredValidator,
+                  betweenValidator(formData.qty, 0.001, props.itemData.stock_remaining)
+                ]"
                 hint="Please input correct value"
               ></v-text-field>
             </v-col>
