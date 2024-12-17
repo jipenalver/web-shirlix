@@ -48,11 +48,12 @@ onMounted(async () => {
       <v-text-field
         v-if="isKeyboardBtnClicked"
         v-model="formData.customer"
-        label="Input Customer Name"
+        label="Input Customer"
+        placeholder="Enter Customer Name"
         density="compact"
         prepend-inner-icon="mdi-account-tie"
         append-icon="mdi-close"
-        append-inner-icon="mdi-magnify"
+        append-inner-icon="mdi-account-details"
         @click:append-inner="onFormReset"
         @click:append="onCancel"
         @update:model-value="onEmitForm"
@@ -63,6 +64,7 @@ onMounted(async () => {
         v-else
         v-model="formData.customer"
         label="Select Customer"
+        placeholder="Select Customer Name"
         density="compact"
         :items="salesStore.customers"
         item-title="customer"

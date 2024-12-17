@@ -1,5 +1,5 @@
 <script setup>
-import { generateCSV, generateCSVTrim } from '@/utils/helpers'
+import { generateCSV, generateCSVTrim, getMoneyText } from '@/utils/helpers'
 import { tableHeaders } from './expensesReportTableUtils'
 import { useExpensesStore } from '@/stores/expenses'
 import { useBranchesStore } from '@/stores/branches'
@@ -180,8 +180,20 @@ onMounted(async () => {
         </template>
 
         <template #item.name="{ item }">
-          <span class="font-weight-bold">
-            {{ item.name }}
+          <div
+            class="td-first"
+            :class="mobile ? '' : 'd-flex align-center'"
+            :style="mobile ? 'height: auto' : ''"
+          >
+            <span class="font-weight-bold">
+              {{ item.name }}
+            </span>
+          </div>
+        </template>
+
+        <template #item.amount="{ item }">
+          <span class="font-weight-black">
+            {{ getMoneyText(item.amount) }}
           </span>
         </template>
 
@@ -198,3 +210,9 @@ onMounted(async () => {
     </v-col>
   </v-row>
 </template>
+
+<style scoped>
+.td-first {
+  height: 75px;
+}
+</style>

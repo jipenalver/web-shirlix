@@ -31,7 +31,7 @@ const tableOptions = ref({
 const tableFilters = ref({
   customer_id: null,
   branch_id: null,
-  date_range: [new Date(date.format(new Date(), 'fullDate'))]
+  date_range: null
 })
 
 // Retrieve Data based on Date
@@ -145,10 +145,10 @@ onMounted(async () => {
           <v-divider class="mb-5"></v-divider>
 
           <v-row dense>
-            <v-col cols="12" sm="3">
+            <v-col cols="6" sm="3">
               <ul class="ms-5">
                 <li>
-                  Inventory:
+                  Inventory: <br v-if="mobile" />
                   <b>
                     {{
                       getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'inventory'))
@@ -156,7 +156,7 @@ onMounted(async () => {
                   </b>
                 </li>
                 <li>
-                  Profit Gross:
+                  Gross Profit: <br v-if="mobile" />
                   <b>
                     {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'sales')) }}
                   </b>
@@ -164,10 +164,10 @@ onMounted(async () => {
               </ul>
             </v-col>
 
-            <v-col cols="12" sm="3">
+            <v-col cols="6" sm="3">
               <ul class="ms-5">
                 <li>
-                  Receivable:
+                  Receivable: <br v-if="mobile" />
                   <b>
                     {{
                       getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'receivable'))
@@ -175,7 +175,7 @@ onMounted(async () => {
                   </b>
                 </li>
                 <li>
-                  Expenses:
+                  Expenses: <br v-if="mobile" />
                   <b>
                     {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'expenses')) }}
                   </b>
@@ -186,8 +186,8 @@ onMounted(async () => {
             <v-col cols="12" sm="3" class="d-flex align-center">
               <ul class="ms-5">
                 <li>
-                  Net Profit:
-                  <b>
+                  Net Profit: <br v-if="mobile" />
+                  <b class="font-weight-black">
                     {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'profit')) }}
                   </b>
                 </li>
@@ -248,7 +248,7 @@ onMounted(async () => {
         </template>
 
         <template #item.profit_net="{ item }">
-          <span class="font-weight-bold">
+          <span class="font-weight-black">
             {{ getMoneyText(item.profit) }}
           </span>
         </template>

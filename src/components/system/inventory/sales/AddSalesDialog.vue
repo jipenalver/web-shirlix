@@ -1,6 +1,6 @@
 <script setup>
+import { requiredValidator, betweenValidator, isEmpty, isObject } from '@/utils/validators'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator, betweenValidator } from '@/utils/validators'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { formActionDefault } from '@/utils/supabase.js'
@@ -26,7 +26,7 @@ const formAction = ref({
 })
 const refVForm = ref()
 const salesData = ref(null)
-const customerName = ref('')
+const customer = ref('')
 const isConfirmDialog = ref(false)
 const confirmText = ref('')
 
@@ -35,12 +35,11 @@ watch(
   () => props.soldData,
   () => {
     salesData.value = props.soldData
-    const { customer } = salesData.value
-    customerName.value = customer
-      ? typeof customer === 'string'
-        ? customer.trim()
-        : customer.customer
-      : '-'
+    customer.value = isObject(salesData.value.customer)
+      ? salesData.value.customer.customer
+      : !isEmpty(salesData.value.customer)
+        ? salesData.value.customer
+        : '-'
   }
 )
 
@@ -96,9 +95,9 @@ const onFormSubmit = async () => {
   }
 
   if (cash < overall_price) {
-    if (customerName.value !== '-') {
+    if (customer.value !== '-') {
       confirmText.value = `The amount ${getMoneyText(cash)} is less than the total amount of ${getMoneyText(overall_price)}.
-        This will be recorded as a partial payment for customer ${customerName.value}. Do you wish to proceed?`
+        This will be recorded as a partial payment for customer ${customer.value}. Do you wish to proceed?`
       isConfirmDialog.value = true
     } else {
       formAction.value.formErrorMessage =
@@ -130,7 +129,7 @@ const onFormReset = () => {
               <h3>Customer</h3>
 
               <h3>
-                {{ customerName }}
+                {{ customer }}
               </h3>
             </v-col>
 

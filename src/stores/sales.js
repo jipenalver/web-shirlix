@@ -1,7 +1,7 @@
 import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
 import { supabase, tableSearch } from '@/utils/supabase'
+import { isEmpty, isObject } from '@/utils/validators'
 import { useAuthUserStore } from './authUser'
-import { isEmpty } from '@/utils/validators'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -84,15 +84,14 @@ export const useSalesStore = defineStore('sales', () => {
   async function addSales(formData) {
     const { stocks, customer, payment, ...salesData } = formData
 
-    // Check if new customer
+    // Check if object, existing customer
     let customer_id = null
-    if (typeof customer === 'string' && !isEmpty(customer.trim())) {
+    if (isObject(customer)) customer_id = customer.id
+    // Check if string, new customer
+    else if (!isEmpty(customer)) {
       const { data } = await supabase.from('customers').insert([{ customer }]).select()
-
       customer_id = data[0].id
     }
-    // Check if it is customer id
-    else if (typeof customer === 'number') customer_id = customer
 
     // Add Sale Report
     const { data } = await supabase

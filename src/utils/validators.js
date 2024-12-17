@@ -1,8 +1,13 @@
 // 👉 IsEmpty
 export const isEmpty = (value) => {
+  // Null, undefined, or empty string
   if (value === null || value === undefined || value === '') return true
 
-  return !!(Array.isArray(value) && value.length === 0)
+  // Check for strings (non-empty strings are not empty)
+  if (typeof value === 'string') return value.trim() === ''
+
+  // For all other types, return false
+  return false
 }
 
 // 👉 IsNullOrUndefined
