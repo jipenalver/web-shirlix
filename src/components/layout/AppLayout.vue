@@ -28,17 +28,11 @@ const onToggleTheme = () => {
   emit('theme', theme.value)
 }
 
-// Get Authentication status from supabase
-const getLoggedStatus = async () => {
+// Load Functions during component rendering
+onMounted(async () => {
   isLoggedIn.value = await authStore.isAuthenticated()
-
   isMobileLogged.value = mobile.value && isLoggedIn.value
   isDesktop.value = !mobile.value && (isLoggedIn.value || !isLoggedIn.value)
-}
-
-// Load Functions during component rendering
-onMounted(() => {
-  getLoggedStatus()
 })
 </script>
 

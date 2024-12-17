@@ -15,6 +15,7 @@ import StockWeightView from '@/views/system/inventory/StockWeightView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
 import StocksReportView from '@/views/system/reports/StocksReportView.vue'
 import SalesReportView from '@/views/system/reports/SalesReportView.vue'
+import SummaryReportView from '@/views/system/reports/SummaryReportView.vue'
 
 // 👉 Routes
 export const routes = [
@@ -123,6 +124,12 @@ export const routes = [
     path: '/reports/expenses',
     name: 'reports-expenses',
     component: ExpensesReportView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/reports/summary',
+    name: 'reports-summary',
+    component: SummaryReportView,
     meta: { requiresAuth: true }
   },
 

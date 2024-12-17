@@ -27,6 +27,6 @@ export const menuItemsNav4 = [
 export const menuItemsNav5 = [
   ['Stocks', 'mdi-poll', 'Stocks of Products Report', '/reports/stocks'],
   ['Sales', 'mdi-sale', 'Sold Products Report', '/reports/sales'],
-  ['Expenses', 'mdi-cash-multiple', 'Expenditures Report', '/reports/expenses']
-  // ['Balance Sheet', 'mdi-scale-balance', '', '/reports/balance'],
+  ['Expenses', 'mdi-cash-multiple', 'Expenditures Report', '/reports/expenses'],
+  ['Daily Summary', 'mdi-counter', 'Sales and Expenses Report', '/reports/summary']
 ]
