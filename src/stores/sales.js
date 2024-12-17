@@ -62,15 +62,9 @@ export const useSalesStore = defineStore('sales', () => {
     if (branch_id) query = query.eq('branch_id', branch_id)
     // If branch is not set, get the branch(es) of the user
     else {
-      const { data } = await supabase
-        .from('branches')
-        .select('id')
-        .in('name', authStore.userData.branch.split(','))
+      if (authStore.authBranchIds.value.length === 0) await authStore.getAuthBranchIds()
 
-      query = query.in(
-        'branch_id',
-        data.map((b) => b.id)
-      )
+      query = query.in('branch_id', authStore.authBranchIds)
     }
 
     return query

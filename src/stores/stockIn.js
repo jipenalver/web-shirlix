@@ -1,8 +1,8 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useStockInStore = defineStore('stockIn', () => {
   // Use Pinia Store
@@ -71,15 +71,9 @@ export const useStockInStore = defineStore('stockIn', () => {
     if (branch_id) query = query.eq('branch_id', branch_id)
     // If branch is not set, get the branch(es) of the user
     else {
-      const { data } = await supabase
-        .from('branches')
-        .select('id')
-        .in('name', authStore.userData.branch.split(','))
+      if (authStore.authBranchIds.value.length === 0) await authStore.getAuthBranchIds()
 
-      query = query.in(
-        'branch_id',
-        data.map((b) => b.id)
-      )
+      query = query.in('branch_id', authStore.authBranchIds)
     }
 
     if (purchased_at) {
