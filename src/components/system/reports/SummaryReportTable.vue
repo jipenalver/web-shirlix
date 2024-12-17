@@ -1,5 +1,11 @@
 <script setup>
-import { generateCSV, generateCSVTrim, getMoneyText, getPreciseNumber } from '@/utils/helpers'
+import {
+  generateCSV,
+  generateCSVTrim,
+  getAccumulatedNumber,
+  getMoneyText,
+  getPreciseNumber
+} from '@/utils/helpers'
 import { tableHeaders } from './summaryReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useSummaryStore } from '@/stores/summary'
@@ -102,6 +108,7 @@ onMounted(async () => {
         :headers="tableHeaders"
         :items="summaryStore.summaryReport"
         :items-length="summaryStore.summaryReport.length"
+        @update:sort-by="(sortBy) => onLoadItems({ sortBy })"
         no-data-text="Use the above filter to display report"
         hide-default-footer
         :hide-default-header="mobile"
@@ -138,7 +145,54 @@ onMounted(async () => {
           <v-divider class="mb-5"></v-divider>
 
           <v-row dense>
-            <v-spacer></v-spacer>
+            <v-col cols="12" sm="3">
+              <ul class="ms-5">
+                <li>
+                  Inventory:
+                  <b>
+                    {{
+                      getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'inventory'))
+                    }}
+                  </b>
+                </li>
+                <li>
+                  Profit Gross:
+                  <b>
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'sales')) }}
+                  </b>
+                </li>
+              </ul>
+            </v-col>
+
+            <v-col cols="12" sm="3">
+              <ul class="ms-5">
+                <li>
+                  Receivable:
+                  <b>
+                    {{
+                      getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'receivable'))
+                    }}
+                  </b>
+                </li>
+                <li>
+                  Expenses:
+                  <b>
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'expenses')) }}
+                  </b>
+                </li>
+              </ul>
+            </v-col>
+
+            <v-col cols="12" sm="3" class="d-flex align-center">
+              <ul class="ms-5">
+                <li>
+                  Net Profit:
+                  <b>
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'profit')) }}
+                  </b>
+                </li>
+              </ul>
+            </v-col>
 
             <v-col cols="12" sm="3">
               <v-btn
@@ -158,9 +212,15 @@ onMounted(async () => {
         </template>
 
         <template #item.date="{ item }">
-          <span class="font-weight-bold">
-            {{ date.format(item.date, 'fullDate') }}
-          </span>
+          <div
+            class="td-first"
+            :class="mobile ? '' : 'd-flex align-center'"
+            :style="mobile ? 'height: auto' : ''"
+          >
+            <span class="font-weight-bold">
+              {{ date.format(item.date, 'fullDate') }}
+            </span>
+          </div>
         </template>
 
         <template #item.inventory="{ item }">
@@ -189,7 +249,7 @@ onMounted(async () => {
 
         <template #item.profit_net="{ item }">
           <span class="font-weight-bold">
-            {{ getMoneyText(getPreciseNumber(item.sales - item.expenses)) }}
+            {{ getMoneyText(item.profit) }}
           </span>
         </template>
       </v-data-table-server>

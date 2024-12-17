@@ -140,7 +140,7 @@ onMounted(async () => {
         :items="reportsStore.stocksReport"
         :items-length="reportsStore.stocksReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="(sortBy) => onLoadItems({ sortBy }, true)"
+        @update:sort-by="(sortBy) => onLoadItems({ sortBy })"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"

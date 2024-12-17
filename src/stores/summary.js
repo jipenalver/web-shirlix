@@ -1,5 +1,5 @@
 import { groupByDate, sumByType } from '@/components/system/reports/summaryReportTableUtils'
-import { dateShiftFixValue } from '@/utils/helpers'
+import { dateShiftFixValue, getPreciseNumber } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { supabase } from '@/utils/supabase'
 import { defineStore } from 'pinia'
@@ -18,10 +18,14 @@ export const useSummaryStore = defineStore('summary', () => {
   }
 
   // Retrieve Stocks Report
-  async function getSummaryReport(tableOptions, { branch_id, date_range }) {
-    const { data: inventoryData } = await getInventoryData({ branch_id, date_range })
-    const { data: grossData } = await getGrossData({ branch_id, date_range })
-    const { data: expensesData } = await getExpensesData({ branch_id, date_range })
+  async function getSummaryReport({ sortBy }, { branch_id, date_range }) {
+    // Parallel data fetching
+    const [{ data: inventoryData }, { data: salesData }, { data: expensesData }] =
+      await Promise.all([
+        await getInventoryData({ branch_id, date_range }),
+        await getSalesData({ branch_id, date_range }),
+        await getExpensesData({ branch_id, date_range })
+      ])
 
     // Combine and group data by date
     const combinedData = groupByDate([
@@ -30,10 +34,15 @@ export const useSummaryStore = defineStore('summary', () => {
         type: 'inventory',
         amount: item.unit_cost
       })),
-      ...grossData.map((item) => ({
+      ...salesData.map((item) => ({
         date: item.created_at,
         type: 'sales',
         amount: item.overall_price
+      })),
+      ...salesData.map((item) => ({
+        date: item.created_at,
+        type: 'receivable',
+        amount: item.balance
       })),
       ...expensesData.map((item) => ({
         date: item.spent_at,
@@ -44,14 +53,26 @@ export const useSummaryStore = defineStore('summary', () => {
 
     // Format the grouped data into daily summaries
     summaryReport.value = Object.entries(combinedData)
-      .map(([date, entries]) => ({
-        date,
-        inventory: sumByType(entries, 'inventory'),
-        profit_gross: sumByType(entries, 'sales'),
-        receivable: 0,
-        expenses: sumByType(entries, 'expenses')
-      }))
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .map(([date, entries]) => {
+        const inventory = sumByType(entries, 'inventory')
+        const sales = sumByType(entries, 'sales')
+        const receivable = sumByType(entries, 'receivable')
+        const expenses = sumByType(entries, 'expenses')
+
+        return {
+          date,
+          inventory,
+          sales,
+          receivable,
+          expenses,
+          profit: sales - inventory - expenses
+        }
+      })
+      .sort((a, b) =>
+        sortBy.length === 1 && sortBy[0].order === 'asc'
+          ? new Date(a.date) - new Date(b.date)
+          : new Date(b.date) - new Date(a.date)
+      )
   }
 
   // Get Inventory
@@ -67,12 +88,31 @@ export const useSummaryStore = defineStore('summary', () => {
   }
 
   // Get Sales
-  async function getGrossData({ branch_id, date_range }) {
-    let query = supabase.from('sales').select('overall_price, created_at')
+  async function getSalesData({ branch_id, date_range }) {
+    let query = supabase
+      .from('sales')
+      .select('overall_price, created_at, customer_payments( payment )')
 
     query = getSummaryFilter(query, { branch_id, date_range })
 
-    return await query
+    const { data } = await query
+
+    const remappedData = data.map((item) => {
+      const totalPayments = item.customer_payments.reduce((acc, payment) => {
+        return acc + payment.payment
+      }, 0)
+
+      return {
+        balance:
+          item.customer_payments.length > 0
+            ? getPreciseNumber(item.overall_price - totalPayments)
+            : 0,
+        overall_price: item.overall_price,
+        created_at: item.created_at
+      }
+    })
+
+    return { data: remappedData }
   }
 
   // Get Expenses
