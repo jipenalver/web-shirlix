@@ -1,3 +1,4 @@
+import { groupByDate, sumByType } from '@/components/system/reports/summaryReportTableUtils'
 import { dateShiftFixValue } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { supabase } from '@/utils/supabase'
@@ -9,7 +10,6 @@ export const useSummaryStore = defineStore('summary', () => {
   const authStore = useAuthUserStore()
 
   // States
-
   const summaryReport = ref([])
 
   // Reset State Action
@@ -19,6 +19,43 @@ export const useSummaryStore = defineStore('summary', () => {
 
   // Retrieve Stocks Report
   async function getSummaryReport(tableOptions, { branch_id, date_range }) {
+    const { data: inventoryData } = await getInventoryData({ branch_id, date_range })
+    const { data: grossData } = await getGrossData({ branch_id, date_range })
+    const { data: expensesData } = await getExpensesData({ branch_id, date_range })
+
+    // Combine and group data by date
+    const combinedData = groupByDate([
+      ...inventoryData.map((item) => ({
+        date: item.purchased_at,
+        type: 'inventory',
+        amount: item.unit_cost
+      })),
+      ...grossData.map((item) => ({
+        date: item.created_at,
+        type: 'sales',
+        amount: item.overall_price
+      })),
+      ...expensesData.map((item) => ({
+        date: item.spent_at,
+        type: 'expenses',
+        amount: item.amount
+      }))
+    ])
+
+    // Format the grouped data into daily summaries
+    summaryReport.value = Object.entries(combinedData)
+      .map(([date, entries]) => ({
+        date,
+        inventory: sumByType(entries, 'inventory'),
+        profit_gross: sumByType(entries, 'sales'),
+        receivable: 0,
+        expenses: sumByType(entries, 'expenses')
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+  }
+
+  // Get Inventory
+  async function getInventoryData({ branch_id, date_range }) {
     let query = supabase
       .from('stock_ins')
       .select('unit_cost, purchased_at')
@@ -26,19 +63,33 @@ export const useSummaryStore = defineStore('summary', () => {
 
     query = getSummaryFilter(query, { branch_id, date_range }, 'purchased_at')
 
-    // Execute the query
-    const { data } = await query
-
-    // Set the retrieved data to state
-    summaryReport.value = data
+    return await query
   }
 
-  // Filter Stocks
+  // Get Sales
+  async function getGrossData({ branch_id, date_range }) {
+    let query = supabase.from('sales').select('overall_price, created_at')
+
+    query = getSummaryFilter(query, { branch_id, date_range })
+
+    return await query
+  }
+
+  // Get Expenses
+  async function getExpensesData({ branch_id, date_range }) {
+    let query = supabase.from('expenses').select('amount, spent_at')
+
+    query = getSummaryFilter(query, { branch_id, date_range }, 'spent_at')
+
+    return await query
+  }
+
+  // Filter Summary
   async function getSummaryFilter(query, { branch_id, date_range }, date_key = 'created_at') {
     if (branch_id) query = query.eq('branch_id', branch_id)
     // If branch is not set, get the branch(es) of the user
     else {
-      if (authStore.authBranchIds.value.length === 0) await authStore.getAuthBranchIds()
+      if (authStore.authBranchIds.length === 0) await authStore.getAuthBranchIds()
 
       query = query.in('branch_id', authStore.authBranchIds)
     }

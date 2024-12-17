@@ -1,12 +1,5 @@
 <script setup>
-import {
-  generateCSV,
-  generateCSVTrim,
-  getAccumulatedNumber,
-  getMoneyText,
-  getPadLeftText,
-  getPreciseNumber
-} from '@/utils/helpers'
+import { generateCSV, generateCSVTrim, getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import { tableHeaders } from './summaryReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useSummaryStore } from '@/stores/summary'
@@ -66,8 +59,12 @@ const csvData = () => {
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
   const rows = summaryStore.summaryReport.map((item) => {
     return [
-      generateCSVTrim(item.date)
-      // Test
+      generateCSVTrim(date.format(item.date, 'fullDate')),
+      item.inventory,
+      item.sales,
+      item.receivable,
+      item.expenses,
+      getPreciseNumber(item.sales - item.expenses)
     ].join(',')
   })
 
@@ -106,7 +103,6 @@ onMounted(async () => {
         :items="summaryStore.summaryReport"
         :items-length="summaryStore.summaryReport.length"
         no-data-text="Use the above filter to display report"
-        @update:sort-by="(sortBy) => onLoadItems({ sortBy }, true)"
         hide-default-footer
         :hide-default-header="mobile"
         :mobile="mobile"
@@ -159,6 +155,42 @@ onMounted(async () => {
           </v-row>
 
           <v-divider class="my-5"></v-divider>
+        </template>
+
+        <template #item.date="{ item }">
+          <span class="font-weight-bold">
+            {{ date.format(item.date, 'fullDate') }}
+          </span>
+        </template>
+
+        <template #item.inventory="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.inventory) }}
+          </span>
+        </template>
+
+        <template #item.profit_gross="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.sales) }}
+          </span>
+        </template>
+
+        <template #item.receivable="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.receivable) }}
+          </span>
+        </template>
+
+        <template #item.expenses="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.expenses) }}
+          </span>
+        </template>
+
+        <template #item.profit_net="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(getPreciseNumber(item.sales - item.expenses)) }}
+          </span>
         </template>
       </v-data-table-server>
     </v-col>

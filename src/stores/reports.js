@@ -51,7 +51,7 @@ export const useReportsStore = defineStore('reports', () => {
     if (branch_id) query = query.eq('branch_id', branch_id)
     // If branch is not set, get the branch(es) of the user
     else {
-      if (authStore.authBranchIds.value.length === 0) await authStore.getAuthBranchIds()
+      if (authStore.authBranchIds.length === 0) await authStore.getAuthBranchIds()
 
       query = query.in('branch_id', authStore.authBranchIds)
     }
@@ -96,7 +96,7 @@ export const useReportsStore = defineStore('reports', () => {
     if (branch_id) query = query.eq('branch_id', branch_id)
     // If branch is not set, get the branch(es) of the user
     else {
-      if (authStore.authBranchIds.value.length === 0) await authStore.getAuthBranchIds()
+      if (authStore.authBranchIds.length === 0) await authStore.getAuthBranchIds()
 
       query = query.in('branch_id', authStore.authBranchIds)
     }
