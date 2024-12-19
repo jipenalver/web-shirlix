@@ -237,7 +237,7 @@ onMounted(async () => {
                   compareDatesValidator(
                     formData.expired_at,
                     formData.purchased_at,
-                    '>',
+                    '>=',
                     'expiration',
                     'purchased'
                   )
