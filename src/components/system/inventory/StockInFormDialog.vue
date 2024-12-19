@@ -1,10 +1,10 @@
 <script setup>
+import { betweenValidator, compareDatesValidator, requiredValidator } from '@/utils/validators'
+import AlertNotification from '@/components/common/AlertNotification.vue'
+import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
-import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator } from '@/utils/validators'
-import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -25,7 +25,7 @@ const formDataDefault = {
   supplier: '',
   remarks: '',
   unit_cost: 0,
-  qty: 1,
+  qty: 0,
   qty_metric: 'kg',
   purchased_at: new Date(),
   expired_at: null,
@@ -190,8 +190,8 @@ onMounted(async () => {
                 v-model="formData.qty"
                 label="Weight / Qty"
                 type="number"
-                min="1"
-                :rules="[requiredValidator]"
+                min="0"
+                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
                 hint="Please select correct metric"
               ></v-text-field>
             </v-col>
@@ -209,10 +209,13 @@ onMounted(async () => {
               <v-text-field
                 v-model="formData.unit_cost"
                 prefix="Php"
-                label="Unit Cost"
+                label="Total Cost of Stock"
                 type="number"
                 min="0"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  betweenValidator(formData.unit_cost, 0.001, 999999.999)
+                ]"
               ></v-text-field>
             </v-col>
 
@@ -230,6 +233,15 @@ onMounted(async () => {
                 v-model="formData.expired_at"
                 label="Expiration Date"
                 clearable
+                :rules="[
+                  compareDatesValidator(
+                    formData.expired_at,
+                    formData.purchased_at,
+                    '>',
+                    'expiration',
+                    'purchased'
+                  )
+                ]"
                 hide-actions
               ></v-date-input>
             </v-col>
