@@ -1,5 +1,10 @@
 <script setup>
-import { baseColors, defaultOptions, defaultSeries } from './productsWidgetUtils'
+import {
+  categoryColors,
+  categoryTextFormatter,
+  defaultOptions,
+  defaultSeries
+} from './productsWidgetUtils'
 import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
 import NotAcceptableUI from '@/components/errors/NotAcceptableUI.vue'
 import { useBranchesStore } from '@/stores/branches'
@@ -37,7 +42,7 @@ const getColors = () => {
   const colors = []
 
   for (let i = 0; i < productsStore.productsGraph.length; i++)
-    colors.push(baseColors[i % baseColors.length])
+    colors.push(categoryColors[i % categoryColors.length])
 
   return colors
 }
@@ -52,7 +57,9 @@ const updateGraph = async () => {
   })
 
   barOptions.value.colors = getColors()
-  barOptions.value.xaxis.categories = productsStore.productsGraph.map((item) => item.name)
+  barOptions.value.xaxis.categories = productsStore.productsGraph.map((item) =>
+    categoryTextFormatter(item.name)
+  )
 
   formAction.value.formProcess = false
 }
