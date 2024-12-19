@@ -140,39 +140,46 @@ export const imageValidator = (value) => {
 }
 
 // 👉 General Date Comparison Validator
-export const compareDatesValidator = (date1, date2, operator, date1Name = '', date2Name = '') => {
+export const compareDatesValidator = (
+  date1,
+  date2,
+  operator,
+  date1Name = 'first',
+  date2Name = 'second'
+) => {
+  if (isEmpty(date1)) return true
+
   const d1 = new Date(date1)
   const d2 = new Date(date2)
 
   if (isNaN(d1) || isNaN(d2)) return 'Invalid date input'
 
-  const time1 = d1.getTime()
-  const time2 = d2.getTime()
+  const time1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate()).getTime()
+  const time2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate()).getTime()
 
-  switch (operator) {
-    case '===':
-      return time1 === time2 || 'Dates must be exactly the same'
-    case '==':
-      return time1 == time2 || 'Dates must be equal'
-    case '!==':
-      return time1 !== time2 || 'Dates must not be the same'
-    case '!=':
-      return time1 != time2 || 'Dates must not be equal'
-    case '>':
-      return time1 > time2 || `The ${date1Name} date must be later than the ${date2Name} date`
-    case '>=':
-      return (
-        time1 >= time2 ||
-        `The ${date1Name} date must be the same or later than the ${date2Name} date`
-      )
-    case '<':
-      return time1 < time2 || `The ${date1Name} date must be earlier than the ${date2Name} date`
-    case '<=':
-      return (
-        time1 <= time2 ||
-        `The ${date1Name} date must be the same or earlier than the ${date2Name} date`
-      )
-    default:
-      return `Invalid operator: ${operator}`
+  const messages = {
+    '===': 'Dates must be exactly the same',
+    '==': 'Dates must be equal',
+    '!==': 'Dates must not be the same',
+    '!=': 'Dates must not be equal',
+    '>': `The ${date1Name} date must be later than the ${date2Name} date`,
+    '>=': `The ${date1Name} date must be the same or later than the ${date2Name} date`,
+    '<': `The ${date1Name} date must be earlier than the ${date2Name} date`,
+    '<=': `The ${date1Name} date must be the same or earlier than the ${date2Name} date`
   }
+
+  if (!(operator in messages)) return `Invalid operator: ${operator}`
+
+  const comparisons = {
+    '===': time1 === time2,
+    '==': time1 == time2,
+    '!==': time1 !== time2,
+    '!=': time1 != time2,
+    '>': time1 > time2,
+    '>=': time1 >= time2,
+    '<': time1 < time2,
+    '<=': time1 <= time2
+  }
+
+  return comparisons[operator] || messages[operator]
 }
