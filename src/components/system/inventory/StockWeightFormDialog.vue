@@ -1,10 +1,10 @@
 <script setup>
+import AlertNotification from '@/components/common/AlertNotification.vue'
+import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
+import { requiredValidator } from '@/utils/validators'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
-import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator } from '@/utils/validators'
-import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -24,7 +24,7 @@ const stockInStore = useStockInStore()
 const formDataDefault = {
   remarks: '',
   qty: 1,
-  qty_reweighed: 1,
+  qty_reweighed: 0,
   qty_metric: 'kg',
   branch_id: null,
   product_id: null
@@ -172,7 +172,7 @@ onMounted(async () => {
                 label="Re-weighed Weight / Qty"
                 type="number"
                 min="1"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
               ></v-text-field>
             </v-col>
 
