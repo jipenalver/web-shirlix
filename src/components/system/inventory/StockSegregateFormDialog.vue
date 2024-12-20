@@ -1,13 +1,13 @@
 <script setup>
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { useProductsStore } from '@/stores/products'
-import { useStockInStore } from '@/stores/stockIn'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator, betweenValidator } from '@/utils/validators'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { useProductsStore } from '@/stores/products'
+import { useStockInStore } from '@/stores/stockIn'
+import { getPreciseNumber } from '@/utils/helpers'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
-import { getPreciseNumber } from '@/utils/helpers'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
@@ -76,7 +76,8 @@ const onAddPortion = () => {
     purchased_at: formData.value.purchased_at,
     expired_at: formData.value.expired_at,
     branch_id: formData.value.branch_id,
-    stock_in_id: formData.value.id
+    stock_in_id: formData.value.id,
+    unit_price_metric: formData.value.qty_metric
   })
   getRemainingQty()
 }

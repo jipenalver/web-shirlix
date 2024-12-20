@@ -9,7 +9,7 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Inventory',
+    title: 'Inventory Cost',
     key: 'inventory',
     sortable: false,
     align: 'start'
@@ -22,7 +22,7 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Accounts Receivable',
+    title: 'Collectibles',
     key: 'receivable',
     sortable: false,
     align: 'start'

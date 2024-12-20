@@ -24,7 +24,7 @@ const reportsStore = useReportsStore()
 
 // Load Variables
 const formDataDefault = {
-  payment: ''
+  payment: undefined
 }
 const formData = ref({
   ...formDataDefault
@@ -36,7 +36,7 @@ const refVForm = ref()
 const isConfirmDialog = ref(false)
 const confirmText = ref('')
 
-// Calculate Balance
+// Calculate Collectibles
 const getPaymentBalance = () => {
   return getPreciseNumber(
     props.soldData.overall_price - getAccumulatedNumber(props.soldData.customer_payments, 'payment')
@@ -169,7 +169,7 @@ const onFormReset = () => {
 
             <v-list-item lines="two">
               <template #title>
-                <h1>Balance</h1>
+                <h1>Collectible(s)</h1>
               </template>
 
               <template #append>
