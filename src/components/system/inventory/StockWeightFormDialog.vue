@@ -1,7 +1,7 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
-import { requiredValidator } from '@/utils/validators'
+import { requiredValidator, betweenValidator } from '@/utils/validators'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'

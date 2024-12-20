@@ -77,10 +77,7 @@ export const useSummaryStore = defineStore('summary', () => {
 
   // Get Inventory
   async function getInventoryData({ branch_id, date_range }) {
-    let query = supabase
-      .from('stock_ins')
-      .select('unit_cost, purchased_at')
-      .eq('is_segregated', true)
+    let query = supabase.from('stock_ins').select('unit_cost, purchased_at')
 
     query = getSummaryFilter(query, { branch_id, date_range }, 'purchased_at')
 

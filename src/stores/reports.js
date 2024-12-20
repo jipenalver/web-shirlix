@@ -27,7 +27,7 @@ export const useReportsStore = defineStore('reports', () => {
       .from('stock_ins')
       .select('*, branches( name ), products( name, image_url, description ), sale_products( qty )')
       .order(column, { ascending: order })
-      .eq('is_portion', true)
+      .eq('is_segregated', false)
 
     query = getStocksFilter(query, { search, product_id, branch_id, purchased_at })
 

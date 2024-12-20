@@ -39,6 +39,13 @@ const tableFilters = ref({
   purchased_at: null
 })
 
+// Calculate Stock In Qty
+const getStockInQty = (item) => {
+  return item.qty_reweighed
+    ? item.qty_reweighed + ' ' + item.qty_metric
+    : item.qty + ' ' + item.qty_metric
+}
+
 // Calculate Stock Remaining
 const getStockRemaining = (item) => {
   return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
@@ -89,11 +96,17 @@ const csvData = () => {
     return [
       "'" + getPadLeftText(item.id),
       generateCSVTrim(item.products.name),
-      item.qty_reweighed + ' ' + item.qty_metric,
-      getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric,
-      getStockRemaining(item) + ' ' + item.qty_metric,
+      getStockInQty(item),
+      item.sale_products.length != 0
+        ? getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric
+        : '-',
+      item.is_portion
+        ? item.sale_products.length != 0
+          ? getStockRemaining(item) + ' ' + item.qty_metric
+          : '-'
+        : getStockInQty(item),
       item.expired_at ? generateCSVTrim(date.format(item.expired_at, 'fullDate')) : 'n/a',
-      getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock',
+      item.is_portion ? (getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock') : 'Inventory',
 
       item.unit_price,
       generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
@@ -258,7 +271,7 @@ onMounted(async () => {
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
               <p class="text-caption" v-if="item.unit_cost">
-                <span class="font-weight-bold">Unit Cost:</span>
+                <span class="font-weight-bold">Total Cost:</span>
                 {{ getMoneyText(item.unit_cost) }}
               </p>
               <p class="text-caption" v-else-if="item.is_portion">
@@ -274,19 +287,29 @@ onMounted(async () => {
 
         <template #item.qty_reweighed="{ item }">
           <span class="font-weight-bold">
-            {{ item.qty_reweighed + ' ' + item.qty_metric }}
+            {{ getStockInQty(item) }}
           </span>
         </template>
 
         <template #item.qty_sold="{ item }">
           <span class="font-weight-black">
-            {{ getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric }}
+            {{
+              item.sale_products.length != 0
+                ? getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric
+                : '-'
+            }}
           </span>
         </template>
 
         <template #item.qty_remaining="{ item }">
           <span class="font-weight-black">
-            {{ getStockRemaining(item) + ' ' + item.qty_metric }}
+            {{
+              item.is_portion
+                ? item.sale_products.length != 0
+                  ? getStockRemaining(item) + ' ' + item.qty_metric
+                  : '-'
+                : getStockInQty(item)
+            }}
           </span>
         </template>
 
@@ -300,9 +323,17 @@ onMounted(async () => {
           <v-chip
             class="font-weight-bold cursor-pointer"
             prepend-icon="mdi-information"
-            :color="getStockRemaining(item) > 0 ? undefined : 'error'"
+            :color="
+              item.is_portion ? (getStockRemaining(item) > 0 ? undefined : 'error') : 'success'
+            "
           >
-            {{ getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock' }}
+            {{
+              item.is_portion
+                ? getStockRemaining(item) > 0
+                  ? 'In Stock'
+                  : 'Out of Stock'
+                : 'Inventory'
+            }}
 
             <v-tooltip activator="parent" location="top" open-on-click>
               <ul class="ms-2">

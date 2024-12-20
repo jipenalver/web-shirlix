@@ -16,7 +16,7 @@ const salesStore = useSalesStore()
 
 // Load Variables
 const formDataDefault = {
-  cash: ''
+  cash: undefined
 }
 const formData = ref({
   ...formDataDefault

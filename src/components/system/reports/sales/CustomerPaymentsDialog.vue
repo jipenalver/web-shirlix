@@ -24,7 +24,7 @@ const reportsStore = useReportsStore()
 
 // Load Variables
 const formDataDefault = {
-  payment: ''
+  payment: undefined
 }
 const formData = ref({
   ...formDataDefault
