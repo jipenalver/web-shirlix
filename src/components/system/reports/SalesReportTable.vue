@@ -42,7 +42,7 @@ const itemData = ref(null)
 const isViewProductsDialog = ref(false)
 const isViewPaymentsDialog = ref(false)
 
-// Calculate Balance
+// Calculate Collectibles
 const getPaymentBalance = (item) => {
   return getPreciseNumber(
     item.overall_price - getAccumulatedNumber(item.customer_payments, 'payment')

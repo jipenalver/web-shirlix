@@ -100,11 +100,7 @@ const csvData = () => {
       item.sale_products.length != 0
         ? getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric
         : '-',
-      item.is_portion
-        ? item.sale_products.length != 0
-          ? getStockRemaining(item) + ' ' + item.qty_metric
-          : '-'
-        : getStockInQty(item),
+      item.is_portion ? getStockRemaining(item) + ' ' + item.qty_metric : getStockInQty(item),
       item.expired_at ? generateCSVTrim(date.format(item.expired_at, 'fullDate')) : 'n/a',
       item.is_portion ? (getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock') : 'Inventory',
 
@@ -305,9 +301,7 @@ onMounted(async () => {
           <span class="font-weight-black">
             {{
               item.is_portion
-                ? item.sale_products.length != 0
-                  ? getStockRemaining(item) + ' ' + item.qty_metric
-                  : '-'
+                ? getStockRemaining(item) + ' ' + item.qty_metric
                 : getStockInQty(item)
             }}
           </span>

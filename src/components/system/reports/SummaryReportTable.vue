@@ -148,7 +148,7 @@ onMounted(async () => {
             <v-col cols="6" sm="3">
               <ul class="ms-5">
                 <li>
-                  Inventory: <br v-if="mobile" />
+                  Inventory Cost: <br v-if="mobile" />
                   <b>
                     {{
                       getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'inventory'))

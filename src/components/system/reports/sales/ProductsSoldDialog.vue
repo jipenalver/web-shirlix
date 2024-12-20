@@ -9,7 +9,7 @@ const emit = defineEmits(['update:isDialogVisible'])
 // Utilize pre-defined vue functions
 const { mdAndDown } = useDisplay()
 
-// Calculate Balance
+// Calculate Collectibles
 const getPaymentBalance = () => {
   return getPreciseNumber(
     props.soldData.overall_price - getAccumulatedNumber(props.soldData.customer_payments, 'payment')
@@ -116,7 +116,7 @@ const onClose = () => {
 
           <v-list-item v-if="props.soldData.customer_payments.length > 0" lines="two">
             <template #title>
-              <h1>Balance</h1>
+              <h1>Collectible(s)</h1>
             </template>
 
             <template #append>

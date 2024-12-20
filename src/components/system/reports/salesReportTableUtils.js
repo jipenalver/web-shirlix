@@ -18,12 +18,12 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Tendered Amount',
+    title: 'Amount Payable',
     key: 'overall_price',
     align: 'start'
   },
   {
-    title: 'Balance',
+    title: 'Collectibles',
     key: 'balance',
     sortable: false,
     align: 'start'
