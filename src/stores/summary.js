@@ -32,7 +32,7 @@ export const useSummaryStore = defineStore('summary', () => {
       ...inventoryData.map((item) => ({
         date: item.purchased_at,
         type: 'inventory',
-        amount: item.unit_cost
+        amount: item.total_cost
       })),
       ...salesData.map((item) => ({
         date: item.created_at,
@@ -77,7 +77,7 @@ export const useSummaryStore = defineStore('summary', () => {
 
   // Get Inventory
   async function getInventoryData({ branch_id, date_range }) {
-    let query = supabase.from('stock_ins').select('unit_cost, purchased_at')
+    let query = supabase.from('stock_ins').select('total_cost, purchased_at')
 
     query = getSummaryFilter(query, { branch_id, date_range }, 'purchased_at')
 

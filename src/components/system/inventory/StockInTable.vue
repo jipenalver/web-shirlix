@@ -262,9 +262,9 @@ onMounted(async () => {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption" v-if="item.unit_cost">
+              <p class="text-caption" v-if="item.total_cost">
                 <span class="font-weight-bold">Total Cost:</span>
-                {{ getMoneyText(item.unit_cost) }}
+                {{ getMoneyText(item.total_cost) }}
               </p>
               <p class="text-caption" v-else-if="item.is_portion">
                 <span class="font-weight-bold">Portion of ID:</span>
