@@ -2,7 +2,7 @@
 import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import StockInFormDialog from './StockInFormDialog.vue'
+import StockInFormDialog from './stockin/StockInFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'

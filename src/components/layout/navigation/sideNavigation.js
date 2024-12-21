@@ -2,7 +2,7 @@
 export const mainNav = [
   ['User Management', 'mdi-account-box-multiple'],
   ['Product Management', 'mdi-clipboard-list'],
-  ['Inventory', 'mdi-invoice-list'],
+  ['Inventory Management', 'mdi-invoice-list'],
   ['Expenses Management', 'mdi-cash-register'],
   ['Reporting', 'mdi-file-chart']
 ]
@@ -18,15 +18,21 @@ export const menuItemsNav2 = [
 ]
 export const menuItemsNav3 = [
   ['Stock In', 'mdi-tray-arrow-down', 'Add Stocks on Products', '/inventory/stockin'],
-  ['Stock Weight', 'mdi-weight-kilogram', 'Track Weight of Products', '/inventory/weight'],
-  ['Sales', 'mdi-tray-arrow-up', 'Sell Products', '/inventory/sales']
+  ['Stock Transfer', 'mdi-store-marker', 'Multi-Branch Stock Transfers', '/inventory/transfer'],
+  [
+    'Stock Segregation',
+    'mdi-tray-full',
+    'Track Weight and Segregate Stocks',
+    '/inventory/segregate'
+  ],
+  ['Check Out', 'mdi-cart-variant', 'Sell Products', '/inventory/sales']
 ]
 export const menuItemsNav4 = [
   ['Expenditures', 'mdi-cash-remove', 'Tally and Manage Expenses', '/expenses']
 ]
 export const menuItemsNav5 = [
   ['Stocks', 'mdi-poll', 'Stocks of Products Report', '/reports/stocks'],
-  ['Sales', 'mdi-sale', 'Sold Products Report', '/reports/sales'],
-  ['Expenses', 'mdi-cash-multiple', 'Expenditures Report', '/reports/expenses'],
-  ['Daily Summary', 'mdi-counter', 'Sales and Expenses Report', '/reports/summary']
+  ['Sales Status', 'mdi-sale', 'Sold Products Report', '/reports/sales'],
+  ['Sales Summary', 'mdi-counter', 'Sales and Expenses Report', '/reports/summary'],
+  ['Expenses', 'mdi-cash-multiple', 'Expenditures Report', '/reports/expenses']
 ]

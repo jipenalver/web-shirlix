@@ -7,9 +7,9 @@ import {
   menuItemsNav4,
   menuItemsNav5
 } from './sideNavigation'
-import { useDisplay } from 'vuetify'
-import { ref, watch, onMounted } from 'vue'
 import { useAuthUserStore } from '@/stores/authUser'
+import { ref, watch, onMounted } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDrawerVisible'])
 
@@ -66,7 +66,7 @@ onMounted(() => {
     :persistent="mobile"
     :temporary="mobile"
     :permanent="!mobile"
-    width="325"
+    width="350"
   >
     <v-list density="compact" nav>
       <v-list-item

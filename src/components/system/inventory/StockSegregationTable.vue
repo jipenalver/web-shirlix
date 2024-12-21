@@ -1,8 +1,8 @@
 <script setup>
 import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
+import StockSegregateFormDialog from './segregation/StockSegregateFormDialog.vue'
+import StockWeightFormDialog from './segregation/StockWeightFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import StockSegregateFormDialog from './StockSegregateFormDialog.vue'
-import StockWeightFormDialog from './StockWeightFormDialog.vue'
 import { tableHeaders } from './stockWeightTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
