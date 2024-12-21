@@ -38,6 +38,13 @@ const tableFilters = ref({
   product_id: null,
   purchased_at: null
 })
+const isTransferFormDialogVisible = ref(false)
+const itemData = ref(null)
+
+// Calculate Sold Qty
+const getSoldQty = (item) => {
+  return getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric
+}
 
 // Calculate Stock In Qty
 const getStockInQty = (item) => {
@@ -49,6 +56,12 @@ const getStockInQty = (item) => {
 // Calculate Stock Remaining
 const getStockRemaining = (item) => {
   return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+}
+
+// Trigger Transfer Btn
+const onTransfer = () => {
+  itemData.value = null
+  isTransferFormDialogVisible.value = true
 }
 
 // Retrieve Data based on Date
@@ -87,7 +100,7 @@ const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
 // CSV Data
 const csvData = () => {
   // Get the headers from utils
-  const headers = tableHeaders.map((header) => header.title)
+  const headers = tableHeaders.slice(0, -1).map((header) => header.title)
   const addHeaders = ['Unit Price', 'Added Date', 'Purchased Date', 'Supplier', 'Branch', 'Remarks']
   const newHeaders = [...headers, ...addHeaders].join(',')
 
@@ -97,9 +110,7 @@ const csvData = () => {
       "'" + getPadLeftText(item.id),
       generateCSVTrim(item.products.name),
       getStockInQty(item),
-      item.sale_products.length != 0
-        ? getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric
-        : '-',
+      item.sale_products.length === 0 ? '-' : getSoldQty(item),
       item.is_portion ? getStockRemaining(item) + ' ' + item.qty_metric : getStockInQty(item),
       item.expired_at ? generateCSVTrim(date.format(item.expired_at, 'fullDate')) : 'n/a',
       item.is_portion ? (getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock') : 'Inventory',
@@ -289,11 +300,7 @@ onMounted(async () => {
 
         <template #item.qty_sold="{ item }">
           <span class="font-weight-black">
-            {{
-              item.sale_products.length != 0
-                ? getAccumulatedNumber(item.sale_products, 'qty') + ' ' + item.qty_metric
-                : '-'
-            }}
+            {{ item.sale_products.length === 0 ? '-' : getSoldQty(item) }}
           </span>
         </template>
 
@@ -345,6 +352,21 @@ onMounted(async () => {
               </ul>
             </v-tooltip>
           </v-chip>
+        </template>
+
+        <template #item.actions="{ item }">
+          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onTransfer(item)"
+              :disabled="!item.is_portion || getStockRemaining(item) === 0"
+              icon
+            >
+              <v-icon icon="mdi-transfer"></v-icon>
+              <v-tooltip activator="parent" location="top">Transfer Remaining Qty</v-tooltip>
+            </v-btn>
+          </div>
         </template>
       </v-data-table-server>
     </v-col>

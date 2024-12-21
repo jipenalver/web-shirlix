@@ -39,7 +39,7 @@ const tableFilters = ref({
 const isWeightFormDialogVisible = ref(false)
 const isSegregateFormDialogVisible = ref(false)
 const isPriceFormDialogVisible = ref(false)
-const isCodeDialogVisible = ref(false)
+const isCodeFormDialogVisible = ref(false)
 const itemData = ref(null)
 const formAction = ref({
   ...formActionDefault
@@ -56,21 +56,21 @@ const onCodeVerified = (isVerified) => {
 // Trigger Update Btn
 const onUpdateWeight = (item) => {
   itemData.value = item
-  isCodeDialogVisible.value = true
+  isCodeFormDialogVisible.value = true
   action.value = 'weight'
 }
 
 // Trigger Update Btn
 const onUpdateSegregate = (item) => {
   itemData.value = item
-  isCodeDialogVisible.value = true
+  isCodeFormDialogVisible.value = true
   action.value = 'segregate'
 }
 
 // Trigger Update Btn
 const onUpdatePrice = (item) => {
   itemData.value = item
-  isCodeDialogVisible.value = true
+  isCodeFormDialogVisible.value = true
   action.value = 'price'
 }
 
@@ -347,7 +347,7 @@ onMounted(async () => {
   </v-row>
 
   <CodeFormDialog
-    v-model:is-dialog-visible="isCodeDialogVisible"
+    v-model:is-dialog-visible="isCodeFormDialogVisible"
     @is-code-verified="onCodeVerified"
   ></CodeFormDialog>
 

@@ -36,7 +36,7 @@ const tableFilters = ref({
   purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
 })
 const isFormDialogVisible = ref(false)
-const isCodeDialogVisible = ref(false)
+const isCodeFormDialogVisible = ref(false)
 const isConfirmDeleteDialog = ref(false)
 const itemData = ref(null)
 const deleteId = ref('')
@@ -54,7 +54,7 @@ const onCodeVerified = (isVerified) => {
 // Trigger Update Btn
 const onUpdate = (item) => {
   itemData.value = item
-  isCodeDialogVisible.value = true
+  isCodeFormDialogVisible.value = true
   action.value = 'update'
 }
 
@@ -67,7 +67,7 @@ const onAdd = () => {
 // Trigger Delete Btn
 const onDelete = (id) => {
   deleteId.value = id
-  isCodeDialogVisible.value = true
+  isCodeFormDialogVisible.value = true
   action.value = 'delete'
 }
 
@@ -348,7 +348,7 @@ onMounted(async () => {
   </v-row>
 
   <CodeFormDialog
-    v-model:is-dialog-visible="isCodeDialogVisible"
+    v-model:is-dialog-visible="isCodeFormDialogVisible"
     @is-code-verified="onCodeVerified"
   ></CodeFormDialog>
 
