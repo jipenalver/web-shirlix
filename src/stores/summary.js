@@ -41,7 +41,12 @@ export const useSummaryStore = defineStore('summary', () => {
       })),
       ...salesData.map((item) => ({
         date: item.created_at,
-        type: 'receivable',
+        type: 'discount',
+        amount: item.discount
+      })),
+      ...salesData.map((item) => ({
+        date: item.created_at,
+        type: 'collectible',
         amount: item.balance
       })),
       ...expensesData.map((item) => ({
@@ -56,16 +61,18 @@ export const useSummaryStore = defineStore('summary', () => {
       .map(([date, entries]) => {
         const inventory = sumByType(entries, 'inventory')
         const sales = sumByType(entries, 'sales')
-        const receivable = sumByType(entries, 'receivable')
+        const discount = sumByType(entries, 'discount')
+        const collectible = sumByType(entries, 'collectible')
         const expenses = sumByType(entries, 'expenses')
 
         return {
           date,
           inventory,
           sales,
-          receivable,
+          discount,
+          collectible,
           expenses,
-          profit: sales - inventory - expenses
+          profit: getPreciseNumber(sales - inventory - expenses)
         }
       })
       .sort((a, b) =>
@@ -88,7 +95,7 @@ export const useSummaryStore = defineStore('summary', () => {
   async function getSalesData({ branch_id, date_range }) {
     let query = supabase
       .from('sales')
-      .select('overall_price, created_at, customer_payments( payment )')
+      .select('overall_price, exact_price, created_at, customer_payments( payment )')
 
     query = getSummaryFilter(query, { branch_id, date_range })
 
@@ -100,6 +107,7 @@ export const useSummaryStore = defineStore('summary', () => {
       }, 0)
 
       return {
+        discount: getPreciseNumber(item.exact_price - item.overall_price),
         balance:
           item.customer_payments.length > 0
             ? getPreciseNumber(item.overall_price - totalPayments)

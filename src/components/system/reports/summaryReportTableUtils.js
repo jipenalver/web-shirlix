@@ -21,9 +21,16 @@ export const tableHeaders = [
     sortable: false,
     align: 'start'
   },
+
+  {
+    title: 'Discounts',
+    key: 'discount',
+    sortable: false,
+    align: 'start'
+  },
   {
     title: 'Collectibles',
-    key: 'receivable',
+    key: 'collectible',
     sortable: false,
     align: 'start'
   },
