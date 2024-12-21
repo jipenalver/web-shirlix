@@ -107,25 +107,22 @@ export const filesExtract = (event) => {
   })
 }
 
-// 👉 Fix v-date-input datetime shift issue for form
-export const dateShiftFixForm = (formData, dateColumns = []) => {
+// 👉 Fix v-date-input; prepare local dates in form
+export const prepareFormDates = (formData, dateColumns = []) => {
   dateColumns.forEach((dateColumn) => {
     if (formData[dateColumn]) {
       const dateValue = new Date(formData[dateColumn])
-
-      formData = {
-        ...formData,
-        [dateColumn]: dateValue.toLocaleDateString()
-      }
+      formData[dateColumn] = dateValue.toLocaleDateString('en-US', { timeZone: 'Asia/Manila' })
     }
   })
 
   return formData
 }
 
-// 👉 Fix v-date-input datetime shift issue for value
-export const dateShiftFixValue = (date) => {
-  return date.toLocaleDateString()
+// 👉 Fix v-date-input; prepare local date in form
+export const prepareDate = (date) => {
+  const dateValue = new Date(date)
+  return dateValue.toLocaleDateString('en-US', { timeZone: 'Asia/Manila' })
 }
 
 // 👉 Generate CSV

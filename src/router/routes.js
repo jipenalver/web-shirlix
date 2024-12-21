@@ -1,3 +1,4 @@
+// Auth
 import LoginView from '@/views/auth/LoginView.vue'
 // import RegisterView from '@/views/auth/RegisterView.vue'
 // Error
@@ -44,7 +45,7 @@ export const routes = [
   //   meta: { requiresAuth: false }
   // },
 
-  // System Pages
+  // Default Pages
   {
     path: '/dashboard',
     name: 'dashboard',
@@ -58,7 +59,7 @@ export const routes = [
     meta: { requiresAuth: true, isDefault: true }
   },
 
-  // Admin Pages
+  // User Pages
   {
     path: '/manage/user/roles',
     name: 'manage-user-roles',
@@ -86,7 +87,7 @@ export const routes = [
     meta: { requiresAuth: true }
   },
 
-  // Inventory
+  // Inventory Pages
   {
     path: '/inventory/stockin',
     name: 'inventory-stockin',
@@ -114,7 +115,7 @@ export const routes = [
     meta: { requiresAuth: true }
   },
 
-  // Reports Page
+  // Reports Pages
   {
     path: '/reports/stocks',
     name: 'reports-stocks',

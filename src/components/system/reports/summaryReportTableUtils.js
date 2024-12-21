@@ -1,4 +1,4 @@
-import { dateShiftFixValue } from '@/utils/helpers'
+import { prepareDate } from '@/utils/helpers'
 
 // Table Headers
 export const tableHeaders = [
@@ -45,7 +45,7 @@ export const tableHeaders = [
 // Group data by date
 export const groupByDate = (data) => {
   return data.reduce((acc, item) => {
-    const date = dateShiftFixValue(new Date(item.date))
+    const date = prepareDate(item.date)
     acc[date] = acc[date] || []
     acc[date].push(item)
     return acc

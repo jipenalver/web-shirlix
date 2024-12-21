@@ -1,5 +1,5 @@
 import { groupByDate, sumByType } from '@/components/system/reports/summaryReportTableUtils'
-import { dateShiftFixValue, getPreciseNumber } from '@/utils/helpers'
+import { prepareDate, getPreciseNumber } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { supabase } from '@/utils/supabase'
 import { defineStore } from 'pinia'
@@ -132,11 +132,11 @@ export const useSummaryStore = defineStore('summary', () => {
     }
 
     if (date_range) {
-      if (date_range.length === 1) query = query.eq(date_key, dateShiftFixValue(date_range[0]))
+      if (date_range.length === 1) query = query.eq(date_key, prepareDate(date_range[0]))
       else {
         query = query
-          .gte(date_key, dateShiftFixValue(date_range[0])) // Greater than or equal to `from` date
-          .lte(date_key, dateShiftFixValue(date_range[date_range.length - 1])) // Less than or equal to `to` date
+          .gte(date_key, prepareDate(date_range[0])) // Greater than or equal to `from` date
+          .lte(date_key, prepareDate(date_range[date_range.length - 1])) // Less than or equal to `to` date
       }
     }
 
