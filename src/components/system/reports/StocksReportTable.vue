@@ -8,6 +8,7 @@ import {
   getAccumulatedNumber,
   getPreciseNumber
 } from '@/utils/helpers'
+import TransferFormDialog from './stocks/TransferFormDialog.vue'
 import { tableHeaders } from './stocksReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
@@ -59,8 +60,8 @@ const getStockRemaining = (item) => {
 }
 
 // Trigger Transfer Btn
-const onTransfer = () => {
-  itemData.value = null
+const onTransfer = (item) => {
+  itemData.value = { ...item, stock_remaining: getStockRemaining(item) }
   isTransferFormDialogVisible.value = true
 }
 
@@ -371,6 +372,13 @@ onMounted(async () => {
       </v-data-table-server>
     </v-col>
   </v-row>
+
+  <TransferFormDialog
+    v-model:is-dialog-visible="isTransferFormDialogVisible"
+    :item-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
+  ></TransferFormDialog>
 </template>
 
 <style scoped>
