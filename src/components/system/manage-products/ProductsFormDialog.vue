@@ -1,12 +1,12 @@
 <script setup>
-import { useAuthUserStore } from '@/stores/authUser'
-import { useProductsStore } from '@/stores/products'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator, imageValidator } from '@/utils/validators'
 import { formActionDefault } from '@/utils/supabase.js'
+import { useAuthUserStore } from '@/stores/authUser'
+import { useProductsStore } from '@/stores/products'
 import { fileExtract } from '@/utils/helpers'
-import { ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
+import { ref, watch } from 'vue'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
@@ -84,6 +84,7 @@ const onSubmit = async () => {
       : 'Successfully Added Product.'
 
     await productsStore.getProductsTable(props.tableOptions, props.tableFilters)
+    await productsStore.getProducts()
 
     // Form Reset and Close Dialog
     setTimeout(() => {
@@ -155,7 +156,7 @@ const onFormReset = () => {
             <v-col cols="12" sm="6" md="8">
               <v-file-input
                 class="mt-5"
-                :rules="[imageValidator]"
+                :rules="[requiredValidator, imageValidator]"
                 accept="image/png, image/jpeg, image/bmp"
                 label="Browse Product Picture"
                 placeholder="Browse Product Picture"

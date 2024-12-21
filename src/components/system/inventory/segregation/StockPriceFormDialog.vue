@@ -2,7 +2,6 @@
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
 import { requiredValidator, betweenValidator } from '@/utils/validators'
-import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
 import { onMounted, ref, watch } from 'vue'
@@ -17,16 +16,13 @@ const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
-const branchesStore = useBranchesStore()
 const stockInStore = useStockInStore()
 
 // Load Variables
 const formDataDefault = {
   remarks: '',
-  qty: 1,
-  qty_reweighed: 0,
-  qty_metric: 'kg',
-  branch_id: null,
+  unit_price: 0,
+  unit_price_metric: 'kg',
   product_id: null
 }
 const formData = ref({
@@ -42,7 +38,7 @@ const imgPreview = ref('/images/img-product.png')
 watch(
   () => props.itemData,
   () => {
-    formData.value = { ...props.itemData, is_reweighed: true }
+    formData.value = props.itemData
     imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'
   }
 )
@@ -63,7 +59,7 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Updated Stock Weight.'
+    formAction.value.formSuccessMessage = 'Successfully Updated Stock Price.'
 
     await stockInStore.getStockInTable(props.tableOptions, props.tableFilters)
 
@@ -89,7 +85,6 @@ const onFormReset = () => {
 
 // Load Functions during component rendering
 onMounted(async () => {
-  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
   if (productsStore.products.length == 0) await productsStore.getProducts()
 })
 </script>
@@ -101,7 +96,13 @@ onMounted(async () => {
     :fullscreen="mdAndDown"
     persistent
   >
-    <v-card prepend-icon="mdi-weight-kilogram" title="Stock Re-weight">
+    <v-card prepend-icon="mdi-tag-text" title="Stock Price">
+      <template #subtitle>
+        <div class="text-wrap">
+          <b class="text-error">Please review the entered values carefully before submitting.</b>
+        </div>
+      </template>
+
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"
@@ -135,53 +136,26 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
-            <v-col cols="12">
-              <v-autocomplete
-                v-model="formData.branch_id"
-                label="Branch"
-                :items="branchesStore.branches"
-                item-title="name"
-                item-value="id"
-                clearable
+            <v-col cols="9" sm="8">
+              <v-text-field
+                v-model="formData.unit_price"
+                prefix="Php"
+                label="Unit Price Per"
+                type="number"
+                min="0"
+                :rules="[
+                  requiredValidator,
+                  betweenValidator(formData.unit_price, 0.001, 999999.999)
+                ]"
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="3" sm="4">
+              <v-select
+                v-model="formData.unit_price_metric"
+                label="Metric"
+                :items="formDataMetrics"
                 :rules="[requiredValidator]"
-              ></v-autocomplete>
-            </v-col>
-
-            <v-col cols="9" sm="4">
-              <v-text-field
-                v-model="formData.qty"
-                label="Original Weight / Qty"
-                type="number"
-                min="1"
-                readonly
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="3" sm="2">
-              <v-select
-                v-model="formData.qty_metric"
-                label="Metric"
-                :items="formDataMetrics"
-                readonly
-              ></v-select>
-            </v-col>
-
-            <v-col cols="9" sm="4">
-              <v-text-field
-                v-model="formData.qty_reweighed"
-                label="Re-weighed Weight / Qty"
-                type="number"
-                min="1"
-                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="3" sm="2">
-              <v-select
-                v-model="formData.qty_metric"
-                label="Metric"
-                :items="formDataMetrics"
-                readonly
               ></v-select>
             </v-col>
 
@@ -206,7 +180,7 @@ onMounted(async () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            Update Stock
+            Update Price
           </v-btn>
         </v-card-actions>
       </v-form>

@@ -1,7 +1,7 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
-import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
+import { prepareFormDates, prepareDate } from '@/utils/helpers'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useExpensesStore = defineStore('expenses', () => {
   // States
@@ -76,11 +76,11 @@ export const useExpensesStore = defineStore('expenses', () => {
     if (branch_id) query = query.eq('branch_id', branch_id)
 
     if (spent_at) {
-      if (spent_at.length === 1) query = query.eq('spent_at', dateShiftFixValue(spent_at[0]))
+      if (spent_at.length === 1) query = query.eq('spent_at', prepareDate(spent_at[0]))
       else {
         query = query
-          .gte('spent_at', dateShiftFixValue(spent_at[0])) // Greater than or equal to `from` date
-          .lte('spent_at', dateShiftFixValue(spent_at[spent_at.length - 1])) // Less than or equal to `to` date
+          .gte('spent_at', prepareDate(spent_at[0])) // Greater than or equal to `from` date
+          .lte('spent_at', prepareDate(spent_at[spent_at.length - 1])) // Less than or equal to `to` date
       }
     }
 
@@ -89,13 +89,15 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   // Add Expenses
   async function addExpenditure(formData) {
-    return await supabase.from('expenses').insert([formData]).select()
+    const data = prepareFormDates(formData, ['spent_at'])
+
+    return await supabase.from('expenses').insert([data]).select()
   }
 
   // Update Expenses
   async function updateExpenditure(formData) {
     // eslint-disable-next-line no-unused-vars
-    const { branches, ...data } = dateShiftFixForm(formData, ['spent_at'])
+    const { branches, ...data } = prepareFormDates(formData, ['spent_at'])
 
     return await supabase.from('expenses').update(data).eq('id', formData.id).select()
   }

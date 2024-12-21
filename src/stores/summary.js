@@ -1,5 +1,5 @@
 import { groupByDate, sumByType } from '@/components/system/reports/summaryReportTableUtils'
-import { dateShiftFixValue, getPreciseNumber } from '@/utils/helpers'
+import { prepareDate, getPreciseNumber } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { supabase } from '@/utils/supabase'
 import { defineStore } from 'pinia'
@@ -32,7 +32,7 @@ export const useSummaryStore = defineStore('summary', () => {
       ...inventoryData.map((item) => ({
         date: item.purchased_at,
         type: 'inventory',
-        amount: item.unit_cost
+        amount: item.total_cost
       })),
       ...salesData.map((item) => ({
         date: item.created_at,
@@ -41,7 +41,12 @@ export const useSummaryStore = defineStore('summary', () => {
       })),
       ...salesData.map((item) => ({
         date: item.created_at,
-        type: 'receivable',
+        type: 'discount',
+        amount: item.discount
+      })),
+      ...salesData.map((item) => ({
+        date: item.created_at,
+        type: 'collectible',
         amount: item.balance
       })),
       ...expensesData.map((item) => ({
@@ -56,16 +61,18 @@ export const useSummaryStore = defineStore('summary', () => {
       .map(([date, entries]) => {
         const inventory = sumByType(entries, 'inventory')
         const sales = sumByType(entries, 'sales')
-        const receivable = sumByType(entries, 'receivable')
+        const discount = sumByType(entries, 'discount')
+        const collectible = sumByType(entries, 'collectible')
         const expenses = sumByType(entries, 'expenses')
 
         return {
           date,
           inventory,
           sales,
-          receivable,
+          discount,
+          collectible,
           expenses,
-          profit: sales - inventory - expenses
+          profit: getPreciseNumber(sales - inventory - expenses)
         }
       })
       .sort((a, b) =>
@@ -77,7 +84,7 @@ export const useSummaryStore = defineStore('summary', () => {
 
   // Get Inventory
   async function getInventoryData({ branch_id, date_range }) {
-    let query = supabase.from('stock_ins').select('unit_cost, purchased_at')
+    let query = supabase.from('stock_ins').select('total_cost, purchased_at')
 
     query = getSummaryFilter(query, { branch_id, date_range }, 'purchased_at')
 
@@ -88,7 +95,7 @@ export const useSummaryStore = defineStore('summary', () => {
   async function getSalesData({ branch_id, date_range }) {
     let query = supabase
       .from('sales')
-      .select('overall_price, created_at, customer_payments( payment )')
+      .select('overall_price, exact_price, created_at, customer_payments( payment )')
 
     query = getSummaryFilter(query, { branch_id, date_range })
 
@@ -100,6 +107,7 @@ export const useSummaryStore = defineStore('summary', () => {
       }, 0)
 
       return {
+        discount: getPreciseNumber(item.exact_price - item.overall_price),
         balance:
           item.customer_payments.length > 0
             ? getPreciseNumber(item.overall_price - totalPayments)
@@ -132,11 +140,11 @@ export const useSummaryStore = defineStore('summary', () => {
     }
 
     if (date_range) {
-      if (date_range.length === 1) query = query.eq(date_key, dateShiftFixValue(date_range[0]))
+      if (date_range.length === 1) query = query.eq(date_key, prepareDate(date_range[0]))
       else {
         query = query
-          .gte(date_key, dateShiftFixValue(date_range[0])) // Greater than or equal to `from` date
-          .lte(date_key, dateShiftFixValue(date_range[date_range.length - 1])) // Less than or equal to `to` date
+          .gte(date_key, prepareDate(date_range[0])) // Greater than or equal to `from` date
+          .lte(date_key, prepareDate(date_range[date_range.length - 1])) // Less than or equal to `to` date
       }
     }
 

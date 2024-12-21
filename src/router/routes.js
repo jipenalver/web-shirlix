@@ -1,21 +1,29 @@
+// Auth
 import LoginView from '@/views/auth/LoginView.vue'
 // import RegisterView from '@/views/auth/RegisterView.vue'
-import DashboardView from '@/views/system/DashboardView.vue'
+// Error
 import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
+// Default
+import DashboardView from '@/views/system/DashboardView.vue'
 import AccountSettingsView from '@/views/system/AccountSettingsView.vue'
+// Users
+import BranchesView from '@/views/system/manage-users/BranchesView.vue'
 import UserRolesView from '@/views/system/manage-users/UserRolesView.vue'
 import UsersView from '@/views/system/manage-users/UsersView.vue'
-import BranchesView from '@/views/system/manage-users/BranchesView.vue'
-import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
-import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
+// Product
 import ProductsView from '@/views/system/manage-products/ProductsView.vue'
+// Inventory
 import StockInView from '@/views/system/inventory/StockInView.vue'
-import StockWeightView from '@/views/system/inventory/StockWeightView.vue'
+import StockSegregationView from '@/views/system/inventory/StockSegregationView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
+// Expenses
+import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
+// Reports
 import StocksReportView from '@/views/system/reports/StocksReportView.vue'
 import SalesReportView from '@/views/system/reports/SalesReportView.vue'
 import SummaryReportView from '@/views/system/reports/SummaryReportView.vue'
+import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 
 // 👉 Routes
 export const routes = [
@@ -37,7 +45,7 @@ export const routes = [
   //   meta: { requiresAuth: false }
   // },
 
-  // System Pages
+  // Default Pages
   {
     path: '/dashboard',
     name: 'dashboard',
@@ -51,7 +59,7 @@ export const routes = [
     meta: { requiresAuth: true, isDefault: true }
   },
 
-  // Admin Pages
+  // User Pages
   {
     path: '/manage/user/roles',
     name: 'manage-user-roles',
@@ -79,7 +87,7 @@ export const routes = [
     meta: { requiresAuth: true }
   },
 
-  // Inventory
+  // Inventory Pages
   {
     path: '/inventory/stockin',
     name: 'inventory-stockin',
@@ -87,9 +95,9 @@ export const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/inventory/weight',
-    name: 'inventory-weight',
-    component: StockWeightView,
+    path: '/inventory/segregate',
+    name: 'inventory-segregate',
+    component: StockSegregationView,
     meta: { requiresAuth: true }
   },
   {
@@ -107,7 +115,7 @@ export const routes = [
     meta: { requiresAuth: true }
   },
 
-  // Reports Page
+  // Reports Pages
   {
     path: '/reports/stocks',
     name: 'reports-stocks',
@@ -121,15 +129,15 @@ export const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/reports/expenses',
-    name: 'reports-expenses',
-    component: ExpensesReportView,
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/reports/summary',
     name: 'reports-summary',
     component: SummaryReportView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/reports/expenses',
+    name: 'reports-expenses',
+    component: ExpensesReportView,
     meta: { requiresAuth: true }
   },
 

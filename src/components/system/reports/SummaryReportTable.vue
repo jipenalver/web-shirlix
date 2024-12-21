@@ -1,11 +1,5 @@
 <script setup>
-import {
-  generateCSV,
-  generateCSVTrim,
-  getAccumulatedNumber,
-  getMoneyText,
-  getPreciseNumber
-} from '@/utils/helpers'
+import { generateCSV, generateCSVTrim, getAccumulatedNumber, getMoneyText } from '@/utils/helpers'
 import { tableHeaders } from './summaryReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useSummaryStore } from '@/stores/summary'
@@ -68,9 +62,10 @@ const csvData = () => {
       generateCSVTrim(date.format(item.date, 'fullDate')),
       item.inventory,
       item.sales,
-      item.receivable,
+      item.discount,
+      item.collectible,
       item.expenses,
-      getPreciseNumber(item.sales - item.expenses)
+      item.profit
     ].join(',')
   })
 
@@ -145,7 +140,7 @@ onMounted(async () => {
           <v-divider class="mb-5"></v-divider>
 
           <v-row dense>
-            <v-col cols="6" sm="3">
+            <v-col cols="6" sm="3" class="d-flex align-center">
               <ul class="ms-5">
                 <li>
                   Inventory Cost: <br v-if="mobile" />
@@ -164,13 +159,19 @@ onMounted(async () => {
               </ul>
             </v-col>
 
-            <v-col cols="6" sm="3">
+            <v-col cols="6" sm="3" class="d-flex align-center">
               <ul class="ms-5">
                 <li>
-                  Receivable: <br v-if="mobile" />
+                  Discounts: <br v-if="mobile" />
+                  <b>
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'discount')) }}
+                  </b>
+                </li>
+                <li>
+                  Collectibles: <br v-if="mobile" />
                   <b>
                     {{
-                      getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'receivable'))
+                      getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'collectible'))
                     }}
                   </b>
                 </li>
@@ -235,9 +236,15 @@ onMounted(async () => {
           </span>
         </template>
 
-        <template #item.receivable="{ item }">
+        <template #item.discount="{ item }">
           <span class="font-weight-bold">
-            {{ getMoneyText(item.receivable) }}
+            {{ getMoneyText(item.discount) }}
+          </span>
+        </template>
+
+        <template #item.collectible="{ item }">
+          <span class="font-weight-bold">
+            {{ getMoneyText(item.collectible) }}
           </span>
         </template>
 

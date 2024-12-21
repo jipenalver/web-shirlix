@@ -1,5 +1,5 @@
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
-import { dateShiftFixForm, dateShiftFixValue } from '@/utils/helpers'
+import { prepareFormDates, prepareDate } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -77,12 +77,11 @@ export const useStockInStore = defineStore('stockIn', () => {
     }
 
     if (purchased_at) {
-      if (purchased_at.length === 1)
-        query = query.eq('purchased_at', dateShiftFixValue(purchased_at[0]))
+      if (purchased_at.length === 1) query = query.eq('purchased_at', prepareDate(purchased_at[0]))
       else {
         query = query
-          .gte('purchased_at', dateShiftFixValue(purchased_at[0])) // Greater than or equal to `from` date
-          .lte('purchased_at', dateShiftFixValue(purchased_at[purchased_at.length - 1])) // Less than or equal to `to` date
+          .gte('purchased_at', prepareDate(purchased_at[0])) // Greater than or equal to `from` date
+          .lte('purchased_at', prepareDate(purchased_at[purchased_at.length - 1])) // Less than or equal to `to` date
       }
     }
 
@@ -90,11 +89,15 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Add StockIn
-  async function addStockIn(formData) {
-    return await supabase
-      .from('stock_ins')
-      .insert([{ ...formData, last_updated_id: authStore.userData.id }])
-      .select()
+  async function addStockIn(formData, repetition = 1) {
+    const preparedData = prepareFormDates(formData, ['purchased_at', 'expired_at'])
+
+    const formDatas = Array.from({ length: repetition || 1 }, () => ({
+      ...preparedData,
+      last_updated_id: authStore.userData.id
+    }))
+
+    return await supabase.from('stock_ins').insert(formDatas).select()
   }
 
   // Update StockIn; if you put arg stockId will assume a customized formData
@@ -103,7 +106,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     if (stockId) transformedData = formData
     else {
       // eslint-disable-next-line no-unused-vars
-      const { branches, products, ...data } = dateShiftFixForm(formData, [
+      const { branches, products, ...data } = prepareFormDates(formData, [
         'purchased_at',
         'expired_at'
       ])

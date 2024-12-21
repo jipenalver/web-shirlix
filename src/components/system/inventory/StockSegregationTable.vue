@@ -1,8 +1,9 @@
 <script setup>
 import { getAvatarText, getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
+import StockSegregateFormDialog from './segregation/StockSegregateFormDialog.vue'
+import StockWeightFormDialog from './segregation/StockWeightFormDialog.vue'
+import StockPriceFormDialog from './segregation/StockPriceFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import StockSegregateFormDialog from './StockSegregateFormDialog.vue'
-import StockWeightFormDialog from './StockWeightFormDialog.vue'
 import { tableHeaders } from './stockWeightTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
@@ -37,6 +38,7 @@ const tableFilters = ref({
 })
 const isWeightFormDialogVisible = ref(false)
 const isSegregateFormDialogVisible = ref(false)
+const isPriceFormDialogVisible = ref(false)
 const isCodeDialogVisible = ref(false)
 const itemData = ref(null)
 const formAction = ref({
@@ -48,6 +50,7 @@ const action = ref('')
 const onCodeVerified = (isVerified) => {
   if (action.value === 'weight') isWeightFormDialogVisible.value = isVerified
   if (action.value === 'segregate') isSegregateFormDialogVisible.value = isVerified
+  if (action.value === 'price') isPriceFormDialogVisible.value = isVerified
 }
 
 // Trigger Update Btn
@@ -62,6 +65,13 @@ const onUpdateSegregate = (item) => {
   itemData.value = item
   isCodeDialogVisible.value = true
   action.value = 'segregate'
+}
+
+// Trigger Update Btn
+const onUpdatePrice = (item) => {
+  itemData.value = item
+  isCodeDialogVisible.value = true
+  action.value = 'price'
 }
 
 // Retrieve Data based on Date
@@ -224,9 +234,9 @@ onMounted(async () => {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
-              <p class="text-caption" v-if="item.unit_cost">
+              <p class="text-caption" v-if="item.total_cost">
                 <span class="font-weight-bold">Total Cost:</span>
-                {{ getMoneyText(item.unit_cost) }}
+                {{ getMoneyText(item.total_cost) }}
               </p>
               <p class="text-caption" v-else-if="item.is_portion">
                 <span class="font-weight-bold">Portion of ID:</span>
@@ -318,6 +328,18 @@ onMounted(async () => {
               <v-icon icon="mdi-scale"></v-icon>
               <v-tooltip activator="parent" location="top">Segregate Stock</v-tooltip>
             </v-btn>
+
+            <v-btn
+              variant="text"
+              density="comfortable"
+              @click="onUpdatePrice(item)"
+              :disabled="!item.is_portion"
+              color="error"
+              icon
+            >
+              <v-icon icon="mdi-tag-text"></v-icon>
+              <v-tooltip activator="parent" location="top">Modify Price</v-tooltip>
+            </v-btn>
           </div>
         </template>
       </v-data-table-server>
@@ -342,6 +364,13 @@ onMounted(async () => {
     :table-options="tableOptions"
     :table-filters="tableFilters"
   ></StockSegregateFormDialog>
+
+  <StockPriceFormDialog
+    v-model:is-dialog-visible="isPriceFormDialogVisible"
+    :item-data="itemData"
+    :table-options="tableOptions"
+    :table-filters="tableFilters"
+  ></StockPriceFormDialog>
 </template>
 
 <style scoped>

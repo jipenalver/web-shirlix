@@ -11,7 +11,7 @@ const emit = defineEmits(['update:isDialogVisible', 'quantity'])
 
 // Load Variables
 const formDataDefault = {
-  qty: 0,
+  qty: undefined,
   qty_metric: '',
   unit_price: 0,
   unit_price_metric: '',

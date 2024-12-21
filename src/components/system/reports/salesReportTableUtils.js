@@ -7,6 +7,12 @@ export const tableHeaders = [
   },
 
   {
+    title: 'Sold Date',
+    key: 'created_at',
+    align: 'center'
+  },
+
+  {
     title: 'Gross Amount',
     key: 'exact_price',
     align: 'start'
@@ -18,7 +24,7 @@ export const tableHeaders = [
     align: 'start'
   },
   {
-    title: 'Amount Payable',
+    title: 'Net Amount',
     key: 'overall_price',
     align: 'start'
   },
@@ -27,12 +33,6 @@ export const tableHeaders = [
     key: 'balance',
     sortable: false,
     align: 'start'
-  },
-
-  {
-    title: 'Sold Date',
-    key: 'created_at',
-    align: 'center'
   },
 
   {

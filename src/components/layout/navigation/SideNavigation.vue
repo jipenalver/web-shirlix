@@ -7,9 +7,9 @@ import {
   menuItemsNav4,
   menuItemsNav5
 } from './sideNavigation'
-import { useDisplay } from 'vuetify'
-import { ref, watch, onMounted } from 'vue'
 import { useAuthUserStore } from '@/stores/authUser'
+import { ref, watch, onMounted } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDrawerVisible'])
 

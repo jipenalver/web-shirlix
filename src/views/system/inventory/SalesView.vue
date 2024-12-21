@@ -1,11 +1,11 @@
 <script setup>
-import NotAcceptableUI from '@/components/errors/NotAcceptableUI.vue'
 import StocksSoldList from '@/components/system/inventory/sales/StocksSoldList.vue'
-import StocksList from '@/components/system/inventory/sales/StocksList.vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
-import { ref } from 'vue'
+import StocksList from '@/components/system/inventory/sales/StocksList.vue'
+import NotAcceptableUI from '@/components/errors/NotAcceptableUI.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
 import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const { xs, mobile } = useDisplay()

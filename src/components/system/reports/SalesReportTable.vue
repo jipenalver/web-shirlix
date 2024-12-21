@@ -42,6 +42,11 @@ const itemData = ref(null)
 const isViewProductsDialog = ref(false)
 const isViewPaymentsDialog = ref(false)
 
+// Calculate Discount
+const getDiscount = (item) => {
+  return getPreciseNumber(item.exact_price - item.overall_price)
+}
+
 // Calculate Collectibles
 const getPaymentBalance = (item) => {
   return getPreciseNumber(
@@ -93,15 +98,13 @@ const csvData = () => {
 
   // Get the reports data and map it to be used as csv data, follow the headers arrangement
   const rows = reportsStore.salesReport.map((item) => {
-    const discount = getPreciseNumber(item.exact_price - item.overall_price)
-
     return [
       "'" + getPadLeftText(item.id),
+      generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
       item.exact_price,
-      discount === 0 ? '-' : discount,
+      getDiscount(item) === 0 ? '-' : getDiscount(item),
       item.overall_price,
       item.customer_payments.length === 0 ? '-' : getPaymentBalance(item),
-      generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
       item.customer_payments.length === 0 ? 'Fully Paid' : 'Partially Paid',
       generateCSVTrim(item.branches.name),
       generateCSVTrim(item.customers?.customer)
@@ -224,6 +227,12 @@ onMounted(async () => {
           </div>
         </template>
 
+        <template #item.created_at="{ item }">
+          <span class="font-weight-bold">
+            {{ date.format(item.created_at, 'fullDateTime') }}
+          </span>
+        </template>
+
         <template #item.exact_price="{ item }">
           <span class="font-weight-bold">
             {{ getMoneyText(item.exact_price) }}
@@ -231,11 +240,7 @@ onMounted(async () => {
         </template>
 
         <template #item.discount="{ item }">
-          {{
-            getPreciseNumber(item.exact_price - item.overall_price) === 0
-              ? '-'
-              : getMoneyText(getPreciseNumber(item.exact_price - item.overall_price))
-          }}
+          {{ getDiscount(item) === 0 ? '-' : getMoneyText(getDiscount(item)) }}
         </template>
 
         <template #item.overall_price="{ item }">
@@ -247,12 +252,6 @@ onMounted(async () => {
         <template #item.balance="{ item }">
           <span class="font-weight-bold">
             {{ item.customer_payments.length === 0 ? '-' : getMoneyText(getPaymentBalance(item)) }}
-          </span>
-        </template>
-
-        <template #item.created_at="{ item }">
-          <span class="font-weight-bold">
-            {{ date.format(item.created_at, 'fullDateTime') }}
           </span>
         </template>
 

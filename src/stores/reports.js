@@ -1,5 +1,5 @@
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
-import { dateShiftFixValue } from '@/utils/helpers'
+import { prepareDate } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -57,12 +57,11 @@ export const useReportsStore = defineStore('reports', () => {
     }
 
     if (purchased_at) {
-      if (purchased_at.length === 1)
-        query = query.eq('purchased_at', dateShiftFixValue(purchased_at[0]))
+      if (purchased_at.length === 1) query = query.eq('purchased_at', prepareDate(purchased_at[0]))
       else {
         query = query
-          .gte('purchased_at', dateShiftFixValue(purchased_at[0])) // Greater than or equal to `from` date
-          .lte('purchased_at', dateShiftFixValue(purchased_at[purchased_at.length - 1])) // Less than or equal to `to` date
+          .gte('purchased_at', prepareDate(purchased_at[0])) // Greater than or equal to `from` date
+          .lte('purchased_at', prepareDate(purchased_at[purchased_at.length - 1])) // Less than or equal to `to` date
       }
     }
 
@@ -102,11 +101,11 @@ export const useReportsStore = defineStore('reports', () => {
     }
 
     if (created_at) {
-      if (created_at.length === 1) query = query.eq('created_at', dateShiftFixValue(created_at[0]))
+      if (created_at.length === 1) query = query.eq('created_at', prepareDate(created_at[0]))
       else {
         query = query
-          .gte('created_at', dateShiftFixValue(created_at[0])) // Greater than or equal to `from` date
-          .lte('created_at', dateShiftFixValue(created_at[created_at.length - 1])) // Less than or equal to `to` date
+          .gte('created_at', prepareDate(created_at[0])) // Greater than or equal to `from` date
+          .lte('created_at', prepareDate(created_at[created_at.length - 1])) // Less than or equal to `to` date
       }
     }
 
