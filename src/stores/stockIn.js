@@ -89,13 +89,15 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Add StockIn
-  async function addStockIn(formData) {
-    const data = prepareFormDates(formData, ['purchased_at', 'expired_at'])
+  async function addStockIn(formData, repetition = 1) {
+    const preparedData = prepareFormDates(formData, ['purchased_at', 'expired_at'])
 
-    return await supabase
-      .from('stock_ins')
-      .insert([{ ...data, last_updated_id: authStore.userData.id }])
-      .select()
+    const formDatas = Array.from({ length: repetition || 1 }, () => ({
+      ...preparedData,
+      last_updated_id: authStore.userData.id
+    }))
+
+    return await supabase.from('stock_ins').insert(formDatas).select()
   }
 
   // Update StockIn; if you put arg stockId will assume a customized formData

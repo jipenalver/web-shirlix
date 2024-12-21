@@ -41,6 +41,7 @@ const formAction = ref({
 const refVForm = ref()
 const isUpdate = ref(false)
 const imgPreview = ref('/images/img-product.png')
+const repetition = ref(1)
 
 // Monitor itemData if it has data
 watch(
@@ -77,7 +78,7 @@ const onSubmit = async () => {
   // Check if isUpdate is true, then do update, if false do add
   const { data, error } = isUpdate.value
     ? await stockInStore.updateStockIn(formData.value)
-    : await stockInStore.addStockIn(formData.value)
+    : await stockInStore.addStockIn(formData.value, repetition.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -130,6 +131,27 @@ onMounted(async () => {
     persistent
   >
     <v-card prepend-icon="mdi-information-box" title="Stock Information">
+      <template #subtitle>
+        <div class="text-wrap">
+          <b class="text-error">Please review the entered values carefully before submitting.</b>
+        </div>
+      </template>
+
+      <template #append>
+        <v-text-field
+          width="125px"
+          v-model="repetition"
+          prepend-inner-icon="mdi-sync"
+          density="compact"
+          label="Input Repetition"
+          variant="outlined"
+          type="number"
+          min="1"
+          :rules="[betweenValidator(repetition, 1, 50)]"
+          hide-details
+        ></v-text-field>
+      </template>
+
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"

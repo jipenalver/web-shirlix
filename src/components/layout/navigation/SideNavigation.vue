@@ -66,7 +66,7 @@ onMounted(() => {
     :persistent="mobile"
     :temporary="mobile"
     :permanent="!mobile"
-    width="350"
+    width="325"
   >
     <v-list density="compact" nav>
       <v-list-item

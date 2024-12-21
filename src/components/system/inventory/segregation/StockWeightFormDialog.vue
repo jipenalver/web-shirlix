@@ -102,6 +102,12 @@ onMounted(async () => {
     persistent
   >
     <v-card prepend-icon="mdi-weight-kilogram" title="Stock Re-weight">
+      <template #subtitle>
+        <div class="text-wrap">
+          <b class="text-error">Please review the entered values carefully before submitting.</b>
+        </div>
+      </template>
+
       <AlertNotification
         :form-success-message="formAction.formSuccessMessage"
         :form-error-message="formAction.formErrorMessage"

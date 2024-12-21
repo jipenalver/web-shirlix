@@ -19,12 +19,7 @@ export const menuItemsNav2 = [
 export const menuItemsNav3 = [
   ['Stock In', 'mdi-tray-arrow-down', 'Add Stocks on Products', '/inventory/stockin'],
   ['Stock Transfer', 'mdi-store-marker', 'Multi-Branch Stock Transfers', '/inventory/transfer'],
-  [
-    'Stock Segregation',
-    'mdi-tray-full',
-    'Track Weight and Segregate Stocks',
-    '/inventory/segregate'
-  ],
+  ['Stock Segregation', 'mdi-tray-full', 'Track Weight and Segregation', '/inventory/segregate'],
   ['Check Out', 'mdi-cart-variant', 'Sell Products', '/inventory/sales']
 ]
 export const menuItemsNav4 = [
