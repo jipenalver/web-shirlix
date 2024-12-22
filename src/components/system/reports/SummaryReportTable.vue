@@ -151,9 +151,9 @@ onMounted(async () => {
                   </b>
                 </li>
                 <li>
-                  Gross Profit: <br v-if="mobile" />
+                  Expenses: <br v-if="mobile" />
                   <b>
-                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'sales')) }}
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'expenses')) }}
                   </b>
                 </li>
               </ul>
@@ -175,17 +175,17 @@ onMounted(async () => {
                     }}
                   </b>
                 </li>
-                <li>
-                  Expenses: <br v-if="mobile" />
-                  <b>
-                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'expenses')) }}
-                  </b>
-                </li>
               </ul>
             </v-col>
 
             <v-col cols="12" sm="3" class="d-flex align-center">
               <ul class="ms-5">
+                <li>
+                  Gross Profit: <br v-if="mobile" />
+                  <b>
+                    {{ getMoneyText(getAccumulatedNumber(summaryStore.summaryReport, 'sales')) }}
+                  </b>
+                </li>
                 <li>
                   Net Profit: <br v-if="mobile" />
                   <b class="font-weight-black">

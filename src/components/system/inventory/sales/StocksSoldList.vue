@@ -2,8 +2,8 @@
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
+import AddSalesFormDialog from './AddSalesFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase.js'
-import AddSalesDialog from './AddSalesDialog.vue'
 import AddCustomerBtn from './AddCustomerBtn.vue'
 import AddDiscountBtn from './AddDiscountBtn.vue'
 import { useSalesStore } from '@/stores/sales'
@@ -223,11 +223,11 @@ onMounted(() => {
     @confirm="onConfirmDelete"
   ></ConfirmDialog>
 
-  <AddSalesDialog
+  <AddSalesFormDialog
     v-model:is-dialog-visible="isConfirmSoldDialog"
     :sold-data="soldData"
     @reset-cart="onResetForm"
-  ></AddSalesDialog>
+  ></AddSalesFormDialog>
 </template>
 
 <style scoped>

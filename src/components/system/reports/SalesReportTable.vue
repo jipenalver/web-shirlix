@@ -7,7 +7,7 @@ import {
   getPadLeftText,
   getPreciseNumber
 } from '@/utils/helpers'
-import CustomerPaymentsDialog from './sales/CustomerPaymentsDialog.vue'
+import PaymentsFormDialog from './sales/PaymentsFormDialog.vue'
 import ProductsSoldDialog from './sales/ProductsSoldDialog.vue'
 import { tableHeaders } from './salesReportTableUtils'
 import { useBranchesStore } from '@/stores/branches'
@@ -302,12 +302,12 @@ onMounted(async () => {
     :sold-data="itemData"
   ></ProductsSoldDialog>
 
-  <CustomerPaymentsDialog
+  <PaymentsFormDialog
     v-model:is-dialog-visible="isViewPaymentsDialog"
     :sold-data="itemData"
     :table-options="tableOptions"
     :table-filters="tableFilters"
-  ></CustomerPaymentsDialog>
+  ></PaymentsFormDialog>
 </template>
 
 <style scoped>

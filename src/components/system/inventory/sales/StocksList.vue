@@ -164,10 +164,10 @@ onMounted(async () => {
                   ? item.qty_reweighed + ' ' + item.qty_metric
                   : getStockRemaining(item) + ' ' + item.qty_metric
               }}
-            </span>
 
-            <v-chip class="mx-n2 cursor-pointer" density="compact" variant="text">
-              <v-icon icon="mdi-information" size="small"></v-icon>
+              <v-chip class="mx-n2 cursor-pointer" density="compact" variant="text">
+                <v-icon icon="mdi-information" size="small"></v-icon>
+              </v-chip>
 
               <v-tooltip activator="parent" location="top" open-on-click>
                 <ul class="ms-2">
@@ -185,7 +185,7 @@ onMounted(async () => {
                   <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
                 </ul>
               </v-tooltip>
-            </v-chip>
+            </span>
           </div>
         </v-card-text>
       </v-card>

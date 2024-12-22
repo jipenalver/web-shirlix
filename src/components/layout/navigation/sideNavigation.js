@@ -26,6 +26,7 @@ export const menuItemsNav4 = [
   ['Expenditures', 'mdi-cash-remove', 'Tally and Manage Expenses', '/expenses']
 ]
 export const menuItemsNav5 = [
+  ['Products', 'mdi-food-takeout-box', 'Qty of Products Report', '/reports/products'],
   ['Stocks', 'mdi-poll', 'Stocks of Products Report', '/reports/stocks'],
   ['Sales Status', 'mdi-sale', 'Sold Products Report', '/reports/sales'],
   ['Sales Summary', 'mdi-counter', 'Sales and Expenses Report', '/reports/summary'],

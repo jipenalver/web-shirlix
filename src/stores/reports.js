@@ -1,5 +1,5 @@
+import { getAccumulatedNumber, getPreciseNumber, prepareDate } from '@/utils/helpers'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
-import { prepareDate } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -10,11 +10,13 @@ export const useReportsStore = defineStore('reports', () => {
 
   // States
   const stocksReport = ref([])
+  const stocksTransferList = ref([])
   const salesReport = ref([])
 
   // Reset State Action
   function $reset() {
     stocksReport.value = []
+    stocksTransferList.value = []
     salesReport.value = []
   }
 
@@ -68,6 +70,27 @@ export const useReportsStore = defineStore('reports', () => {
     return query
   }
 
+  // Retrieve Stocks Transfer List
+  async function getStocksTransferList(itemData) {
+    let query = supabase
+      .from('stock_ins')
+      .select('*, products( name, image_url, description ), sale_products( qty )')
+      .order('purchased_at', { ascending: false })
+      .eq('is_portion', true)
+      .eq('branch_id', itemData.branch_id)
+      .eq('product_id', itemData.product_id)
+      .neq('id', itemData.id)
+
+    // Execute the query
+    const { data } = await query
+
+    // Set the retrieved data to state
+    stocksTransferList.value = data.filter(
+      (item) =>
+        getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
+    )
+  }
+
   // Retrieve Sales
   async function getSalesReport(tableOptions, { customer_id, branch_id, created_at }) {
     const { column, order } = tablePagination(tableOptions, 'created_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
@@ -114,9 +137,11 @@ export const useReportsStore = defineStore('reports', () => {
 
   return {
     stocksReport,
+    stocksTransferList,
     salesReport,
     $reset,
     getStocksReport,
+    getStocksTransferList,
     getSalesReport
   }
 })

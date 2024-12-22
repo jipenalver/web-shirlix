@@ -41,5 +41,11 @@ export const tableHeaders = [
     key: 'status',
     sortable: false,
     align: 'center'
+  },
+  {
+    title: 'Actions',
+    key: 'actions',
+    sortable: false,
+    align: 'center'
   }
 ]
