@@ -1,10 +1,10 @@
 <script setup>
+import AlertNotification from '@/components/common/AlertNotification.vue'
+import { betweenValidator, requiredValidator } from '@/utils/validators'
+import { formActionDefault } from '@/utils/supabase.js'
 import { useAuthUserStore } from '@/stores/authUser'
 import { useBranchesStore } from '@/stores/branches'
 import { useExpensesStore } from '@/stores/expenses'
-import AlertNotification from '@/components/common/AlertNotification.vue'
-import { requiredValidator } from '@/utils/validators'
-import { formActionDefault } from '@/utils/supabase.js'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -136,7 +136,7 @@ onMounted(async () => {
                 label="Amount"
                 type="number"
                 min="0"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, betweenValidator(formData.amount, 0.001, 999999.999)]"
               ></v-text-field>
             </v-col>
 

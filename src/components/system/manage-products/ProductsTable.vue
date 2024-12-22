@@ -1,14 +1,14 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import ProductsFormDialog from './ProductsFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { tableHeaders } from './productsTableUtils'
+import ProductsFormDialog from './ProductsFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase'
 import { useProductsStore } from '@/stores/products'
+import { tableHeaders } from './productsTableUtils'
 import { getAvatarText } from '@/utils/helpers'
+import { useDisplay } from 'vuetify'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
-import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
