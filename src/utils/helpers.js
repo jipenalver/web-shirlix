@@ -29,6 +29,13 @@ export const getMoneyText = (value) => {
   }).format(value)
 }
 
+// 👉 Pad String Left
+export const getPadLeftText = (value, length = 4, char = '0') => {
+  value = String(value)
+  if (value.length >= length) return value
+  return char.repeat(length - value.length) + value
+}
+
 // 👉 Precise Number
 export const getPreciseNumber = (value) => {
   return Math.round(value * 100) / 100
@@ -46,13 +53,6 @@ export const getRandomCode = (length = 6) => {
   return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join(
     ''
   )
-}
-
-// 👉 Pad String Left
-export const getPadLeftText = (value, length = 4, char = '0') => {
-  value = String(value)
-  if (value.length >= length) return value
-  return char.repeat(length - value.length) + value
 }
 
 // 👉 File Extraction of Object, for 1 File/Image
