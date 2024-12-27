@@ -1,12 +1,12 @@
 <script setup>
-import AppLayout from '@/components/layout/AppLayout.vue'
+import PasswordForm from '@/components/system/account-settings/PasswordForm.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import PictureForm from '@/components/system/account-settings/PictureForm.vue'
 import ProfileForm from '@/components/system/account-settings/ProfileForm.vue'
-import PasswordForm from '@/components/system/account-settings/PasswordForm.vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
 import { useAuthUserStore } from '@/stores/authUser'
-import { ref } from 'vue'
 import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const { mobile } = useDisplay()

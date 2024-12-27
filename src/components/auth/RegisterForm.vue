@@ -5,8 +5,8 @@ import {
   passwordValidator,
   confirmedValidator
 } from '@/utils/validators'
-import { useRegister } from '@/composables/auth/register'
 import AlertNotification from '@/components/common/AlertNotification.vue'
+import { useRegister } from '@/composables/auth/register'
 import { ref } from 'vue'
 
 const { formData, formAction, refVForm, onFormSubmit } = useRegister()
