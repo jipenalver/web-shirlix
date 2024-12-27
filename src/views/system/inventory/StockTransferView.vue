@@ -1,4 +1,5 @@
 <script setup>
+import StockTransferTable from '@/components/system/inventory/StockTransferTable.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { useDisplay } from 'vuetify'
@@ -39,7 +40,9 @@ const isDrawerVisible = ref(mobile.value ? false : true)
         </v-card>
 
         <v-card>
-          <v-card-text> </v-card-text>
+          <v-card-text>
+            <StockTransferTable></StockTransferTable>
+          </v-card-text>
         </v-card>
       </v-container>
     </template>

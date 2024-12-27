@@ -24,12 +24,7 @@ export const useAuthUserStore = defineStore('authUser', () => {
   // Actions
   // Retrieve User Session if Logged
   async function isAuthenticated() {
-    const { data, error } = await supabase.auth.getSession()
-
-    if (error) {
-      console.error('Error getting session:', error.message)
-      return false
-    }
+    const { data } = await supabase.auth.getSession()
 
     if (data.session) {
       const { id, email, user_metadata } = data.session.user

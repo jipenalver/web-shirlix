@@ -17,12 +17,8 @@ export const useSalesStore = defineStore('sales', () => {
   )
 
   // Getters
-  const stocksCartTotal = computed(() => {
-    return stocksCart.value.reduce((acc, item) => acc + item.discounted_price, 0)
-  })
-  const stocksExactTotal = computed(() => {
-    return stocksCart.value.reduce((acc, item) => acc + item.total_price, 0)
-  })
+  const stocksCartTotal = computed(() => getAccumulatedNumber(stocksCart.value, 'discounted_price'))
+  const stocksExactTotal = computed(() => getAccumulatedNumber(stocksCart.value, 'total_price'))
 
   // Reset State Stocks
   function $reset() {

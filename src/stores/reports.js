@@ -1,4 +1,4 @@
-import { getAccumulatedNumber, getPreciseNumber, prepareDate } from '@/utils/helpers'
+import { getAccumulatedNumber, getISODate, getPreciseNumber, prepareDate } from '@/utils/helpers'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
@@ -9,15 +9,92 @@ export const useReportsStore = defineStore('reports', () => {
   const authStore = useAuthUserStore()
 
   // States
+  const productsReport = ref([])
   const stocksReport = ref([])
   const stocksTransferList = ref([])
   const salesReport = ref([])
 
   // Reset State Action
   function $reset() {
+    productsReport.value = []
     stocksReport.value = []
     stocksTransferList.value = []
     salesReport.value = []
+  }
+
+  // Retrieve Products Report
+  async function getProductsReport(tableOptions, { product_id, branch_id, date }) {
+    let query = supabase
+      .from('products')
+      .select(
+        'id, name, image_url, description, stock_ins( qty_reweighed, qty_metric, branch_id, is_portion, purchased_at ), sale_products( qty, branch_id, created_at )'
+      )
+      .eq('stock_ins.is_portion', true)
+
+    if (branch_id)
+      query = query.eq('stock_ins.branch_id', branch_id).eq('sale_products.branch_id', branch_id)
+
+    if (product_id) query = query.eq('id', product_id)
+
+    // Execute the query
+    const { data } = await query
+
+    // Set the retrieved data to state
+    productsReport.value = date ? getProductsMap(data, { date }) : []
+  }
+
+  // Filter Products
+  function getProductsMap(data, { date }) {
+    // Calculate the previous day's date
+    const formatDate = new Date(date)
+    formatDate.setDate(formatDate.getDate() - 1)
+    const previousDate = getISODate(formatDate)
+
+    // Format the given date to YYYY-MM-DD for comparison
+    const todayDate = getISODate(new Date(date))
+
+    // Remapped Date for Table
+    const remappedData = data.map((product) => {
+      const totalStockIns = getAccumulatedNumber(
+        product.stock_ins.filter((stock) => stock.purchased_at <= previousDate),
+        'qty_reweighed'
+      )
+
+      const totalSales = getAccumulatedNumber(
+        product.sale_products.filter((sale) => getISODate(sale.created_at) <= previousDate),
+        'qty'
+      )
+
+      // Stock in for the specified date
+      const stockInDuringDate = getAccumulatedNumber(
+        product.stock_ins.filter((stock) => stock.purchased_at === todayDate),
+        'qty_reweighed'
+      )
+
+      const stockSoldDuringDate = getAccumulatedNumber(
+        product.sale_products.filter((sale) => getISODate(sale.created_at) === todayDate),
+        'qty'
+      )
+
+      const qty_metric = product.stock_ins.length > 0 ? product.stock_ins[0].qty_metric : ''
+
+      return {
+        date: todayDate,
+        name: product.name,
+        image_url: product.image_url,
+        description: product.description,
+        stock_opening: getPreciseNumber(totalStockIns - totalSales),
+        stock_in: stockInDuringDate,
+        stock_sold: stockSoldDuringDate,
+        stock_transferred: 0,
+        stock_remaining: getPreciseNumber(
+          totalStockIns - totalSales + stockInDuringDate - (stockSoldDuringDate + 0)
+        ),
+        qty_metric
+      }
+    })
+
+    return remappedData
   }
 
   // Retrieve Stocks Report
@@ -136,10 +213,12 @@ export const useReportsStore = defineStore('reports', () => {
   }
 
   return {
+    productsReport,
     stocksReport,
     stocksTransferList,
     salesReport,
     $reset,
+    getProductsReport,
     getStocksReport,
     getStocksTransferList,
     getSalesReport

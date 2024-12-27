@@ -43,7 +43,7 @@ export const getPreciseNumber = (value) => {
 
 // 👉 Accumulated Number
 export const getAccumulatedNumber = (object, key) => {
-  return object.reduce((acc, cur) => acc + cur[key], 0)
+  return object.reduce((acc, cur) => acc + (isNaN(Number(cur[key])) ? 0 : Number(cur[key])), 0)
 }
 
 // 👉 Alpha-numeric Random Code
@@ -123,6 +123,18 @@ export const prepareFormDates = (formData, dateColumns = []) => {
 export const prepareDate = (date) => {
   const dateValue = new Date(date)
   return dateValue.toLocaleDateString('en-US', { timeZone: 'Asia/Manila' })
+}
+
+// 👉 Get date in ISO format without UTC conversion
+export const getISODate = (date) => {
+  const dateValue = new Date(date)
+
+  // Extract components in the local timezone
+  const year = dateValue.getFullYear()
+  const month = String(dateValue.getMonth() + 1).padStart(2, '0') // Months are 0-based
+  const day = String(dateValue.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
 }
 
 // 👉 Generate CSV
