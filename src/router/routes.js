@@ -21,6 +21,7 @@ import SalesView from '@/views/system/inventory/SalesView.vue'
 // Expenses
 import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
 // Reports
+import ProductsReportView from '@/views/system/reports/ProductsReportView.vue'
 import StocksReportView from '@/views/system/reports/StocksReportView.vue'
 import SalesReportView from '@/views/system/reports/SalesReportView.vue'
 import SummaryReportView from '@/views/system/reports/SummaryReportView.vue'
@@ -123,6 +124,12 @@ export const routes = [
   },
 
   // Reports Pages
+  {
+    path: '/reports/products',
+    name: 'reports-products',
+    component: ProductsReportView,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/reports/stocks',
     name: 'reports-stocks',
