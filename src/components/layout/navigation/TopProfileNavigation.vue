@@ -26,11 +26,7 @@ const onLogout = async () => {
   formAction.value = { ...formActionDefault, formProcess: true }
 
   // Get supabase logout functionality
-  const { error } = await supabase.auth.signOut()
-  if (error) {
-    console.error('Error during logout:', error)
-    return
-  }
+  await supabase.auth.signOut()
 
   formAction.value.formProcess = false
   // Reset State

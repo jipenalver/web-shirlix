@@ -125,6 +125,18 @@ export const prepareDate = (date) => {
   return dateValue.toLocaleDateString('en-US', { timeZone: 'Asia/Manila' })
 }
 
+// 👉 Get date in ISO format without UTC conversion
+export const getISODate = (date) => {
+  const dateValue = new Date(date)
+
+  // Extract components in the local timezone
+  const year = dateValue.getFullYear()
+  const month = String(dateValue.getMonth() + 1).padStart(2, '0') // Months are 0-based
+  const day = String(dateValue.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
 // 👉 Generate CSV
 export const generateCSV = (filename, csvData) => {
   const blob = new Blob([csvData], { type: 'text/csv; charset=utf-8' })

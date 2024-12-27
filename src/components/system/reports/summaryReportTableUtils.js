@@ -1,4 +1,4 @@
-import { prepareDate } from '@/utils/helpers'
+import { getAccumulatedNumber, prepareDate } from '@/utils/helpers'
 
 // Table Headers
 export const tableHeaders = [
@@ -61,7 +61,8 @@ export const groupByDate = (data) => {
 
 // Sum amounts by type
 export const sumByType = (entries, type) => {
-  return entries
-    .filter((entry) => entry.type === type)
-    .reduce((acc, entry) => acc + entry.amount, 0)
+  return getAccumulatedNumber(
+    entries.filter((entry) => entry.type === type),
+    'amount'
+  )
 }
