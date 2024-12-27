@@ -48,7 +48,7 @@ const onThemeUpdate = (value) => {
           </v-col>
 
           <v-col cols="12">
-            <ProductsWidget></ProductsWidget>
+            <ProductsWidget v-if="authStore.userData.user_role"></ProductsWidget>
           </v-col>
 
           <v-col cols="12">

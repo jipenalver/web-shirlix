@@ -1,6 +1,6 @@
 // Auth
 import LoginView from '@/views/auth/LoginView.vue'
-// import RegisterView from '@/views/auth/RegisterView.vue'
+import RegisterView from '@/views/auth/RegisterView.vue'
 // Error
 import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
@@ -15,11 +15,13 @@ import UsersView from '@/views/system/manage-users/UsersView.vue'
 import ProductsView from '@/views/system/manage-products/ProductsView.vue'
 // Inventory
 import StockInView from '@/views/system/inventory/StockInView.vue'
+import StockTransferView from '@/views/system/inventory/StockTransferView.vue'
 import StockSegregationView from '@/views/system/inventory/StockSegregationView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
 // Expenses
 import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
 // Reports
+import ProductsReportView from '@/views/system/reports/ProductsReportView.vue'
 import StocksReportView from '@/views/system/reports/StocksReportView.vue'
 import SalesReportView from '@/views/system/reports/SalesReportView.vue'
 import SummaryReportView from '@/views/system/reports/SummaryReportView.vue'
@@ -38,12 +40,12 @@ export const routes = [
     component: LoginView,
     meta: { requiresAuth: false }
   },
-  // {
-  //   path: '/register',
-  //   name: 'register',
-  //   component: RegisterView,
-  //   meta: { requiresAuth: false }
-  // },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
+    meta: { requiresAuth: false }
+  },
 
   // Default Pages
   {
@@ -95,6 +97,12 @@ export const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/inventory/transfer',
+    name: 'inventory-transfer',
+    component: StockTransferView,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/inventory/segregate',
     name: 'inventory-segregate',
     component: StockSegregationView,
@@ -116,6 +124,12 @@ export const routes = [
   },
 
   // Reports Pages
+  {
+    path: '/reports/products',
+    name: 'reports-products',
+    component: ProductsReportView,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/reports/stocks',
     name: 'reports-stocks',

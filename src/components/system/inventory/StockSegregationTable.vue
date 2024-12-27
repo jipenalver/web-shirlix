@@ -4,7 +4,7 @@ import StockSegregateFormDialog from './segregation/StockSegregateFormDialog.vue
 import StockWeightFormDialog from './segregation/StockWeightFormDialog.vue'
 import StockPriceFormDialog from './segregation/StockPriceFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import { tableHeaders } from './stockWeightTableUtils'
+import { tableHeaders } from './stockSegregationTableUtils'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { formActionDefault } from '@/utils/supabase'
