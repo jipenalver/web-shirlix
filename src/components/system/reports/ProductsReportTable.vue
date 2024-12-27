@@ -1,5 +1,5 @@
 <script setup>
-import { useProductsReport } from '@/composables/system/reports/productsReport'
+import { useProductsReportTable } from '@/composables/system/reports/productsReportTable'
 import { getAvatarText } from '@/utils/helpers'
 import { useDisplay } from 'vuetify'
 
@@ -18,7 +18,7 @@ const {
   productsStore,
   branchesStore,
   reportsStore
-} = useProductsReport()
+} = useProductsReportTable()
 </script>
 
 <template>

@@ -13,8 +13,10 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useDate } from 'vuetify'
 
 // by convention, composable function names start with "use"
-export function useStocksReport() {
+export function useStocksReportTable() {
+  // Utilize pre-defined vue functions
   const date = useDate()
+
   // Use Pinia Store
   const productsStore = useProductsStore()
   const branchesStore = useBranchesStore()

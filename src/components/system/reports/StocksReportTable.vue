@@ -1,6 +1,6 @@
 <script setup>
+import { useStocksReportTable } from '@/composables/system/reports/stocksReportTable'
 import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
-import { useStocksReport } from '@/composables/system/reports/stocksReport'
 import TransferFormDialog from './stocks/TransferFormDialog.vue'
 import { useDisplay } from 'vuetify'
 
@@ -27,7 +27,7 @@ const {
   productsStore,
   branchesStore,
   reportsStore
-} = useStocksReport()
+} = useStocksReportTable()
 </script>
 
 <template>

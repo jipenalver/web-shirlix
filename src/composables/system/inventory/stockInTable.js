@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted } from 'vue'
 
 // by convention, composable function names start with "use"
-export function useStockIn() {
+export function useStockInTable() {
   // a composable can also hook into its owner component's
   // lifecycle to setup and teardown side effects.
   onMounted(() => {})

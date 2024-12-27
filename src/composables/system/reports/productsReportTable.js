@@ -7,7 +7,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useDate } from 'vuetify'
 
 // by convention, composable function names start with "use"
-export function useProductsReport() {
+export function useProductsReportTable() {
   // Utilize pre-defined vue functions
   const date = useDate()
 
