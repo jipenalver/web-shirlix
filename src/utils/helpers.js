@@ -43,7 +43,7 @@ export const getPreciseNumber = (value) => {
 
 // 👉 Accumulated Number
 export const getAccumulatedNumber = (object, key) => {
-  return object.reduce((acc, cur) => acc + cur[key], 0)
+  return object.reduce((acc, cur) => acc + (isNaN(Number(cur[key])) ? 0 : Number(cur[key])), 0)
 }
 
 // 👉 Alpha-numeric Random Code

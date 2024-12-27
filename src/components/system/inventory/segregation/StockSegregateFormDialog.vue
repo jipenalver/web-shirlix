@@ -2,10 +2,10 @@
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator, betweenValidator } from '@/utils/validators'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
+import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
-import { getPreciseNumber } from '@/utils/helpers'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -92,7 +92,7 @@ const onRemoveStock = () => {
 const getRemainingQty = () => {
   remainingQty.value = getPreciseNumber(
     (formData.value.qty_reweighed || formData.value.qty) -
-      formData.value.stocks.reduce((acc, cur) => acc + Number(cur.qty), 0)
+      getAccumulatedNumber(formData.value.stocks, 'qty')
   )
 }
 

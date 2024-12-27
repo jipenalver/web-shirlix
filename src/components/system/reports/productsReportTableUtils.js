@@ -3,6 +3,7 @@ export const tableHeaders = [
   {
     title: 'Date',
     key: 'date',
+    sortable: false,
     align: 'start'
   },
   {

@@ -1,5 +1,5 @@
 import { groupByDate, sumByType } from '@/components/system/reports/summaryReportTableUtils'
-import { prepareDate, getPreciseNumber } from '@/utils/helpers'
+import { prepareDate, getPreciseNumber, getAccumulatedNumber } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { supabase } from '@/utils/supabase'
 import { defineStore } from 'pinia'
@@ -102,9 +102,7 @@ export const useSummaryStore = defineStore('summary', () => {
     const { data } = await query
 
     const remappedData = data.map((item) => {
-      const totalPayments = item.customer_payments.reduce((acc, payment) => {
-        return acc + payment.payment
-      }, 0)
+      const totalPayments = getAccumulatedNumber(item.customer_payments, 'payment')
 
       return {
         discount: getPreciseNumber(item.exact_price - item.overall_price),
