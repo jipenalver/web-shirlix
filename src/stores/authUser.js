@@ -60,7 +60,7 @@ export const useAuthUserStore = defineStore('authUser', () => {
       .eq('user_role', name)
 
     // Set the retrieved data to state
-    authPages.value = data[0].pages.map((p) => p.page)
+    if (data.length > 0) authPages.value = data[0].pages.map((p) => p.page)
   }
 
   // Retrieve Branch Ids

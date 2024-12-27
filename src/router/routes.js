@@ -1,6 +1,6 @@
 // Auth
 import LoginView from '@/views/auth/LoginView.vue'
-// import RegisterView from '@/views/auth/RegisterView.vue'
+import RegisterView from '@/views/auth/RegisterView.vue'
 // Error
 import ForbiddenView from '@/views/errors/ForbiddenView.vue'
 import NotFoundView from '@/views/errors/NotFoundView.vue'
@@ -38,12 +38,12 @@ export const routes = [
     component: LoginView,
     meta: { requiresAuth: false }
   },
-  // {
-  //   path: '/register',
-  //   name: 'register',
-  //   component: RegisterView,
-  //   meta: { requiresAuth: false }
-  // },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
+    meta: { requiresAuth: false }
+  },
 
   // Default Pages
   {
