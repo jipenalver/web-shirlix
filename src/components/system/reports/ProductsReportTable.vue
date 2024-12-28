@@ -71,7 +71,7 @@ const {
                 v-model="tableFilters.date"
                 density="compact"
                 label="Date"
-                hint="Please Select Date"
+                hint="Please Select Date to Display"
                 clearable
                 persistent-hint
                 @click:clear="onFilterDate(true)"
