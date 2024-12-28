@@ -97,7 +97,9 @@ export function useStocksReportTable() {
   // CSV Data
   const csvData = () => {
     // Get the headers from utils
-    const headers = tableHeaders.slice(0, -1).map((header) => header.title)
+    const headers = tableHeaders
+      // .slice(0, -1)
+      .map((header) => header.title)
     const addHeaders = [
       'Unit Price',
       'Added Date',

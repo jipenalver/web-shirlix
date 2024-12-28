@@ -28,7 +28,7 @@ export function useStockInTable() {
     product_id: null,
     purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
   })
-  const isFormDialogVisible = ref(false)
+  const isStockInFormDialogVisible = ref(false)
   const isCodeFormDialogVisible = ref(false)
   const isConfirmDeleteDialog = ref(false)
   const itemData = ref(null)
@@ -38,7 +38,7 @@ export function useStockInTable() {
 
   // Verified Code
   const onCodeVerified = (isVerified) => {
-    if (action.value === 'update') isFormDialogVisible.value = isVerified
+    if (action.value === 'update') isStockInFormDialogVisible.value = isVerified
     if (action.value === 'delete') isConfirmDeleteDialog.value = isVerified
   }
 
@@ -52,7 +52,7 @@ export function useStockInTable() {
   // Trigger Add Btn
   const onAdd = () => {
     itemData.value = null
-    isFormDialogVisible.value = true
+    isStockInFormDialogVisible.value = true
   }
 
   // Trigger Delete Btn
@@ -132,7 +132,7 @@ export function useStockInTable() {
     tableOptions,
     tableFilters,
     isCodeFormDialogVisible,
-    isFormDialogVisible,
+    isStockInFormDialogVisible,
     isConfirmDeleteDialog,
     itemData,
     formAction,

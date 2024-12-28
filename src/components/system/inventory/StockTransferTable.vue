@@ -1,88 +1,31 @@
 <script setup>
+import { useStockTransferTable } from '@/composables/system/inventory/stockTransferTable'
 import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import StockTransferFormDialog from './transfer/StockTransferFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { tableHeaders } from './stockTransferTableUtils'
-import { useBranchesStore } from '@/stores/branches'
-import { useProductsStore } from '@/stores/products'
-import { formActionDefault } from '@/utils/supabase'
-import { useStockInStore } from '@/stores/stockIn'
-import { onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
-import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
-const date = useDate()
 const { mobile } = useDisplay()
 
-// Use Pinia Store
-const productsStore = useProductsStore()
-const branchesStore = useBranchesStore()
-const stockInStore = useStockInStore()
-
-// Load Variables
-const tableOptions = ref({
-  page: 1,
-  itemsPerPage: 10,
-  sortBy: [],
-  isLoading: false
-})
-const tableFilters = ref({
-  search: '',
-  branch_id: null,
-  product_id: null,
-  purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
-})
-const isTransferFormDialogVisible = ref(false)
-const itemData = ref(null)
-const formAction = ref({
-  ...formActionDefault
-})
-
-// Trigger Update Btn
-const onTransfer = (item) => {
-  itemData.value = item
-  isTransferFormDialogVisible.value = true
-}
-
-// Retrieve Data based on Date
-const onFilterDate = (isCleared = false) => {
-  if (isCleared) tableFilters.value.purchased_at = null
-
-  onLoadItems(tableOptions.value, tableFilters.value)
-}
-
-// Retrieve Data based on Filter
-const onFilterItems = () => {
-  onLoadItems(tableOptions.value, tableFilters.value)
-}
-
-// Retrieve Data based on Search
-const onSearchItems = () => {
-  if (
-    tableFilters.value.search?.length >= 4 ||
-    tableFilters.value.search?.length == 0 ||
-    tableFilters.value.search === null
-  )
-    onLoadItems(tableOptions.value, tableFilters.value)
-}
-
-// Load Tables Data
-const onLoadItems = async ({ page, itemsPerPage, sortBy }) => {
-  // Trigger Loading
-  tableOptions.value.isLoading = true
-
-  await stockInStore.getStockInTable({ page, itemsPerPage, sortBy }, tableFilters.value)
-
-  // Trigger Loading
-  tableOptions.value.isLoading = false
-}
-
-// Load Functions during component rendering
-onMounted(async () => {
-  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
-  if (productsStore.products.length == 0) await productsStore.getProducts()
-})
+// Utilized Composable
+const {
+  date,
+  tableOptions,
+  tableFilters,
+  isTransferFormDialogVisible,
+  itemData,
+  formAction,
+  onTransfer,
+  onFilterDate,
+  onFilterItems,
+  onSearchItems,
+  onLoadItems,
+  productsStore,
+  branchesStore,
+  stockInStore
+} = useStockTransferTable()
 </script>
 
 <template>
@@ -268,12 +211,19 @@ onMounted(async () => {
           </v-chip>
         </template>
 
+        <template #item.status_transfer="{ item }">
+          <v-chip class="font-weight-bold" prepend-icon="mdi-information">
+            {{ item.is_transfer_request ? 'Pending Requst' : 'No Request' }}
+          </v-chip>
+        </template>
+
         <template #item.actions="{ item }">
           <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
             <v-btn
               variant="text"
               density="comfortable"
               @click="onTransfer(item)"
+              :disabled="item.is_segregated"
               color="error"
               icon
             >

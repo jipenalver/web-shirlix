@@ -8,7 +8,7 @@ import {
   menuItemsNav5
 } from './sideNavigation'
 import { useAuthUserStore } from '@/stores/authUser'
-import { ref, watch, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
 const props = defineProps(['isDrawerVisible'])
@@ -26,18 +26,9 @@ const editableMenuItemsNav2 = ref([...menuItemsNav2])
 const editableMenuItemsNav3 = ref([...menuItemsNav3])
 const editableMenuItemsNav4 = ref([...menuItemsNav4])
 const editableMenuItemsNav5 = ref([...menuItemsNav5])
-const isDrawerVisible = ref(props.isDrawerVisible)
-
-// Watch props if it changes
-watch(
-  () => props.isDrawerVisible,
-  () => {
-    isDrawerVisible.value = props.isDrawerVisible
-  }
-)
 
 // Filter pages base on role
-const onFilterPages = async () => {
+const onFilterPages = () => {
   if (authStore.userRole === 'Super Administrator') return
 
   const menuItems = [
@@ -62,11 +53,14 @@ onMounted(() => {
 
 <template>
   <v-navigation-drawer
-    v-model="isDrawerVisible"
+    :model-value="props.isDrawerVisible"
     :persistent="mobile"
     :temporary="mobile"
     :permanent="!mobile"
-    width="325"
+    close-delay="2000"
+    width="300"
+    expand-on-hover
+    rail
   >
     <v-list density="compact" nav>
       <v-list-item
@@ -77,7 +71,7 @@ onMounted(() => {
 
       <v-divider></v-divider>
 
-      <v-list-group :key="i" v-for="([title, icon], i) in mainNav">
+      <v-list-group :key="i" v-for="([title, icon], i) in mainNav" fluid>
         <template #activator="{ props }" v-if="!noAccessPages.includes(title)">
           <v-list-item v-bind="props" :prepend-icon="icon" :title="title"></v-list-item>
         </template>
