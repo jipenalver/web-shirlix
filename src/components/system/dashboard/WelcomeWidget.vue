@@ -48,10 +48,8 @@ const authStore = useAuthUserStore()
 
           <p class="text-justify">
             Welcome to the Inventory Management System! Effortlessly manage your inventory from one
-            place. Log in to access your account or register to get started. Here, you can track
-            items, manage stock levels, and streamline your operations for greater efficiency. Thank
-            you for choosing our system—we’re here to make inventory management simple and
-            effective!
+            place. Here, you can track items, manage stock levels, and streamline your operations
+            for greater efficiency. We’re here to make inventory management simple and effective!
           </p>
         </v-col>
       </v-row>

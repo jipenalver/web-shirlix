@@ -11,6 +11,7 @@ import { useDisplay } from 'vuetify'
 // Utilize pre-defined vue functions
 const { mobile } = useDisplay()
 
+// Utilized Composable
 const {
   date,
   tableOptions,
