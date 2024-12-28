@@ -1,7 +1,8 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
-import { requiredValidator, betweenValidator } from '@/utils/validators'
+import { requiredValidator } from '@/utils/validators'
+import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { useStockInStore } from '@/stores/stockIn'
 import { onMounted, ref, watch } from 'vue'
@@ -16,6 +17,7 @@ const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
 const productsStore = useProductsStore()
+const branchesStore = useBranchesStore()
 const stockInStore = useStockInStore()
 
 // Load Variables
@@ -24,6 +26,7 @@ const formDataDefault = {
   qty: 1,
   qty_reweighed: 0,
   qty_metric: 'kg',
+  branch_id: null,
   product_id: null
 }
 const formData = ref({
@@ -39,7 +42,7 @@ const imgPreview = ref('/images/img-product.png')
 watch(
   () => props.itemData,
   () => {
-    formData.value = { ...props.itemData, is_reweighed: true }
+    formData.value = { ...props.itemData }
     imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'
   }
 )
@@ -86,6 +89,7 @@ const onFormReset = () => {
 
 // Load Functions during component rendering
 onMounted(async () => {
+  if (branchesStore.branches.length == 0) await branchesStore.getBranches()
   if (productsStore.products.length == 0) await productsStore.getProducts()
 })
 </script>
@@ -97,7 +101,7 @@ onMounted(async () => {
     :fullscreen="mdAndDown"
     persistent
   >
-    <v-card prepend-icon="mdi-weight-kilogram" title="Stock Re-weight">
+    <v-card prepend-icon="mdi-transfer" title="Stock Transfer">
       <template #subtitle>
         <div class="text-wrap">
           <b class="text-error">Please review the entered values carefully before submitting.</b>
@@ -137,6 +141,18 @@ onMounted(async () => {
               ></v-autocomplete>
             </v-col>
 
+            <v-col cols="12">
+              <v-autocomplete
+                v-model="formData.branch_id"
+                label="Branch"
+                :items="branchesStore.branches"
+                item-title="name"
+                item-value="id"
+                clearable
+                :rules="[requiredValidator]"
+              ></v-autocomplete>
+            </v-col>
+
             <v-col cols="9" sm="4">
               <v-text-field
                 v-model="formData.qty"
@@ -162,7 +178,7 @@ onMounted(async () => {
                 label="Re-weighed Weight / Qty"
                 type="number"
                 min="1"
-                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
+                readonly
               ></v-text-field>
             </v-col>
 
@@ -196,7 +212,7 @@ onMounted(async () => {
             :disabled="formAction.formProcess"
             :loading="formAction.formProcess"
           >
-            Update Stock
+            Transfer Stock
           </v-btn>
         </v-card-actions>
       </v-form>
