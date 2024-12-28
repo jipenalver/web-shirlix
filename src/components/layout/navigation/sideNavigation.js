@@ -18,7 +18,7 @@ export const menuItemsNav2 = [
 ]
 export const menuItemsNav3 = [
   ['Stock In', 'mdi-tray-arrow-down', 'Add Stocks on Products', '/inventory/stockin'],
-  ['Stock Transfer', 'mdi-store-marker', 'Multi-Branch Stock Transfers', '/inventory/transfer'],
+  ['Stock Transfer', 'mdi-transfer', 'Multi-Branch Stock Transfers', '/inventory/transfer'],
   ['Stock Segregation', 'mdi-tray-full', 'Track Weight and Segregation', '/inventory/segregate'],
   ['Check Out', 'mdi-cart-variant', 'Sell Products', '/inventory/sales']
 ]
@@ -26,7 +26,7 @@ export const menuItemsNav4 = [
   ['Expenditures', 'mdi-cash-remove', 'Tally and Manage Expenses', '/expenses']
 ]
 export const menuItemsNav5 = [
-  ['Products', 'mdi-food-takeout-box', 'Products Inventory Report', '/reports/products'],
+  ['Products', 'mdi-package', 'Products Inventory Report', '/reports/products'],
   ['Stocks', 'mdi-poll', 'Stocks of Products Report', '/reports/stocks'],
   ['Sales Status', 'mdi-sale', 'Sold Products Report', '/reports/sales'],
   ['Sales Summary', 'mdi-counter', 'Sales and Expenses Report', '/reports/summary'],
