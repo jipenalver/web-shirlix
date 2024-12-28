@@ -28,7 +28,7 @@ const isDrawerVisible = ref(mobile.value ? false : true)
             <span class="text-h6 font-weight-bold">
               <v-breadcrumbs :items="['Inventory', 'Stock Transfer']">
                 <template #prepend>
-                  <v-icon icon="mdi-store-marker" size="small" class="me-1"></v-icon>
+                  <v-icon icon="mdi-transfer" size="small" class="me-1"></v-icon>
                 </template>
               </v-breadcrumbs>
             </span>
