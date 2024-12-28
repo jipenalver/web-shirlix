@@ -29,7 +29,7 @@ const formAction = ref({
   ...formActionDefault
 })
 const itemData = ref(null)
-const isFormDialogVisible = ref(false)
+const isStockQtyFormDialogVisible = ref(false)
 
 // Calculate Stock Remaining
 const getStockRemaining = (item) => {
@@ -47,7 +47,7 @@ const onAddQty = (item) => {
   }
 
   itemData.value = { ...item, stock_remaining: getStockRemaining(item) }
-  isFormDialogVisible.value = true
+  isStockQtyFormDialogVisible.value = true
 }
 
 // Set Stock Cart Qty
@@ -193,7 +193,7 @@ onMounted(async () => {
   </v-row>
 
   <StockQtyFormDialog
-    v-model:is-dialog-visible="isFormDialogVisible"
+    v-model:is-dialog-visible="isStockQtyFormDialogVisible"
     :item-data="itemData"
     @quantity="onCartQty"
   ></StockQtyFormDialog>

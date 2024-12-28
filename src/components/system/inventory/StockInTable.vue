@@ -17,7 +17,7 @@ const {
   tableOptions,
   tableFilters,
   isCodeFormDialogVisible,
-  isFormDialogVisible,
+  isStockInFormDialogVisible,
   isConfirmDeleteDialog,
   itemData,
   formAction,
@@ -253,7 +253,7 @@ const {
   ></CodeFormDialog>
 
   <StockInFormDialog
-    v-model:is-dialog-visible="isFormDialogVisible"
+    v-model:is-dialog-visible="isStockInFormDialogVisible"
     :item-data="itemData"
     :table-options="tableOptions"
     :table-filters="tableFilters"
