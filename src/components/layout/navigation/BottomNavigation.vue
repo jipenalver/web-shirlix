@@ -32,14 +32,14 @@ const onFilterPages = (path) => {
       Check Out
     </v-btn>
 
-    <v-btn v-if="onFilterPages('/reports/sales')" to="/reports/sales">
-      <v-icon>mdi-sale</v-icon>
-      Sales Status
+    <v-btn v-if="onFilterPages('/inventory/stockin')" to="/inventory/stockin">
+      <v-icon>mdi-tray-arrow-down</v-icon>
+      Stock In
     </v-btn>
 
-    <v-btn v-if="onFilterPages('/expenses')" to="/expenses">
-      <v-icon>mdi-cash-remove</v-icon>
-      Expenditures
+    <v-btn v-if="onFilterPages('/inventory/transfer')" to="/inventory/transfer">
+      <v-icon>mdi-transfer</v-icon>
+      Stock Transfer
     </v-btn>
   </v-bottom-navigation>
 </template>
