@@ -24,6 +24,8 @@ export const useReportsStore = defineStore('reports', () => {
 
   // Retrieve Products Report
   async function getProductsReport(tableOptions, { product_id, branch_id, date }) {
+    if (!date) return
+
     let query = supabase
       .from('products')
       .select(
@@ -41,7 +43,7 @@ export const useReportsStore = defineStore('reports', () => {
     const { data } = await query
 
     // Set the retrieved data to state
-    productsReport.value = date ? getProductsMap(data, { date }) : []
+    productsReport.value = getProductsMap(data, { date })
   }
 
   // Filter Products
