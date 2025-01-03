@@ -6,9 +6,9 @@ import {
   getPreciseNumber
 } from '@/utils/helpers'
 import AlertNotification from '@/components/common/AlertNotification.vue'
+import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
+import { betweenValidator, requiredValidator } from '@/utils/validators'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { formActionDefault } from '@/utils/supabase.js'
-import { requiredValidator } from '@/utils/validators'
 import { useBranchesStore } from '@/stores/branches'
 import { useStockInStore } from '@/stores/stockIn'
 import { onMounted, ref, watch } from 'vue'
@@ -29,6 +29,8 @@ const stockInStore = useStockInStore()
 
 // Load Variables
 const formDataDefault = {
+  qty: 0,
+  qty_metric: '',
   remarks: '',
   branch_id: null
 }
@@ -39,20 +41,34 @@ const formAction = ref({
   ...formActionDefault
 })
 const refVForm = ref()
-const itemQty = ref(0)
-const stocksTransferList = ref([])
 const isConfirmDialog = ref(false)
+const itemQty = ref(0)
 const branchList = ref([])
+const stocksTransferList = ref([])
 
 // Monitor itemData if it has data
 watch(
   () => props.itemData,
   () => {
-    formData.value = { ...formDataDefault }
-    itemQty.value = props.itemData.stock_remaining
+    // eslint-disable-next-line no-unused-vars
+    const { stock_remaining, qty, qty_reweighed, ...itemData } = props.itemData
+    formData.value = {
+      ...itemData,
+      qty: stock_remaining,
+      old_qty: qty_reweighed ?? qty,
+      branch_id: null
+    }
+
+    stocksTransferList.value = []
+    itemQty.value = stock_remaining
     branchList.value = branchesStore.branches.filter((item) => item.id !== props.itemData.branch_id)
   }
 )
+
+// Calculate Stock In Qty
+const getStockInQty = (item) => {
+  return item.qty_reweighed ?? item.qty
+}
 
 // Calculate Stock Remaining
 const getStockRemaining = (item) => {
@@ -63,10 +79,14 @@ const getStockRemaining = (item) => {
 const onLoadItems = async () => {
   if (!formData.value.branch_id) return
 
+  formAction.value = { ...formActionDefault, formProcess: true }
+
   stocksTransferList.value = await stockInStore.getStocksTransferList({
     ...props.itemData,
     branch_id: formData.value.branch_id
   })
+
+  formAction.value = { ...formActionDefault }
 }
 
 // Submit Functionality
@@ -74,7 +94,7 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { data, error } = await stockInStore.updateStockIn(formData.value)
+  const { data, error } = await stockInStore.addStockTransfer(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -99,7 +119,7 @@ const onSubmit = async () => {
 // Trigger Validators
 const onFormSubmit = () => {
   refVForm.value?.validate().then(({ valid }) => {
-    if (valid) onSubmit()
+    if (valid) isConfirmDialog.value = true
   })
 }
 
@@ -126,9 +146,10 @@ onMounted(async () => {
       prepend-icon="mdi-transfer"
       title="Transfer Stock"
       :subtitle="`Origin Branch: ${props.itemData.branches.name}`"
+      :loading="formAction.formProcess"
     >
       <template #append>
-        {{ xs ? '' : 'Transfer Weight / Qty:' }}&nbsp;
+        {{ xs ? '' : 'Remaining Weight / Qty:' }}&nbsp;
         <span class="font-weight-bold">
           {{ itemQty + ' ' + props.itemData.qty_metric }}
         </span>
@@ -142,7 +163,26 @@ onMounted(async () => {
       <v-form ref="refVForm" @submit.prevent="onFormSubmit">
         <v-card-text>
           <v-row dense>
-            <v-col cols="12">
+            <v-col cols="9" sm="4">
+              <v-text-field
+                v-model="formData.qty"
+                label="Weight / Qty to Transfer"
+                type="number"
+                min="0"
+                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="3" sm="2">
+              <v-select
+                v-model="formData.qty_metric"
+                label="Metric"
+                :items="formDataMetrics"
+                readonly
+              ></v-select>
+            </v-col>
+
+            <v-col cols="12" sm="6">
               <v-autocomplete
                 v-model="formData.branch_id"
                 label="Destination Branch"
@@ -172,13 +212,19 @@ onMounted(async () => {
               :key="index"
               :prepend-avatar="item.products.image_url"
               :title="item.products.name"
-              :subtitle="`${getMoneyText(item.unit_price)} / ${item.unit_price_metric}`"
+              :subtitle="
+                item.unit_price
+                  ? `Unit Price: ${getMoneyText(item.unit_price)} / ${item.unit_price_metric}`
+                  : undefined
+              "
             >
               <template #append>
                 <span class="font-weight-bold">
                   {{
                     (xs ? '' : 'Remaining Weight / Qty: ') +
-                    (getStockRemaining(item) + ' ' + item.qty_metric)
+                    (item.is_portion
+                      ? getStockRemaining(item) + ' ' + item.qty_metric
+                      : getStockInQty(item) + ' ' + item.qty_metric)
                   }}
 
                   <v-chip class="mx-n2 cursor-pointer" density="compact" variant="text">
@@ -190,6 +236,10 @@ onMounted(async () => {
                       <li>
                         <span class="font-weight-bold">Stock ID:</span>
                         {{ getPadLeftText(item.id) }}
+                      </li>
+                      <li v-if="item.is_portion">
+                        <span class="font-weight-bold">Portion of ID:</span>
+                        {{ getPadLeftText(item.stock_in_id) }}
                       </li>
                       <li>
                         <span class="font-weight-bold">Purchased Date:</span>
@@ -233,7 +283,7 @@ onMounted(async () => {
   <ConfirmDialog
     v-model:is-dialog-visible="isConfirmDialog"
     title="Confirm Transfer"
-    text="Are you sure you want to transfer the remaining quantity on destination branch?"
-    @confirm="onFormSubmit"
+    text="Are you sure you want to transfer the quantity on destination branch?"
+    @confirm="onSubmit"
   ></ConfirmDialog>
 </template>

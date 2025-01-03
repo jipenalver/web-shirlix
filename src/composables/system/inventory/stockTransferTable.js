@@ -36,9 +36,7 @@ export function useStockTransferTable() {
 
   // Calculate Stock In Qty
   const getStockInQty = (item) => {
-    return item.qty_reweighed
-      ? item.qty_reweighed + ' ' + item.qty_metric
-      : item.qty + ' ' + item.qty_metric
+    return item.qty_reweighed ?? item.qty
   }
 
   // Calculate Stock Remaining
@@ -48,7 +46,10 @@ export function useStockTransferTable() {
 
   // Trigger Update Btn
   const onTransfer = (item) => {
-    itemData.value = { ...item, stock_remaining: getStockRemaining(item) }
+    itemData.value = {
+      ...item,
+      stock_remaining: item.is_portion ? getStockRemaining(item) : getStockInQty(item)
+    }
     isTransferFormDialogVisible.value = true
   }
 

@@ -179,10 +179,9 @@ export const useStockInStore = defineStore('stockIn', () => {
       .from('stock_ins')
       .select('*, products( name, image_url, description ), sale_products( qty )')
       .order('purchased_at', { ascending: false })
-      .eq('is_portion', true)
       .eq('branch_id', itemData.branch_id)
       .eq('product_id', itemData.product_id)
-      .neq('id', itemData.id)
+      .eq('is_segregated', false)
 
     // Execute the query
     const { data } = await query
@@ -190,8 +189,35 @@ export const useStockInStore = defineStore('stockIn', () => {
     // Set the retrieved data to state
     return data.filter(
       (item) =>
-        getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
+        getPreciseNumber(
+          (item.qty_reweighed ?? item.qty) - getAccumulatedNumber(item.sale_products, 'qty')
+        ) > 0
     )
+  }
+
+  // Transfer Stock
+  async function addStockTransfer(formData) {
+    // eslint-disable-next-line no-unused-vars
+    const { id, created_at, branches, products, sale_products, old_qty, ...stockData } = formData
+
+    await supabase
+      .from('stock_ins')
+      .update({
+        qty: old_qty - stockData.qty,
+        qty_reweighed: stockData.is_portion ? old_qty - stockData.qty : null,
+        last_updated_id: authStore.userData.id
+      })
+      .eq('id', id)
+      .select()
+
+    return await supabase
+      .from('stock_ins')
+      .insert({
+        ...stockData,
+        qty_reweighed: stockData.is_portion ? stockData.qty : null,
+        last_updated_id: authStore.userData.id
+      })
+      .select()
   }
 
   return {
@@ -205,6 +231,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     updateStockIn,
     deleteStockIn,
     addStockPortion,
-    getStocksTransferList
+    getStocksTransferList,
+    addStockTransfer
   }
 })

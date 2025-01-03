@@ -173,7 +173,7 @@ const {
 
         <template #item.qty_reweighed="{ item }">
           <span class="font-weight-bold">
-            {{ getStockInQty(item) }}
+            {{ getStockInQty(item) + ' ' + item.qty_metric }}
           </span>
         </template>
 
@@ -188,7 +188,7 @@ const {
             {{
               item.is_portion
                 ? getStockRemaining(item) + ' ' + item.qty_metric
-                : getStockInQty(item)
+                : getStockInQty(item) + ' ' + item.qty_metric
             }}
           </span>
         </template>

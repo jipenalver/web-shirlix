@@ -43,9 +43,7 @@ export function useStocksReportTable() {
 
   // Calculate Stock In Qty
   const getStockInQty = (item) => {
-    return item.qty_reweighed
-      ? item.qty_reweighed + ' ' + item.qty_metric
-      : item.qty + ' ' + item.qty_metric
+    return item.qty_reweighed ?? item.qty
   }
 
   // Calculate Stock Remaining
@@ -98,9 +96,11 @@ export function useStocksReportTable() {
       return [
         "'" + getPadLeftText(item.id),
         generateCSVTrim(item.products.name),
-        getStockInQty(item),
+        getStockInQty(item) + ' ' + item.qty_metric,
         item.sale_products.length === 0 ? '-' : getSoldQty(item),
-        item.is_portion ? getStockRemaining(item) + ' ' + item.qty_metric : getStockInQty(item),
+        item.is_portion
+          ? getStockRemaining(item) + ' ' + item.qty_metric
+          : getStockInQty(item) + ' ' + item.qty_metric,
         generateCSVTrim(date.format(item.purchased_at, 'fullDate')),
         item.is_portion ? (getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock') : 'Inventory',
 

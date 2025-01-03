@@ -182,7 +182,7 @@ const {
             {{
               item.is_portion
                 ? getStockRemaining(item) + ' ' + item.qty_metric
-                : getStockInQty(item)
+                : getStockInQty(item) + ' ' + item.qty_metric
             }}
           </span>
         </template>
@@ -233,7 +233,9 @@ const {
               variant="text"
               density="comfortable"
               @click="onTransfer(item)"
-              :disabled="item.is_segregated || getStockRemaining(item) === 0"
+              :disabled="
+                item.is_portion ? getStockRemaining(item) === 0 : getStockInQty(item) === 0
+              "
               color="error"
               icon
             >
