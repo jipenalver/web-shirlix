@@ -30,6 +30,7 @@ export const useReportsStore = defineStore('reports', () => {
         'id, name, image_url, description, stock_ins( qty_reweighed, qty_metric, branch_id, is_portion, purchased_at ), sale_products( qty, branch_id, created_at )'
       )
       .eq('stock_ins.is_portion', true)
+      .order('name', { ascending: true })
 
     if (branch_id)
       query = query.eq('stock_ins.branch_id', branch_id).eq('sale_products.branch_id', branch_id)
