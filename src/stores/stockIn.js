@@ -19,22 +19,21 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Retrieve StockIn Table
-  async function getStockInTable(tableOptions, { search, product_id, branch_id, purchased_at }) {
-    const { rangeStart, rangeEnd, column, order } = tablePagination(
-      tableOptions,
-      'purchased_at',
-      false
-    ) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
+  async function getStockInTable(
+    { isNotSegregated, ...options },
+    { search, product_id, branch_id, purchased_at }
+  ) {
+    const { rangeStart, rangeEnd, column, order } = tablePagination(options, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 
     // Query Supabase with pagination and sorting
     let query = supabase
       .from('stock_ins')
-      .select('*, branches( name ), products( name, image_url, description )')
+      .select('*, branches( name ), products( name, image_url, description ), sale_products( qty )')
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
 
-    if (tableOptions.isNotSegregated) query = query.eq('is_segregated', false)
+    if (isNotSegregated) query = query.eq('is_segregated', false)
 
     query = getStockInFilter(query, { search, product_id, branch_id, purchased_at })
 
@@ -42,7 +41,10 @@ export const useStockInStore = defineStore('stockIn', () => {
     const { data } = await query
 
     // Separate query to get the total count without range
-    const { count } = await getStockInCount({ search, product_id, branch_id, purchased_at })
+    const { count } = await getStockInCount(
+      { isNotSegregated },
+      { search, product_id, branch_id, purchased_at }
+    )
 
     // Set the retrieved data to state
     stockInTable.value = data
@@ -50,10 +52,15 @@ export const useStockInStore = defineStore('stockIn', () => {
   }
 
   // Count StockIn
-  async function getStockInCount({ search, product_id, branch_id, purchased_at }) {
+  async function getStockInCount(
+    { isNotSegregated },
+    { search, product_id, branch_id, purchased_at }
+  ) {
     let query = supabase
       .from('stock_ins')
       .select('*, branches( name ), products( name )', { count: 'exact', head: true })
+
+    if (isNotSegregated) query = query.eq('is_segregated', false)
 
     query = getStockInFilter(query, { search, product_id, branch_id, purchased_at })
 

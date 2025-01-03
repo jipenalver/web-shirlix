@@ -17,6 +17,8 @@ const {
   isTransferFormDialogVisible,
   itemData,
   formAction,
+  getStockInQty,
+  getStockRemaining,
   onTransfer,
   onFilterDate,
   onFilterItems,
@@ -175,9 +177,13 @@ const {
           </span>
         </template>
 
-        <template #item.purchased_at="{ item }">
-          <span class="font-weight-bold">
-            {{ date.format(item.purchased_at, 'fullDate') }}
+        <template #item.qty_remaining="{ item }">
+          <span class="font-weight-black">
+            {{
+              item.is_portion
+                ? getStockRemaining(item) + ' ' + item.qty_metric
+                : getStockInQty(item)
+            }}
           </span>
         </template>
 
@@ -198,6 +204,10 @@ const {
                 <li>
                   <span class="font-weight-bold">Added Date:</span>
                   {{ date.format(item.created_at, 'fullDateTime') }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Purchased Date:</span>
+                  {{ date.format(item.purchased_at, 'fullDate') }}
                 </li>
                 <li>
                   <span class="font-weight-bold">Expiration Date:</span>

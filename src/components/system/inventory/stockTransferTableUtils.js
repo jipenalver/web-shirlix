@@ -24,8 +24,9 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Purchased Date',
-    key: 'purchased_at',
+    title: 'Remaining Weight / Qty',
+    key: 'qty_remaining',
+    sortable: false,
     align: 'start'
   },
 

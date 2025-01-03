@@ -1,3 +1,4 @@
+import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { formActionDefault } from '@/utils/supabase'
@@ -32,6 +33,18 @@ export function useStockTransferTable() {
   const isTransferFormDialogVisible = ref(false)
   const itemData = ref(null)
   const formAction = ref({ ...formActionDefault })
+
+  // Calculate Stock In Qty
+  const getStockInQty = (item) => {
+    return item.qty_reweighed
+      ? item.qty_reweighed + ' ' + item.qty_metric
+      : item.qty + ' ' + item.qty_metric
+  }
+
+  // Calculate Stock Remaining
+  const getStockRemaining = (item) => {
+    return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+  }
 
   // Trigger Update Btn
   const onTransfer = (item) => {
@@ -89,6 +102,8 @@ export function useStockTransferTable() {
     isTransferFormDialogVisible,
     itemData,
     formAction,
+    getStockInQty,
+    getStockRemaining,
     onTransfer,
     onFilterDate,
     onFilterItems,
