@@ -89,9 +89,8 @@ export const useReportsStore = defineStore('reports', () => {
         stock_opening: getPreciseNumber(totalStockIns - totalSales),
         stock_in: stockInDuringDate,
         stock_sold: stockSoldDuringDate,
-        stock_transferred: 0,
         stock_remaining: getPreciseNumber(
-          totalStockIns - totalSales + stockInDuringDate - (stockSoldDuringDate + 0)
+          totalStockIns - totalSales + stockInDuringDate - stockSoldDuringDate
         ),
         qty_metric
       }

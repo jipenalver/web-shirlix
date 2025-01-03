@@ -33,13 +33,6 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Transferred',
-    key: 'stock_transferred',
-    sortable: false,
-    align: 'center'
-  },
-
-  {
     title: 'Remaining',
     key: 'stock_remaining',
     sortable: false,

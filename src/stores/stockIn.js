@@ -34,6 +34,8 @@ export const useStockInStore = defineStore('stockIn', () => {
       .order(column, { ascending: order })
       .range(rangeStart, rangeEnd)
 
+    if (tableOptions.isNotSegregated) query = query.eq('is_segregated', false)
+
     query = getStockInFilter(query, { search, product_id, branch_id, purchased_at })
 
     // Execute the query

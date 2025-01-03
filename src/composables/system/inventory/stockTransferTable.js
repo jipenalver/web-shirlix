@@ -20,7 +20,8 @@ export function useStockTransferTable() {
     page: 1,
     itemsPerPage: 10,
     sortBy: [],
-    isLoading: false
+    isLoading: false,
+    isNotSegregated: true
   })
   const tableFilters = ref({
     search: '',
@@ -65,7 +66,10 @@ export function useStockTransferTable() {
     // Trigger Loading
     tableOptions.value.isLoading = true
 
-    await stockInStore.getStockInTable({ page, itemsPerPage, sortBy }, tableFilters.value)
+    await stockInStore.getStockInTable(
+      { page, itemsPerPage, sortBy, isNotSegregated: true },
+      tableFilters.value
+    )
 
     // Trigger Loading
     tableOptions.value.isLoading = false
