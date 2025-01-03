@@ -35,8 +35,6 @@ export function useStocksReportTable() {
     product_id: null,
     purchased_at: null
   })
-  const isTransferFormDialogVisible = ref(false)
-  const itemData = ref(null)
 
   // Calculate Sold Qty
   const getSoldQty = (item) => {
@@ -53,12 +51,6 @@ export function useStocksReportTable() {
   // Calculate Stock Remaining
   const getStockRemaining = (item) => {
     return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
-  }
-
-  // Trigger Transfer Btn
-  const onTransfer = (item) => {
-    itemData.value = { ...item, stock_remaining: getStockRemaining(item) }
-    isTransferFormDialogVisible.value = true
   }
 
   // Retrieve Data based on Date
@@ -97,17 +89,8 @@ export function useStocksReportTable() {
   // CSV Data
   const csvData = () => {
     // Get the headers from utils
-    const headers = tableHeaders
-      // .slice(0, -1)
-      .map((header) => header.title)
-    const addHeaders = [
-      'Unit Price',
-      'Added Date',
-      'Purchased Date',
-      'Supplier',
-      'Branch',
-      'Remarks'
-    ]
+    const headers = tableHeaders.map((header) => header.title)
+    const addHeaders = ['Unit Price', 'Added Date', 'Expired Date', 'Supplier', 'Branch', 'Remarks']
     const newHeaders = [...headers, ...addHeaders].join(',')
 
     // Get the reports data and map it to be used as csv data, follow the headers arrangement
@@ -118,12 +101,12 @@ export function useStocksReportTable() {
         getStockInQty(item),
         item.sale_products.length === 0 ? '-' : getSoldQty(item),
         item.is_portion ? getStockRemaining(item) + ' ' + item.qty_metric : getStockInQty(item),
-        item.expired_at ? generateCSVTrim(date.format(item.expired_at, 'fullDate')) : 'n/a',
+        generateCSVTrim(date.format(item.purchased_at, 'fullDate')),
         item.is_portion ? (getStockRemaining(item) > 0 ? 'In Stock' : 'Out of Stock') : 'Inventory',
 
         item.unit_price,
         generateCSVTrim(date.format(item.created_at, 'fullDateTime')),
-        generateCSVTrim(date.format(item.purchased_at, 'fullDate')),
+        item.expired_at ? generateCSVTrim(date.format(item.expired_at, 'fullDate')) : 'n/a',
         generateCSVTrim(item.supplier),
         generateCSVTrim(item.branches.name),
         generateCSVTrim(item.remarks)
@@ -158,12 +141,9 @@ export function useStocksReportTable() {
     tableHeaders,
     tableOptions,
     tableFilters,
-    itemData,
-    isTransferFormDialogVisible,
     getSoldQty,
     getStockInQty,
     getStockRemaining,
-    onTransfer,
     onFilterDate,
     onFilterItems,
     onSearchItems,

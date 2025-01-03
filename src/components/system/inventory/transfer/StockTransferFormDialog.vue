@@ -83,7 +83,7 @@ const onSubmit = async () => {
     formAction.value.formProcess = false
   } else if (data) {
     // Add Success Message
-    formAction.value.formSuccessMessage = 'Successfully Updated Stock Weight.'
+    formAction.value.formSuccessMessage = 'Successfully Transferred Stock.'
 
     await stockInStore.getStockInTable(props.tableOptions, props.tableFilters)
 

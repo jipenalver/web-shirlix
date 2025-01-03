@@ -31,8 +31,8 @@ export const tableHeaders = [
   },
 
   {
-    title: 'Expired Date',
-    key: 'expired_at',
+    title: 'Purchased Date',
+    key: 'purchased_at',
     align: 'center'
   },
 
@@ -42,10 +42,4 @@ export const tableHeaders = [
     sortable: false,
     align: 'center'
   }
-  // {
-  //   title: 'Actions',
-  //   key: 'actions',
-  //   sortable: false,
-  //   align: 'center'
-  // }
 ]
