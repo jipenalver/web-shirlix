@@ -42,6 +42,7 @@ const refVForm = ref()
 const itemQty = ref(0)
 const stocksTransferList = ref([])
 const isConfirmDialog = ref(false)
+const branchList = ref([])
 
 // Monitor itemData if it has data
 watch(
@@ -49,6 +50,7 @@ watch(
   () => {
     formData.value = { ...formDataDefault }
     itemQty.value = props.itemData.stock_remaining
+    branchList.value = branchesStore.branches.filter((item) => item.id !== props.itemData.branch_id)
   }
 )
 
@@ -144,7 +146,7 @@ onMounted(async () => {
               <v-autocomplete
                 v-model="formData.branch_id"
                 label="Destination Branch"
-                :items="branchesStore.branches"
+                :items="branchList"
                 item-title="name"
                 item-value="id"
                 :rules="[requiredValidator]"
@@ -159,7 +161,7 @@ onMounted(async () => {
 
           <v-list>
             <div v-if="stocksTransferList.length > 0">
-              <span class="ms-2 text-body-2"> Stocks in Destination Branch: </span>
+              <span class="ms-2 text-body-2"> Stock(s) in Destination Branch: </span>
 
               <v-divider class="mt-2 mb-5" thickness="2"></v-divider>
             </div>

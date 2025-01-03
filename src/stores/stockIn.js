@@ -16,11 +16,15 @@ export const useStockInStore = defineStore('stockIn', () => {
   // States
   const stockInTable = ref([])
   const stockInTotal = ref(0)
+  const stockTransferTable = ref([])
+  const stockTransferTotal = ref(0)
 
   // Reset State Action
   function $reset() {
     stockInTable.value = []
+    stockTransferTable.value = []
     stockInTotal.value = 0
+    stockTransferTotal.value = 0
   }
 
   // Retrieve StockIn Table
@@ -32,13 +36,17 @@ export const useStockInStore = defineStore('stockIn', () => {
     search = tableSearch(search) // Handle Search if null turn to empty string
 
     // Query Supabase with pagination and sorting
-    let query = supabase
-      .from('stock_ins')
-      .select('*, branches( name ), products( name, image_url, description ), sale_products( qty )')
-      .order(column, { ascending: order })
-      .range(rangeStart, rangeEnd)
+    let query = supabase.from('stock_ins')
 
-    if (isNotSegregated) query = query.eq('is_segregated', false)
+    if (isNotSegregated)
+      query = query
+        .select(
+          '*, branches( name ), products( name, image_url, description ), sale_products( qty )'
+        )
+        .eq('is_segregated', false)
+    else query = query.select('*, branches( name ), products( name, image_url, description )')
+
+    query = query.order(column, { ascending: order }).range(rangeStart, rangeEnd)
 
     query = getStockInFilter(query, { search, product_id, branch_id, purchased_at })
 
@@ -52,8 +60,13 @@ export const useStockInStore = defineStore('stockIn', () => {
     )
 
     // Set the retrieved data to state
-    stockInTable.value = data
-    stockInTotal.value = count
+    if (isNotSegregated) {
+      stockTransferTable.value = data
+      stockTransferTotal.value = count
+    } else {
+      stockInTable.value = data
+      stockInTotal.value = count
+    }
   }
 
   // Count StockIn
@@ -184,6 +197,8 @@ export const useStockInStore = defineStore('stockIn', () => {
   return {
     stockInTable,
     stockInTotal,
+    stockTransferTable,
+    stockTransferTotal,
     $reset,
     getStockInTable,
     addStockIn,
