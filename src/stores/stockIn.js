@@ -1,5 +1,10 @@
+import {
+  prepareFormDates,
+  prepareDate,
+  getPreciseNumber,
+  getAccumulatedNumber
+} from '@/utils/helpers'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
-import { prepareFormDates, prepareDate } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -155,6 +160,27 @@ export const useStockInStore = defineStore('stockIn', () => {
     return await supabase.from('stock_ins').insert(transformedData).select()
   }
 
+  // Retrieve Stocks Transfer List
+  async function getStocksTransferList(itemData) {
+    let query = supabase
+      .from('stock_ins')
+      .select('*, products( name, image_url, description ), sale_products( qty )')
+      .order('purchased_at', { ascending: false })
+      .eq('is_portion', true)
+      .eq('branch_id', itemData.branch_id)
+      .eq('product_id', itemData.product_id)
+      .neq('id', itemData.id)
+
+    // Execute the query
+    const { data } = await query
+
+    // Set the retrieved data to state
+    return data.filter(
+      (item) =>
+        getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
+    )
+  }
+
   return {
     stockInTable,
     stockInTotal,
@@ -163,6 +189,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     addStockIn,
     updateStockIn,
     deleteStockIn,
-    addStockPortion
+    addStockPortion,
+    getStocksTransferList
   }
 })

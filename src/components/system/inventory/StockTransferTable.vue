@@ -233,7 +233,7 @@ const {
               variant="text"
               density="comfortable"
               @click="onTransfer(item)"
-              :disabled="item.is_segregated"
+              :disabled="item.is_segregated || getStockRemaining(item) === 0"
               color="error"
               icon
             >

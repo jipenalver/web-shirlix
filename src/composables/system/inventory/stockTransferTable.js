@@ -48,7 +48,7 @@ export function useStockTransferTable() {
 
   // Trigger Update Btn
   const onTransfer = (item) => {
-    itemData.value = item
+    itemData.value = { ...item, stock_remaining: getStockRemaining(item) }
     isTransferFormDialogVisible.value = true
   }
 
