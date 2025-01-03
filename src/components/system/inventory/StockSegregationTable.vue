@@ -48,23 +48,25 @@ const action = ref('')
 
 // Verified Code
 const onCodeVerified = (isVerified) => {
-  if (action.value === 'weight') isWeightFormDialogVisible.value = isVerified
-  if (action.value === 'segregate') isSegregateFormDialogVisible.value = isVerified
+  // if (action.value === 'weight') isWeightFormDialogVisible.value = isVerified
+  // if (action.value === 'segregate') isSegregateFormDialogVisible.value = isVerified
   if (action.value === 'price') isPriceFormDialogVisible.value = isVerified
 }
 
 // Trigger Update Btn
 const onUpdateWeight = (item) => {
   itemData.value = item
-  isCodeFormDialogVisible.value = true
-  action.value = 'weight'
+  isWeightFormDialogVisible.value = true
+  // isCodeFormDialogVisible.value = true
+  // action.value = 'weight'
 }
 
 // Trigger Update Btn
 const onUpdateSegregate = (item) => {
   itemData.value = item
-  isCodeFormDialogVisible.value = true
-  action.value = 'segregate'
+  isSegregateFormDialogVisible.value = true
+  // isCodeFormDialogVisible.value = true
+  // action.value = 'segregate'
 }
 
 // Trigger Update Btn
