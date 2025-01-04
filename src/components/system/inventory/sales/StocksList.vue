@@ -25,9 +25,7 @@ const listFilters = ref({
   search: '',
   branch_id: null
 })
-const formAction = ref({
-  ...formActionDefault
-})
+const formAction = ref({ ...formActionDefault })
 const itemData = ref(null)
 const isStockQtyFormDialogVisible = ref(false)
 
@@ -200,6 +198,7 @@ onMounted(async () => {
   <StockQtyFormDialog
     v-model:is-dialog-visible="isStockQtyFormDialogVisible"
     :item-data="itemData"
+    :list-filters="listFilters"
     @quantity="onCartQty"
   ></StockQtyFormDialog>
 </template>

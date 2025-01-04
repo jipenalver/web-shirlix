@@ -22,12 +22,8 @@ const formDataDefault = {
   discount: 0,
   is_cash_discount: false
 }
-const formData = ref({
-  ...formDataDefault
-})
-const formAction = ref({
-  ...formActionDefault
-})
+const formData = ref({ ...formDataDefault })
+const formAction = ref({ ...formActionDefault })
 const deleteIndex = ref(null)
 const isConfirmDeleteDialog = ref(false)
 const isConfirmSoldDialog = ref(false)
@@ -65,7 +61,10 @@ const onDelete = (index) => {
 }
 
 // Confirm Delete
-const onConfirmDelete = () => {
+const onConfirmDelete = async () => {
+  // Load Stocks based on Branch
+  await salesStore.getStocks({ branch_id: salesStore.stocksCart[0].product.branch_id })
+  // Remove Item from Cart
   salesStore.stocksCart = salesStore.stocksCart.filter((item, index) => index !== deleteIndex.value)
   localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
 }

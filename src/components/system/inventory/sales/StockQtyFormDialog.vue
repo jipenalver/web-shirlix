@@ -2,37 +2,35 @@
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { betweenValidator, requiredValidator } from '@/utils/validators'
 import { formActionDefault, formDataMetrics } from '@/utils/supabase.js'
+import { useSalesStore } from '@/stores/sales'
 import { getMoneyText } from '@/utils/helpers'
 import { ref, watch } from 'vue'
 
-const props = defineProps(['isDialogVisible', 'itemData'])
+const props = defineProps(['isDialogVisible', 'itemData', 'listFilters'])
 
 const emit = defineEmits(['update:isDialogVisible', 'quantity'])
+
+// Use Pinia Store
+const salesStore = useSalesStore()
 
 // Load Variables
 const formDataDefault = {
   qty: undefined,
-  qty_metric: '',
-  unit_price: 0,
-  unit_price_metric: '',
-  name: ''
+  qty_metric: ''
 }
-const formData = ref({
-  ...formDataDefault
-})
-const formAction = ref({
-  ...formActionDefault
-})
+const formData = ref({ ...formDataDefault })
+const formAction = ref({ ...formActionDefault })
 const refVForm = ref()
 
 // Monitor itemData if it has data
 watch(
   () => props.itemData,
   () => {
-    formData.value.qty_metric = props.itemData.qty_metric
-    formData.value.unit_price = props.itemData.unit_price
-    formData.value.unit_price_metric = props.itemData.unit_price_metric
-    formData.value.name = props.itemData.products.name
+    const { qty_metric } = props.itemData
+    formData.value = {
+      ...formDataDefault,
+      qty_metric
+    }
   }
 )
 
@@ -41,9 +39,10 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
+  emit('quantity', formData.value.qty)
+  await salesStore.getStocks(props.listFilters)
   // Form Reset and Close Dialog
   setTimeout(() => {
-    emit('quantity', formData.value.qty)
     onFormReset()
   }, 750)
 }
@@ -65,14 +64,14 @@ const onFormReset = () => {
 
 <template>
   <v-dialog max-width="500" :model-value="props.isDialogVisible" persistent>
-    <v-card prepend-icon="mdi-weight" :title="formData.name" subtitle="Weight / Qty">
+    <v-card
+      prepend-icon="mdi-weight"
+      :title="props.itemData.products.name"
+      :subtitle="`Weight / Qty: ${props.itemData.stock_remaining} ${props.itemData.qty_metric}`"
+    >
       <template #append>
         <b>
-          {{
-            formData.unit_price
-              ? getMoneyText(formData.unit_price) + ' / ' + formData.unit_price_metric
-              : 'n/a'
-          }}
+          {{ getMoneyText(props.itemData.unit_price) + ' / ' + props.itemData.unit_price_metric }}
         </b>
       </template>
 

@@ -44,8 +44,22 @@ export const useSalesStore = defineStore('sales', () => {
     // Execute the query
     const { data } = await query
 
+    // Update Qty based on Found Matching Cart Item
+    let stocksData = data
+    if (stocksCart.value.length > 0)
+      stocksData = data.map((item) => {
+        // Find matching stock in the cart; Update `qty_reweighed` if a matching stock is found
+        const cartItem = stocksCart.value.find((cart) => cart.product.id === item.id)
+        return cartItem
+          ? {
+              ...item,
+              qty_reweighed: getPreciseNumber(item.qty_reweighed - cartItem.qty)
+            }
+          : item
+      })
+
     // Filter Stocks by Search and Stock Remaining
-    const filteredStocks = data.filter(
+    const filteredStocks = stocksData.filter(
       (item) =>
         item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase()) &&
         getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
@@ -55,7 +69,7 @@ export const useSalesStore = defineStore('sales', () => {
     const uniqueStocks = Array.from(
       new Map(
         filteredStocks.map((item) => [
-          `${item.products.name.toLowerCase()}|${item.unit_price}`,
+          `${item.products.name.toLowerCase()}|${item.unit_price}|${item.unit_price_metric}`,
           item
         ])
       ).values()
