@@ -48,12 +48,14 @@ export const useSalesStore = defineStore('sales', () => {
     let stocksData = data
     if (stocksCart.value.length > 0)
       stocksData = data.map((item) => {
-        // Find matching stock in the cart; Update `qty_reweighed` if a matching stock is found
-        const cartItem = stocksCart.value.find((cart) => cart.product.id === item.id)
-        return cartItem
+        const totalQty = getAccumulatedNumber(
+          stocksCart.value.filter((cart) => cart.product.id === item.id),
+          'qty'
+        )
+        return totalQty > 0
           ? {
               ...item,
-              qty_reweighed: getPreciseNumber(item.qty_reweighed - cartItem.qty)
+              qty_reweighed: getPreciseNumber(item.qty_reweighed - totalQty)
             }
           : item
       })

@@ -18,12 +18,8 @@ const salesStore = useSalesStore()
 const formDataDefault = {
   cash: undefined
 }
-const formData = ref({
-  ...formDataDefault
-})
-const formAction = ref({
-  ...formActionDefault
-})
+const formData = ref({ ...formDataDefault })
+const formAction = ref({ ...formActionDefault })
 const refVForm = ref()
 const salesData = ref(null)
 const customer = ref('')
@@ -51,6 +47,8 @@ const onSubmit = async () => {
   if (formData.value.cash < salesData.value.overall_price)
     salesData.value = { ...salesData.value, payment: formData.value.cash }
 
+  const { branch_id } = salesData.value.stocks[0].product
+
   const { data, error } = await salesStore.addSales(salesData.value)
 
   if (error) {
@@ -67,7 +65,7 @@ const onSubmit = async () => {
     // Reset Cart State
     salesStore.$resetCart()
     await salesStore.getCustomers()
-    await salesStore.getStocks({ branch_id: salesData.value.stocks[0].product.branch_id })
+    await salesStore.getStocks({ branch_id: localStorage.getItem('stocksBranchId') ?? branch_id })
 
     // Emit to Reset Components
     emit('resetCart')

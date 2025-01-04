@@ -62,11 +62,12 @@ const onDelete = (index) => {
 
 // Confirm Delete
 const onConfirmDelete = async () => {
-  // Load Stocks based on Branch
-  await salesStore.getStocks({ branch_id: salesStore.stocksCart[0].product.branch_id })
+  const { branch_id } = salesStore.stocksCart[deleteIndex.value].product
   // Remove Item from Cart
   salesStore.stocksCart = salesStore.stocksCart.filter((item, index) => index !== deleteIndex.value)
   localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
+  // Load Stocks based on Branch
+  await salesStore.getStocks({ branch_id: localStorage.getItem('stocksBranchId') ?? branch_id })
 }
 
 // Add Customer Name on Form

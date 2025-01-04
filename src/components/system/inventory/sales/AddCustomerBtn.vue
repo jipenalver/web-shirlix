@@ -11,9 +11,7 @@ const salesStore = useSalesStore()
 const formDataDefault = {
   customer: ''
 }
-const formData = ref({
-  ...formDataDefault
-})
+const formData = ref({ ...formDataDefault })
 const isAddBtnClicked = ref(false)
 const isKeyboardBtnClicked = ref(false)
 
