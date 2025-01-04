@@ -63,6 +63,7 @@ const onCartQty = (qty) => {
 
 // Retrieve Data based on Filter
 const onFilterItems = () => {
+  localStorage.setItem('stocksBranchId', listFilters.value.branch_id)
   onLoadItems(listFilters.value)
 }
 
@@ -88,7 +89,8 @@ const onLoadItems = async ({ search, branch_id }) => {
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
-  listFilters.value.branch_id = branchesStore.branches[0].id
+  listFilters.value.branch_id =
+    Number(localStorage.getItem('stocksBranchId')) ?? branchesStore.branches[0].id
   await onLoadItems(listFilters.value)
 })
 </script>
@@ -112,8 +114,8 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" md="6"
-              ><v-autocomplete
+            <v-col cols="12" md="6">
+              <v-autocomplete
                 v-model="listFilters.branch_id"
                 :items="branchesStore.branches"
                 label="Branch"
@@ -122,8 +124,8 @@ onMounted(async () => {
                 item-value="id"
                 @update:model-value="onFilterItems"
                 hide-details
-              ></v-autocomplete
-            ></v-col>
+              ></v-autocomplete>
+            </v-col>
           </v-row>
         </v-card-text>
 
