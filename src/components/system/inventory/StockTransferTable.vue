@@ -3,7 +3,9 @@ import { useStockTransferTable } from '@/composables/system/inventory/stockTrans
 import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
 import StockTransferFormDialog from './transfer/StockTransferFormDialog.vue'
 import AlertNotification from '@/components/common/AlertNotification.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { tableHeaders } from './stockTransferTableUtils'
+import CodeFormDialog from './CodeFormDialog.vue'
 import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
@@ -15,10 +17,18 @@ const {
   tableOptions,
   tableFilters,
   isTransferFormDialogVisible,
+  isCodeFormDialogVisible,
+  isConfirmApproveDialog,
+  isConfirmDisapproveDialog,
   itemData,
   formAction,
   getStockInQty,
   getStockRemaining,
+  onCodeVerified,
+  onApprove,
+  onDisapprove,
+  onConfirmApprove,
+  onConfirmDisapprove,
   onTransfer,
   onFilterDate,
   onFilterItems,
@@ -222,26 +232,82 @@ const {
         </template>
 
         <template #item.status_transfer="{ item }">
-          <v-chip class="font-weight-bold" prepend-icon="mdi-information">
-            {{ item.is_transfer_request ? 'Pending Requst' : 'No Request' }}
+          <v-chip
+            class="font-weight-bold cursor-pointer"
+            prepend-icon="mdi-information"
+            :color="item.is_transfer_request ? 'error' : 'success'"
+          >
+            {{ item.is_transfer_request ? 'Pending Request' : 'No Request' }}
+
+            <v-tooltip
+              v-if="item.transfer_metadata"
+              activator="parent"
+              location="top"
+              open-on-click
+            >
+              Transfer Request Details
+              <ul class="ms-2">
+                <li>
+                  <span class="font-weight-bold">Destination Branch:</span>
+                  {{ item.transfer_metadata.add.branches?.name }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Weight / Qty:</span>
+                  {{ item.transfer_metadata.add.qty + ' ' + item.qty_metric }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Request Date:</span>
+                  {{
+                    date.format(
+                      item.transfer_metadata.update.request_metadata.request_at,
+                      'fullDateTime'
+                    )
+                  }}
+                </li>
+                <li>
+                  <span class="font-weight-bold">Request By:</span>
+                  {{ item.transfer_metadata.update.request_metadata.request_by }}
+                </li>
+              </ul>
+            </v-tooltip>
           </v-chip>
         </template>
 
         <template #item.actions="{ item }">
           <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
-            <v-btn
-              variant="text"
-              density="comfortable"
-              @click="onTransfer(item)"
-              :disabled="
-                item.is_portion ? getStockRemaining(item) === 0 : getStockInQty(item) === 0
-              "
-              color="error"
-              icon
-            >
-              <v-icon icon="mdi-transfer"></v-icon>
-              <v-tooltip activator="parent" location="top">Transfer</v-tooltip>
-            </v-btn>
+            <div v-if="item.is_transfer_request">
+              <v-btn variant="text" density="comfortable" @click="onApprove(item)" icon>
+                <v-icon icon="mdi-thumb-up"></v-icon>
+                <v-tooltip activator="parent" location="top">Approve Request</v-tooltip>
+              </v-btn>
+
+              <v-btn
+                variant="text"
+                density="comfortable"
+                color="error"
+                @click="onDisapprove(item.id)"
+                icon
+              >
+                <v-icon icon="mdi-thumb-down"></v-icon>
+                <v-tooltip activator="parent" location="top">Reject Request</v-tooltip>
+              </v-btn>
+            </div>
+
+            <div v-else>
+              <v-btn
+                variant="text"
+                density="comfortable"
+                @click="onTransfer(item)"
+                :disabled="
+                  item.is_portion ? getStockRemaining(item) === 0 : getStockInQty(item) === 0
+                "
+                color="error"
+                icon
+              >
+                <v-icon icon="mdi-transfer"></v-icon>
+                <v-tooltip activator="parent" location="top">Transfer</v-tooltip>
+              </v-btn>
+            </div>
           </div>
         </template>
       </v-data-table-server>
@@ -254,6 +320,25 @@ const {
     :table-options="tableOptions"
     :table-filters="tableFilters"
   ></StockTransferFormDialog>
+
+  <CodeFormDialog
+    v-model:is-dialog-visible="isCodeFormDialogVisible"
+    @is-code-verified="onCodeVerified"
+  ></CodeFormDialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmApproveDialog"
+    title="Confirm Stock Transfer"
+    text="Are you sure you want to confirm stock transfer?"
+    @confirm="onConfirmApprove"
+  ></ConfirmDialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmDisapproveDialog"
+    title="Reject Stock Transfer"
+    text="Are you sure you want to reject stock transfer?"
+    @confirm="onConfirmDisapprove"
+  ></ConfirmDialog>
 </template>
 
 <style scoped>

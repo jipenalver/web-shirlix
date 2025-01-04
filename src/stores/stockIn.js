@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   prepareFormDates,
   prepareDate,
@@ -132,7 +133,6 @@ export const useStockInStore = defineStore('stockIn', () => {
     let transformedData = {}
     if (stockId) transformedData = formData
     else {
-      // eslint-disable-next-line no-unused-vars
       const { branches, products, ...data } = prepareFormDates(formData, [
         'purchased_at',
         'expired_at'
@@ -155,7 +155,6 @@ export const useStockInStore = defineStore('stockIn', () => {
   // Add Stock Portion
   async function addStockPortion(formData, stockId) {
     const transformedData = formData.map((value) => {
-      // eslint-disable-next-line no-unused-vars
       const { product_id, product_preview, qty, ...stockData } = value
 
       return {
@@ -195,28 +194,65 @@ export const useStockInStore = defineStore('stockIn', () => {
     )
   }
 
-  // Transfer Stock
-  async function addStockTransfer(formData) {
-    // eslint-disable-next-line no-unused-vars
-    const { id, created_at, branches, products, sale_products, old_qty, ...stockData } = formData
-
-    await supabase
-      .from('stock_ins')
-      .update({
-        qty: old_qty - stockData.qty,
-        qty_reweighed: stockData.is_portion ? old_qty - stockData.qty : null,
-        last_updated_id: authStore.userData.id
-      })
-      .eq('id', id)
-      .select()
+  // Request Stock Transfer
+  async function requestStockTransfer(formData) {
+    const { id, created_at, products, sale_products, old_qty, ...stockData } = formData
 
     return await supabase
       .from('stock_ins')
-      .insert({
-        ...stockData,
-        qty_reweighed: stockData.is_portion ? stockData.qty : null,
-        last_updated_id: authStore.userData.id
+      .update({
+        is_transfer_request: true,
+        transfer_metadata: {
+          add: {
+            ...stockData,
+            qty_reweighed: stockData.is_reweighed ? stockData.qty : null,
+            last_updated_id: authStore.userData.id
+          },
+          update: {
+            qty: getPreciseNumber(old_qty - stockData.qty),
+            qty_reweighed: stockData.is_reweighed
+              ? getPreciseNumber(old_qty - stockData.qty)
+              : null,
+            last_updated_id: authStore.userData.id,
+            request_metadata: {
+              request_at: new Date().toISOString(),
+              request_by: authStore.userData.firstname + ' ' + authStore.userData.lastname
+            }
+          }
+        }
       })
+      .eq('id', id)
+      .select()
+  }
+
+  // Approve Stock Transfer
+  async function approveStockTransfer(formData) {
+    const {
+      id,
+      transfer_metadata: {
+        add: { branches, ...addData },
+        update: { request_metadata, ...updateData }
+      }
+    } = formData
+
+    await supabase
+      .from('stock_ins')
+      .update({ ...updateData, is_transfer_request: false, transfer_metadata: null })
+      .eq('id', id)
+      .select()
+
+    return await supabase.from('stock_ins').insert([addData]).select()
+  }
+
+  // Disapprove Stock Transfer
+  async function disapproveStockTransfer(id) {
+    return await supabase
+      .from('stock_ins')
+      .update({
+        is_transfer_request: false,
+        transfer_metadata: null
+      })
+      .eq('id', id)
       .select()
   }
 
@@ -232,6 +268,8 @@ export const useStockInStore = defineStore('stockIn', () => {
     deleteStockIn,
     addStockPortion,
     getStocksTransferList,
-    addStockTransfer
+    requestStockTransfer,
+    approveStockTransfer,
+    disapproveStockTransfer
   }
 })

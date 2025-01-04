@@ -94,7 +94,7 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { data, error } = await stockInStore.addStockTransfer(formData.value)
+  const { data, error } = await stockInStore.requestStockTransfer(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
