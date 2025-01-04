@@ -196,7 +196,7 @@ export const useStockInStore = defineStore('stockIn', () => {
 
   // Request Stock Transfer
   async function requestStockTransfer(formData) {
-    const { id, created_at, products, sale_products, old_qty, ...stockData } = formData
+    const { id, created_at, branches, products, sale_products, old_qty, ...stockData } = formData
 
     return await supabase
       .from('stock_ins')
@@ -230,7 +230,7 @@ export const useStockInStore = defineStore('stockIn', () => {
     const {
       id,
       transfer_metadata: {
-        add: { branches, ...addData },
+        add: { branch_id, ...addData },
         update: { request_metadata, ...updateData }
       }
     } = formData
@@ -241,7 +241,10 @@ export const useStockInStore = defineStore('stockIn', () => {
       .eq('id', id)
       .select()
 
-    return await supabase.from('stock_ins').insert([addData]).select()
+    return await supabase
+      .from('stock_ins')
+      .insert([{ ...addData, branch_id: branch_id.id }])
+      .select()
   }
 
   // Disapprove Stock Transfer

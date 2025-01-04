@@ -249,7 +249,7 @@ const {
               <ul class="ms-2">
                 <li>
                   <span class="font-weight-bold">Destination Branch:</span>
-                  {{ item.transfer_metadata.add.branches?.name }}
+                  {{ item.transfer_metadata.add.branch_id.name }}
                 </li>
                 <li>
                   <span class="font-weight-bold">Weight / Qty:</span>
