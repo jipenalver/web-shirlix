@@ -18,12 +18,8 @@ const salesStore = useSalesStore()
 const formDataDefault = {
   cash: undefined
 }
-const formData = ref({
-  ...formDataDefault
-})
-const formAction = ref({
-  ...formActionDefault
-})
+const formData = ref({ ...formDataDefault })
+const formAction = ref({ ...formActionDefault })
 const refVForm = ref()
 const salesData = ref(null)
 const customer = ref('')

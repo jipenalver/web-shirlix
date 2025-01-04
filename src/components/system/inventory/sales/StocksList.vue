@@ -90,7 +90,7 @@ const onLoadItems = async ({ search, branch_id }) => {
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
   listFilters.value.branch_id =
-    Number(localStorage.getItem('stocksBranchId')) ?? branchesStore.branches[0].id
+    Number(localStorage.getItem('stocksBranchId')) || branchesStore.branches[0].id
   await onLoadItems(listFilters.value)
 })
 </script>
