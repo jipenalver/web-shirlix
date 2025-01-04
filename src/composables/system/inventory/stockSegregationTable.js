@@ -1,4 +1,3 @@
-import { getAccumulatedNumber, getPreciseNumber } from '@/utils/helpers'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
 import { formActionDefault } from '@/utils/supabase'
@@ -7,7 +6,7 @@ import { onMounted, ref } from 'vue'
 import { useDate } from 'vuetify'
 
 // by convention, composable function names start with "use"
-export function useStockTransferTable() {
+export function useStockSegregationTable() {
   // Utilize pre-defined vue functions
   const date = useDate()
 
@@ -21,8 +20,7 @@ export function useStockTransferTable() {
     page: 1,
     itemsPerPage: 10,
     sortBy: [],
-    isLoading: false,
-    isNotSegregated: true
+    isLoading: false
   })
   const tableFilters = ref({
     search: '',
@@ -30,27 +28,42 @@ export function useStockTransferTable() {
     product_id: null,
     purchased_at: [new Date(date.format(new Date(), 'fullDate'))]
   })
-  const isTransferFormDialogVisible = ref(false)
+  const isWeightFormDialogVisible = ref(false)
+  const isSegregateFormDialogVisible = ref(false)
+  const isPriceFormDialogVisible = ref(false)
+  const isCodeFormDialogVisible = ref(false)
   const itemData = ref(null)
   const formAction = ref({ ...formActionDefault })
+  const action = ref('')
 
-  // Calculate Stock In Qty
-  const getStockInQty = (item) => {
-    return item.qty_reweighed ?? item.qty
-  }
-
-  // Calculate Stock Remaining
-  const getStockRemaining = (item) => {
-    return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+  // Verified Code
+  const onCodeVerified = (isVerified) => {
+    // if (action.value === 'weight') isWeightFormDialogVisible.value = isVerified
+    // if (action.value === 'segregate') isSegregateFormDialogVisible.value = isVerified
+    if (action.value === 'price') isPriceFormDialogVisible.value = isVerified
   }
 
   // Trigger Update Btn
-  const onTransfer = (item) => {
-    itemData.value = {
-      ...item,
-      stock_remaining: item.is_portion ? getStockRemaining(item) : getStockInQty(item)
-    }
-    isTransferFormDialogVisible.value = true
+  const onUpdateWeight = (item) => {
+    itemData.value = item
+    isWeightFormDialogVisible.value = true
+    // isCodeFormDialogVisible.value = true
+    // action.value = 'weight'
+  }
+
+  // Trigger Update Btn
+  const onUpdateSegregate = (item) => {
+    itemData.value = item
+    isSegregateFormDialogVisible.value = true
+    // isCodeFormDialogVisible.value = true
+    // action.value = 'segregate'
+  }
+
+  // Trigger Update Btn
+  const onUpdatePrice = (item) => {
+    itemData.value = item
+    isCodeFormDialogVisible.value = true
+    action.value = 'price'
   }
 
   // Retrieve Data based on Date
@@ -80,10 +93,7 @@ export function useStockTransferTable() {
     // Trigger Loading
     tableOptions.value.isLoading = true
 
-    await stockInStore.getStockInTable(
-      { page, itemsPerPage, sortBy, isNotSegregated: true },
-      tableFilters.value
-    )
+    await stockInStore.getStockInTable({ page, itemsPerPage, sortBy }, tableFilters.value)
 
     // Trigger Loading
     tableOptions.value.isLoading = false
@@ -100,12 +110,16 @@ export function useStockTransferTable() {
     date,
     tableOptions,
     tableFilters,
-    isTransferFormDialogVisible,
+    isWeightFormDialogVisible,
+    isSegregateFormDialogVisible,
+    isPriceFormDialogVisible,
+    isCodeFormDialogVisible,
     itemData,
     formAction,
-    getStockInQty,
-    getStockRemaining,
-    onTransfer,
+    onCodeVerified,
+    onUpdateWeight,
+    onUpdateSegregate,
+    onUpdatePrice,
     onFilterDate,
     onFilterItems,
     onSearchItems,

@@ -15,9 +15,9 @@ import UsersView from '@/views/system/manage-users/UsersView.vue'
 import ProductsView from '@/views/system/manage-products/ProductsView.vue'
 // Inventory
 import StockInView from '@/views/system/inventory/StockInView.vue'
-import StockTransferView from '@/views/system/inventory/StockTransferView.vue'
 import StockSegregationView from '@/views/system/inventory/StockSegregationView.vue'
 import SalesView from '@/views/system/inventory/SalesView.vue'
+import StockTransferView from '@/views/system/inventory/StockTransferView.vue'
 // Expenses
 import ExpensesView from '@/views/system/manage-expenses/ExpensesView.vue'
 // Reports
@@ -97,12 +97,6 @@ export const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/inventory/transfer',
-    name: 'inventory-transfer',
-    component: StockTransferView,
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/inventory/segregate',
     name: 'inventory-segregate',
     component: StockSegregationView,
@@ -112,6 +106,12 @@ export const routes = [
     path: '/inventory/sales',
     name: 'inventory-sales',
     component: SalesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/inventory/transfer',
+    name: 'inventory-transfer',
+    component: StockTransferView,
     meta: { requiresAuth: true }
   },
 

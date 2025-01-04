@@ -1,7 +1,6 @@
 <script setup>
 import { useStocksReportTable } from '@/composables/system/reports/stocksReportTable'
 import { getAvatarText, getMoneyText, getPadLeftText } from '@/utils/helpers'
-import TransferFormDialog from './stocks/TransferFormDialog.vue'
 import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
@@ -13,12 +12,9 @@ const {
   tableHeaders,
   tableOptions,
   tableFilters,
-  itemData,
-  isTransferFormDialogVisible,
   getSoldQty,
   getStockInQty,
   getStockRemaining,
-  onTransfer,
   onFilterDate,
   onFilterItems,
   onSearchItems,
@@ -177,7 +173,7 @@ const {
 
         <template #item.qty_reweighed="{ item }">
           <span class="font-weight-bold">
-            {{ getStockInQty(item) }}
+            {{ getStockInQty(item) + ' ' + item.qty_metric }}
           </span>
         </template>
 
@@ -192,14 +188,14 @@ const {
             {{
               item.is_portion
                 ? getStockRemaining(item) + ' ' + item.qty_metric
-                : getStockInQty(item)
+                : getStockInQty(item) + ' ' + item.qty_metric
             }}
           </span>
         </template>
 
-        <template #item.expired_at="{ item }">
+        <template #item.purchased_at="{ item }">
           <span class="font-weight-bold">
-            {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
+            {{ date.format(item.purchased_at, 'fullDate') }}
           </span>
         </template>
 
@@ -226,8 +222,8 @@ const {
                   {{ date.format(item.created_at, 'fullDateTime') }}
                 </li>
                 <li>
-                  <span class="font-weight-bold">Purchased Date:</span>
-                  {{ date.format(item.purchased_at, 'fullDate') }}
+                  <span class="font-weight-bold">Expiration Date:</span>
+                  {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
                 </li>
                 <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
                 <li><span class="font-weight-bold">Branch:</span> {{ item.branches.name }}</li>
@@ -236,31 +232,9 @@ const {
             </v-tooltip>
           </v-chip>
         </template>
-
-        <template #item.actions="{ item }">
-          <div class="d-flex align-center" :class="mobile ? 'justify-end' : 'justify-center'">
-            <v-btn
-              variant="text"
-              density="comfortable"
-              @click="onTransfer(item)"
-              :disabled="!item.is_portion || getStockRemaining(item) === 0"
-              icon
-            >
-              <v-icon icon="mdi-transfer"></v-icon>
-              <v-tooltip activator="parent" location="top">Transfer Remaining Qty</v-tooltip>
-            </v-btn>
-          </div>
-        </template>
       </v-data-table-server>
     </v-col>
   </v-row>
-
-  <TransferFormDialog
-    v-model:is-dialog-visible="isTransferFormDialogVisible"
-    :item-data="itemData"
-    :table-options="tableOptions"
-    :table-filters="tableFilters"
-  ></TransferFormDialog>
 </template>
 
 <style scoped>

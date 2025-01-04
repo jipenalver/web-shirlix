@@ -172,7 +172,12 @@ onMounted(async () => {
               <v-tooltip activator="parent" location="top" open-on-click>
                 <ul class="ms-2">
                   <li>
-                    <span class="font-weight-bold">Stock ID:</span> {{ getPadLeftText(item.id) }}
+                    <span class="font-weight-bold">Stock ID:</span>
+                    {{ getPadLeftText(item.id) }}
+                  </li>
+                  <li v-if="item.is_portion">
+                    <span class="font-weight-bold">Portion of ID:</span>
+                    {{ getPadLeftText(item.stock_in_id) }}
                   </li>
                   <li>
                     <span class="font-weight-bold">Purchased Date:</span>

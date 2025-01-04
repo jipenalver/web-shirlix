@@ -1,5 +1,10 @@
+import {
+  prepareFormDates,
+  prepareDate,
+  getPreciseNumber,
+  getAccumulatedNumber
+} from '@/utils/helpers'
 import { supabase, tablePagination, tableSearch } from '@/utils/supabase'
-import { prepareFormDates, prepareDate } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -11,28 +16,37 @@ export const useStockInStore = defineStore('stockIn', () => {
   // States
   const stockInTable = ref([])
   const stockInTotal = ref(0)
+  const stockTransferTable = ref([])
+  const stockTransferTotal = ref(0)
 
   // Reset State Action
   function $reset() {
     stockInTable.value = []
+    stockTransferTable.value = []
     stockInTotal.value = 0
+    stockTransferTotal.value = 0
   }
 
   // Retrieve StockIn Table
-  async function getStockInTable(tableOptions, { search, product_id, branch_id, purchased_at }) {
-    const { rangeStart, rangeEnd, column, order } = tablePagination(
-      tableOptions,
-      'purchased_at',
-      false
-    ) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
+  async function getStockInTable(
+    { isNotSegregated, ...options },
+    { search, product_id, branch_id, purchased_at }
+  ) {
+    const { rangeStart, rangeEnd, column, order } = tablePagination(options, 'purchased_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
     search = tableSearch(search) // Handle Search if null turn to empty string
 
     // Query Supabase with pagination and sorting
-    let query = supabase
-      .from('stock_ins')
-      .select('*, branches( name ), products( name, image_url, description )')
-      .order(column, { ascending: order })
-      .range(rangeStart, rangeEnd)
+    let query = supabase.from('stock_ins')
+
+    if (isNotSegregated)
+      query = query
+        .select(
+          '*, branches( name ), products( name, image_url, description ), sale_products( qty )'
+        )
+        .eq('is_segregated', false)
+    else query = query.select('*, branches( name ), products( name, image_url, description )')
+
+    query = query.order(column, { ascending: order }).range(rangeStart, rangeEnd)
 
     query = getStockInFilter(query, { search, product_id, branch_id, purchased_at })
 
@@ -40,18 +54,31 @@ export const useStockInStore = defineStore('stockIn', () => {
     const { data } = await query
 
     // Separate query to get the total count without range
-    const { count } = await getStockInCount({ search, product_id, branch_id, purchased_at })
+    const { count } = await getStockInCount(
+      { isNotSegregated },
+      { search, product_id, branch_id, purchased_at }
+    )
 
     // Set the retrieved data to state
-    stockInTable.value = data
-    stockInTotal.value = count
+    if (isNotSegregated) {
+      stockTransferTable.value = data
+      stockTransferTotal.value = count
+    } else {
+      stockInTable.value = data
+      stockInTotal.value = count
+    }
   }
 
   // Count StockIn
-  async function getStockInCount({ search, product_id, branch_id, purchased_at }) {
+  async function getStockInCount(
+    { isNotSegregated },
+    { search, product_id, branch_id, purchased_at }
+  ) {
     let query = supabase
       .from('stock_ins')
       .select('*, branches( name ), products( name )', { count: 'exact', head: true })
+
+    if (isNotSegregated) query = query.eq('is_segregated', false)
 
     query = getStockInFilter(query, { search, product_id, branch_id, purchased_at })
 
@@ -146,14 +173,65 @@ export const useStockInStore = defineStore('stockIn', () => {
     return await supabase.from('stock_ins').insert(transformedData).select()
   }
 
+  // Retrieve Stocks Transfer List
+  async function getStocksTransferList(itemData) {
+    let query = supabase
+      .from('stock_ins')
+      .select('*, products( name, image_url, description ), sale_products( qty )')
+      .order('purchased_at', { ascending: false })
+      .eq('branch_id', itemData.branch_id)
+      .eq('product_id', itemData.product_id)
+      .eq('is_segregated', false)
+
+    // Execute the query
+    const { data } = await query
+
+    // Set the retrieved data to state
+    return data.filter(
+      (item) =>
+        getPreciseNumber(
+          (item.qty_reweighed ?? item.qty) - getAccumulatedNumber(item.sale_products, 'qty')
+        ) > 0
+    )
+  }
+
+  // Transfer Stock
+  async function addStockTransfer(formData) {
+    // eslint-disable-next-line no-unused-vars
+    const { id, created_at, branches, products, sale_products, old_qty, ...stockData } = formData
+
+    await supabase
+      .from('stock_ins')
+      .update({
+        qty: old_qty - stockData.qty,
+        qty_reweighed: stockData.is_portion ? old_qty - stockData.qty : null,
+        last_updated_id: authStore.userData.id
+      })
+      .eq('id', id)
+      .select()
+
+    return await supabase
+      .from('stock_ins')
+      .insert({
+        ...stockData,
+        qty_reweighed: stockData.is_portion ? stockData.qty : null,
+        last_updated_id: authStore.userData.id
+      })
+      .select()
+  }
+
   return {
     stockInTable,
     stockInTotal,
+    stockTransferTable,
+    stockTransferTotal,
     $reset,
     getStockInTable,
     addStockIn,
     updateStockIn,
     deleteStockIn,
-    addStockPortion
+    addStockPortion,
+    getStocksTransferList,
+    addStockTransfer
   }
 })

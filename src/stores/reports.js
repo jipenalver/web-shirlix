@@ -11,25 +11,26 @@ export const useReportsStore = defineStore('reports', () => {
   // States
   const productsReport = ref([])
   const stocksReport = ref([])
-  const stocksTransferList = ref([])
   const salesReport = ref([])
 
   // Reset State Action
   function $reset() {
     productsReport.value = []
     stocksReport.value = []
-    stocksTransferList.value = []
     salesReport.value = []
   }
 
   // Retrieve Products Report
   async function getProductsReport(tableOptions, { product_id, branch_id, date }) {
+    if (!date) return
+
     let query = supabase
       .from('products')
       .select(
         'id, name, image_url, description, stock_ins( qty_reweighed, qty_metric, branch_id, is_portion, purchased_at ), sale_products( qty, branch_id, created_at )'
       )
       .eq('stock_ins.is_portion', true)
+      .order('name', { ascending: true })
 
     if (branch_id)
       query = query.eq('stock_ins.branch_id', branch_id).eq('sale_products.branch_id', branch_id)
@@ -40,7 +41,7 @@ export const useReportsStore = defineStore('reports', () => {
     const { data } = await query
 
     // Set the retrieved data to state
-    productsReport.value = date ? getProductsMap(data, { date }) : []
+    productsReport.value = getProductsMap(data, { date })
   }
 
   // Filter Products
@@ -86,9 +87,8 @@ export const useReportsStore = defineStore('reports', () => {
         stock_opening: getPreciseNumber(totalStockIns - totalSales),
         stock_in: stockInDuringDate,
         stock_sold: stockSoldDuringDate,
-        stock_transferred: 0,
         stock_remaining: getPreciseNumber(
-          totalStockIns - totalSales + stockInDuringDate - (stockSoldDuringDate + 0)
+          totalStockIns - totalSales + stockInDuringDate - stockSoldDuringDate
         ),
         qty_metric
       }
@@ -147,27 +147,6 @@ export const useReportsStore = defineStore('reports', () => {
     return query
   }
 
-  // Retrieve Stocks Transfer List
-  async function getStocksTransferList(itemData) {
-    let query = supabase
-      .from('stock_ins')
-      .select('*, products( name, image_url, description ), sale_products( qty )')
-      .order('purchased_at', { ascending: false })
-      .eq('is_portion', true)
-      .eq('branch_id', itemData.branch_id)
-      .eq('product_id', itemData.product_id)
-      .neq('id', itemData.id)
-
-    // Execute the query
-    const { data } = await query
-
-    // Set the retrieved data to state
-    stocksTransferList.value = data.filter(
-      (item) =>
-        getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
-    )
-  }
-
   // Retrieve Sales
   async function getSalesReport(tableOptions, { customer_id, branch_id, created_at }) {
     const { column, order } = tablePagination(tableOptions, 'created_at', false) // Default Column to be sorted, add 3rd params, boolean if ascending or not, default is true
@@ -215,12 +194,10 @@ export const useReportsStore = defineStore('reports', () => {
   return {
     productsReport,
     stocksReport,
-    stocksTransferList,
     salesReport,
     $reset,
     getProductsReport,
     getStocksReport,
-    getStocksTransferList,
     getSalesReport
   }
 })

@@ -161,12 +161,6 @@ const {
           </span>
         </template>
 
-        <template #item.stock_transferred="{ item }">
-          <span class="font-weight-bold">
-            {{ item.stock_transferred + ' ' + item.qty_metric }}
-          </span>
-        </template>
-
         <template #item.stock_remaining="{ item }">
           <span class="font-weight-bold">
             {{ item.stock_remaining + ' ' + item.qty_metric }}
