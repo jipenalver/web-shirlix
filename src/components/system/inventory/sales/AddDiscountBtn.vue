@@ -8,9 +8,7 @@ const formDataDefault = {
   discount: 0,
   is_cash_discount: false
 }
-const formData = ref({
-  ...formDataDefault
-})
+const formData = ref({ ...formDataDefault })
 const isAddBtnClicked = ref(false)
 
 // Emit components input
