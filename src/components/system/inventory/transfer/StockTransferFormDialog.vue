@@ -42,7 +42,6 @@ const formAction = ref({
 })
 const refVForm = ref()
 const isConfirmDialog = ref(false)
-const itemQty = ref(0)
 const branchList = ref([])
 const stocksTransferList = ref([])
 
@@ -60,7 +59,6 @@ watch(
     }
 
     stocksTransferList.value = []
-    itemQty.value = stock_remaining
     branchList.value = branchesStore.branches.filter((item) => item.id !== props.itemData.branch_id)
   }
 )
@@ -83,7 +81,7 @@ const onLoadItems = async () => {
 
   stocksTransferList.value = await stockInStore.getStocksTransferList({
     ...props.itemData,
-    branch_id: formData.value.branch_id
+    branch_id: formData.value.branch_id.id
   })
 
   formAction.value = { ...formActionDefault }
@@ -94,7 +92,7 @@ const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
 
-  const { data, error } = await stockInStore.addStockTransfer(formData.value)
+  const { data, error } = await stockInStore.requestStockTransfer(formData.value)
 
   if (error) {
     // Add Error Message and Status Code
@@ -151,7 +149,7 @@ onMounted(async () => {
       <template #append>
         {{ xs ? '' : 'Remaining Weight / Qty:' }}&nbsp;
         <span class="font-weight-bold">
-          {{ itemQty + ' ' + props.itemData.qty_metric }}
+          {{ props.itemData.stock_remaining + ' ' + props.itemData.qty_metric }}
         </span>
       </template>
 
@@ -169,7 +167,10 @@ onMounted(async () => {
                 label="Weight / Qty to Transfer"
                 type="number"
                 min="0"
-                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
+                :rules="[
+                  requiredValidator,
+                  betweenValidator(formData.qty, 0.001, props.itemData.stock_remaining)
+                ]"
               ></v-text-field>
             </v-col>
 
@@ -189,6 +190,7 @@ onMounted(async () => {
                 :items="branchList"
                 item-title="name"
                 item-value="id"
+                return-object
                 :rules="[requiredValidator]"
                 @update:model-value="onLoadItems"
               ></v-autocomplete>

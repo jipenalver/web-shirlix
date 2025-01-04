@@ -1,6 +1,7 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
+/* eslint-disable no-unused-vars */
 import { supabaseAdmin } from '@/utils/supabase'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useUsersStore = defineStore('users', () => {
   // States
@@ -29,7 +30,6 @@ export const useUsersStore = defineStore('users', () => {
 
   // Add User
   async function addUser(formData) {
-    // eslint-disable-next-line no-unused-vars
     const { password, branch, ...userMetadata } = formData
 
     return await supabaseAdmin.auth.admin.createUser({
@@ -42,7 +42,6 @@ export const useUsersStore = defineStore('users', () => {
 
   // Update User
   async function updateUser(formData) {
-    // eslint-disable-next-line no-unused-vars
     const { email, password, branch, ...userMetadata } = formData
 
     return await supabaseAdmin.auth.admin.updateUserById(formData.id, {

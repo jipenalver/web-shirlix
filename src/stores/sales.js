@@ -36,8 +36,7 @@ export const useSalesStore = defineStore('sales', () => {
     let query = supabase
       .from('stock_ins')
       .select('*, products( name, image_url ), sale_products( qty )')
-      .order('name', { referencedTable: 'products', ascending: true })
-      .order('id', { ascending: true })
+      .order('purchased_at', { ascending: false })
       .eq('is_portion', true)
 
     query = getStockFilter(query, { branch_id })
@@ -45,11 +44,26 @@ export const useSalesStore = defineStore('sales', () => {
     // Execute the query
     const { data } = await query
 
-    // Set the retrieved data to state; Filter Stocks by Search and Stock Remaining
-    stocks.value = data.filter(
+    // Filter Stocks by Search and Stock Remaining
+    const filteredStocks = data.filter(
       (item) =>
         item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase()) &&
         getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
+    )
+
+    // Remove Duplicates in Stocks
+    const uniqueStocks = Array.from(
+      new Map(
+        filteredStocks.map((item) => [
+          `${item.products.name.toLowerCase()}|${item.unit_price}`,
+          item
+        ])
+      ).values()
+    )
+
+    // Set the retrieved data to state; Sort by Product Name
+    stocks.value = uniqueStocks.sort((a, b) =>
+      a.products.name.toLowerCase().localeCompare(b.products.name.toLowerCase())
     )
   }
 

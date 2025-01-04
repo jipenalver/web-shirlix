@@ -94,7 +94,8 @@ const onFormReset = () => {
                   requiredValidator,
                   betweenValidator(formData.qty, 0.001, props.itemData.stock_remaining)
                 ]"
-                hint="Please input correct value"
+                hint="If the purchase exceeds the remaining weight/quantity, proceed with the remaining weight/quantity, and reselect this product and add the additional weight/quantity needed."
+                persistent-hint
               ></v-text-field>
             </v-col>
 
