@@ -13,7 +13,7 @@ const formDataDefault = {
 }
 const formData = ref({ ...formDataDefault })
 const isAddBtnClicked = ref(false)
-const isKeyboardBtnClicked = ref(false)
+const isInputBtnClicked = ref(false)
 
 // Emit components input
 const onEmitForm = (customer) => {
@@ -30,7 +30,7 @@ const onCancel = () => {
 // Reset Form
 const onFormReset = () => {
   formData.value = { ...formDataDefault }
-  isKeyboardBtnClicked.value = !isKeyboardBtnClicked.value
+  isInputBtnClicked.value = !isInputBtnClicked.value
   onEmitForm()
 }
 
@@ -44,7 +44,7 @@ onMounted(async () => {
   <div>
     <div v-if="isAddBtnClicked">
       <v-text-field
-        v-if="isKeyboardBtnClicked"
+        v-if="isInputBtnClicked"
         v-model="formData.customer"
         label="Input Customer"
         placeholder="Enter Customer Name"

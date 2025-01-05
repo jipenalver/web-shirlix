@@ -12,6 +12,7 @@ export const useSalesStore = defineStore('sales', () => {
   // States
   const customers = ref([])
   const stocks = ref([])
+  const stocksBase = ref([])
   const stocksCart = ref(
     localStorage.getItem('stocksCart') ? JSON.parse(localStorage.getItem('stocksCart')) : []
   )
@@ -23,6 +24,7 @@ export const useSalesStore = defineStore('sales', () => {
   // Reset State Stocks
   function $reset() {
     stocks.value = []
+    stocksBase.value = []
   }
 
   // Reset State Cart
@@ -43,6 +45,9 @@ export const useSalesStore = defineStore('sales', () => {
 
     // Execute the query
     const { data } = await query
+
+    // Get a stock reference for the cart checking
+    stocksBase.value = data
 
     // Update Qty based on Found Matching Cart Item
     let stocksData = data
@@ -71,7 +76,7 @@ export const useSalesStore = defineStore('sales', () => {
     const uniqueStocks = Array.from(
       new Map(
         filteredStocks.map((item) => [
-          `${item.products.name.toLowerCase()}|${item.unit_price}|${item.unit_price_metric}`,
+          `${item.product_id}|${item.unit_price}|${item.unit_price_metric}`,
           item
         ])
       ).values()
@@ -165,6 +170,7 @@ export const useSalesStore = defineStore('sales', () => {
 
   return {
     stocks,
+    stocksBase,
     stocksCart,
     stocksCartTotal,
     stocksExactTotal,

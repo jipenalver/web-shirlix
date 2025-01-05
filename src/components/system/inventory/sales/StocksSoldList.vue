@@ -1,7 +1,7 @@
 <script setup>
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { getMoneyText, getPreciseNumber } from '@/utils/helpers'
+import { getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
 import AddSalesFormDialog from './AddSalesFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase.js'
 import AddCustomerBtn from './AddCustomerBtn.vue'
@@ -9,8 +9,10 @@ import AddDiscountBtn from './AddDiscountBtn.vue'
 import { useSalesStore } from '@/stores/sales'
 import { useDisplay } from 'vuetify'
 import { ref, onMounted } from 'vue'
+import { useDate } from 'vuetify'
 
 // Utilize pre-defined vue functions
+const date = useDate()
 const { mdAndDown } = useDisplay()
 
 // Use Pinia Store
@@ -34,18 +36,21 @@ const resetKey = ref(0)
 // Calculate Total Overall
 const getDiscountedTotal = () => {
   if (formData.value.is_cash_discount)
-    return salesStore.stocksCartTotal - Number(formData.value.discount)
+    return getPreciseNumber(salesStore.stocksCartTotal - formData.value.discount)
   else
-    return (
-      salesStore.stocksCartTotal -
-      salesStore.stocksCartTotal * (Number(formData.value.discount) / 100)
+    return getPreciseNumber(
+      salesStore.stocksCartTotal - (salesStore.stocksCartTotal * formData.value.discount) / 100
     )
 }
 
 // Set Discounted Price
 const onDiscountPrice = (item) => {
-  if (item.is_cash_discount) item.discounted_price = item.total_price - Number(item.discount)
-  else item.discounted_price = item.total_price - item.total_price * (Number(item.discount) / 100)
+  if (item.is_cash_discount)
+    item.discounted_price = getPreciseNumber(item.total_price - item.discount)
+  else
+    item.discounted_price = getPreciseNumber(
+      item.total_price - (item.total_price * item.discount) / 100
+    )
 }
 
 // Toggle Discount either Percentage or Cash
@@ -133,8 +138,43 @@ onMounted(() => {
               v-bind="props"
               :prepend-avatar="mdAndDown ? undefined : item.product.products.image_url"
               :title="item.product.products.name"
-              :subtitle="`${item.qty} x ${getMoneyText(item.product.unit_price)} / ${item.product.unit_price_metric}`"
             >
+              <template #subtitle>
+                {{
+                  `${item.qty} x ${getMoneyText(item.product.unit_price)} / ${item.product.unit_price_metric}`
+                }}
+
+                <v-chip class="mx-n2 cursor-pointer" density="compact" variant="text">
+                  <v-icon icon="mdi-information" size="small"></v-icon>
+
+                  <v-tooltip activator="parent" location="top" open-on-click>
+                    <ul class="ms-2">
+                      <li>
+                        <span class="font-weight-bold">Stock ID:</span>
+                        {{ getPadLeftText(item.product.id) }}
+                      </li>
+                      <li v-if="item.product.is_portion">
+                        <span class="font-weight-bold">Portion of ID:</span>
+                        {{ getPadLeftText(item.product.stock_in_id) }}
+                      </li>
+                      <li>
+                        <span class="font-weight-bold">Purchased Date:</span>
+                        {{ date.format(item.product.purchased_at, 'fullDate') }}
+                      </li>
+                      <li>
+                        <span class="font-weight-bold">Expiration Date:</span>
+                        {{
+                          item.expired_at ? date.format(item.product.expired_at, 'fullDate') : 'n/a'
+                        }}
+                      </li>
+                      <li>
+                        <span class="font-weight-bold">Supplier:</span> {{ item.product.supplier }}
+                      </li>
+                    </ul>
+                  </v-tooltip>
+                </v-chip>
+              </template>
+
               <template #append>
                 <div class="me-1">
                   <span class="text-body-2 font-weight-bold">
