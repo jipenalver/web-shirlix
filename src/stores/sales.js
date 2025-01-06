@@ -49,41 +49,35 @@ export const useSalesStore = defineStore('sales', () => {
     // Get a stock reference for the cart checking
     stocksBase.value = data
 
-    // Update Qty based on Found Matching Cart Item
-    let stocksData = data
-    if (stocksCart.value.length > 0)
-      stocksData = data.map((item) => {
-        const totalQty = getAccumulatedNumber(
-          stocksCart.value.filter((cart) => cart.product.id === item.id),
-          'qty'
-        )
-        return totalQty > 0
-          ? {
-              ...item,
-              qty_reweighed: getPreciseNumber(item.qty_reweighed - totalQty)
-            }
-          : item
-      })
+    // Process stocks
+    const updateStockQty = (stock) => {
+      const cartItems = stocksCart.value.filter((cart) => cart.product.id === stock.id)
+      const cartQty = getAccumulatedNumber(cartItems, 'qty')
 
-    // Filter Stocks by Search and Stock Remaining
-    const filteredStocks = stocksData.filter(
-      (item) =>
-        item.products.name.toLowerCase().includes(tableSearch(search).toLowerCase()) &&
-        getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty')) > 0
-    )
+      return cartQty > 0
+        ? { ...stock, qty_reweighed: getPreciseNumber(stock.qty_reweighed - cartQty) }
+        : stock
+    }
+    const processedStocks = stocksCart.value.length > 0 ? data.map(updateStockQty) : data
 
-    // Remove Duplicates in Stocks
-    const uniqueStocks = Array.from(
-      new Map(
-        filteredStocks.map((item) => [
-          `${item.product_id}|${item.unit_price}|${item.unit_price_metric}`,
-          item
-        ])
-      ).values()
-    )
+    // Filter and deduplicate stocks
+    const getRemainingQty = (item) =>
+      getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+    const getStockKey = (item) => `${item.product_id}|${item.unit_price}|${item.unit_price_metric}`
+    const filterBySearchAndQty = (item) => {
+      const nameMatches = item.products.name
+        .toLowerCase()
+        .includes(tableSearch(search).toLowerCase())
+      const hasStock = getRemainingQty(item) > 0
+      return nameMatches && hasStock
+    }
+    const filteredStocks = processedStocks.filter(filterBySearchAndQty).reduce((unique, item) => {
+      const key = getStockKey(item)
+      return unique.has(key) ? unique : unique.set(key, item)
+    }, new Map())
 
-    // Set the retrieved data to state; Sort by Product Name
-    stocks.value = uniqueStocks.sort((a, b) =>
+    // Sort and store results
+    stocks.value = Array.from(filteredStocks.values()).sort((a, b) =>
       a.products.name.toLowerCase().localeCompare(b.products.name.toLowerCase())
     )
   }

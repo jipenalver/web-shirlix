@@ -67,7 +67,8 @@ const updateGraph = async () => {
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
-  chartFilters.value.branch_id = branchesStore.branches[0].id
+  chartFilters.value.branch_id =
+    Number(localStorage.getItem('stocksBranchId')) || branchesStore.branches[0].id
 
   await updateGraph()
   setTimeout(() => (isDataLoading.value = false), 2000)
