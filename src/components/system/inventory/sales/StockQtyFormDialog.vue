@@ -38,7 +38,7 @@ watch(
 const onSubmit = async () => {
   // Reset Form Action utils
   formAction.value = { ...formActionDefault, formProcess: true }
-
+  // Set Quantity on Cart
   emit('quantity', formData.value.qty)
   await salesStore.getStocks(props.listFilters)
   // Form Reset and Close Dialog
@@ -64,11 +64,7 @@ const onFormReset = () => {
 
 <template>
   <v-dialog max-width="500" :model-value="props.isDialogVisible" persistent>
-    <v-card
-      prepend-icon="mdi-weight"
-      :title="props.itemData.products.name"
-      :subtitle="`Weight / Qty: ${props.itemData.stock_remaining} ${props.itemData.qty_metric}`"
-    >
+    <v-card prepend-icon="mdi-weight" :title="props.itemData.products.name">
       <template #append>
         <b>
           {{ getMoneyText(props.itemData.unit_price) + ' / ' + props.itemData.unit_price_metric }}
@@ -89,12 +85,7 @@ const onFormReset = () => {
                 label="Weight / Qty"
                 type="number"
                 min="1"
-                :rules="[
-                  requiredValidator,
-                  betweenValidator(formData.qty, 0.001, props.itemData.stock_remaining)
-                ]"
-                hint="If the purchase exceeds the remaining weight/quantity, proceed with the remaining weight/quantity, and reselect this product and add the additional weight/quantity needed."
-                persistent-hint
+                :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
               ></v-text-field>
             </v-col>
 
