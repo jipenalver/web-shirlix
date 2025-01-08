@@ -37,9 +37,9 @@ const onFilterPages = (path) => {
       Stock In
     </v-btn>
 
-    <v-btn v-if="onFilterPages('/inventory/transfer')" to="/inventory/transfer">
-      <v-icon>mdi-transfer</v-icon>
-      Stock Transfer
+    <v-btn v-if="onFilterPages('/inventory/segregate')" to="/inventory/segregate">
+      <v-icon>mdi-tray-full</v-icon>
+      Stock Segregate
     </v-btn>
   </v-bottom-navigation>
 </template>

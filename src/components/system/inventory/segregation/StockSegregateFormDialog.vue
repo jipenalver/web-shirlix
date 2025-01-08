@@ -296,7 +296,10 @@ onMounted(async () => {
                       type="number"
                       min="0"
                       :max="remainingQty"
-                      :rules="[requiredValidator, betweenValidator(value.qty, 0.001, 999999.999)]"
+                      :rules="[
+                        requiredValidator,
+                        betweenValidator(value.qty, 0.001, formData.qty_reweighed)
+                      ]"
                       hint="Please input correct value"
                       @update:model-value="getRemainingQty()"
                     ></v-text-field>
