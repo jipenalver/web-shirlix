@@ -47,6 +47,7 @@ const formAction = ref({
 })
 const refVForm = ref()
 const imgPreview = ref('/images/img-product.png')
+const remainingQtyConstant = ref(0)
 const remainingQty = ref(0)
 const isConfirmDialog = ref(false)
 
@@ -56,7 +57,8 @@ watch(
   () => {
     formData.value = { ...props.itemData, stocks: [] }
     imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'
-    remainingQty.value = formData.value.qty_reweighed
+    remainingQtyConstant.value = formData.value.qty_reweighed || formData.value.qty
+    remainingQty.value = formData.value.qty_reweighed || formData.value.qty
     onAddPortion()
   }
 )
@@ -295,10 +297,9 @@ onMounted(async () => {
                       label="Portion Weight / Qty"
                       type="number"
                       min="0"
-                      :max="remainingQty"
                       :rules="[
                         requiredValidator,
-                        betweenValidator(value.qty, 0.001, formData.qty_reweighed)
+                        betweenValidator(value.qty, 0.001, remainingQtyConstant)
                       ]"
                       hint="Please input correct value"
                       @update:model-value="getRemainingQty()"
