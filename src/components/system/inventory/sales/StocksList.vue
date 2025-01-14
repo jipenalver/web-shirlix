@@ -57,15 +57,6 @@ const onCartQty = (qty) => {
 
   // Get matching products and their available quantities
   const matchingProducts = salesStore.stocksBase.filter(isMatchingProduct)
-  const totalAvailableQty = matchingProducts.reduce(
-    (total, item) => total + getAvailableQty(item),
-    0
-  )
-  // Validate quantity
-  if (qty > totalAvailableQty) {
-    formAction.value.formErrorMessage = 'Quantity exceeds stock remaining'
-    return
-  }
 
   // Helper function to create cart item
   const createCartItem = (quantity, product) => ({
