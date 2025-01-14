@@ -26,7 +26,7 @@ const isDrawerVisible = ref(mobile.value ? false : true)
         <v-card class="mb-5">
           <template #title>
             <span class="text-h6 font-weight-bold">
-              <v-breadcrumbs :items="['Reports', 'Products']">
+              <v-breadcrumbs :items="['Reports', 'Running Inventory']">
                 <template #prepend>
                   <v-icon icon="mdi-package" size="small" class="me-1"></v-icon>
                 </template>
