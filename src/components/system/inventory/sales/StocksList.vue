@@ -1,20 +1,11 @@
 <script setup>
-import {
-  getAccumulatedNumber,
-  getMoneyText,
-  getPadLeftText,
-  getPreciseNumber
-} from '@/utils/helpers'
+import { getAccumulatedNumber, getMoneyText, getPreciseNumber } from '@/utils/helpers'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import StockQtyFormDialog from './StockQtyFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase.js'
 import { useBranchesStore } from '@/stores/branches'
 import { useSalesStore } from '@/stores/sales'
 import { onMounted, ref } from 'vue'
-import { useDate } from 'vuetify'
-
-// Utilize pre-defined vue functions
-const date = useDate()
 
 // Use Pinia Store
 const salesStore = useSalesStore()
@@ -29,11 +20,6 @@ const formAction = ref({ ...formActionDefault })
 const itemData = ref(null)
 const isStockQtyFormDialogVisible = ref(false)
 
-// Calculate Stock Remaining
-const getStockRemaining = (item) => {
-  return getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
-}
-
 // Add Weight / Qty
 const onAddQty = (item) => {
   formAction.value = { ...formActionDefault }
@@ -44,21 +30,68 @@ const onAddQty = (item) => {
     return
   }
 
-  itemData.value = { ...item, stock_remaining: getStockRemaining(item) }
+  itemData.value = item
   isStockQtyFormDialogVisible.value = true
 }
 
 // Set Stock Cart Qty
 const onCartQty = (qty) => {
-  salesStore.stocksCart.push({
-    product: itemData.value,
-    qty: Number(qty),
+  // Early validation for existing item
+  const isItemExist = salesStore.stocksCart.some(
+    (item) => item.product.product_id === itemData.value.product_id
+  )
+  if (isItemExist) {
+    formAction.value.formErrorMessage = 'Item already exists in the cart'
+    return
+  }
+
+  // Helper function to check if product matches criteria
+  const isMatchingProduct = (item) =>
+    item.product_id === itemData.value.product_id &&
+    item.unit_price === itemData.value.unit_price &&
+    item.unit_price_metric === itemData.value.unit_price_metric &&
+    getAvailableQty(item) > 0
+  // Helper function to calculate available quantity
+  const getAvailableQty = (item) =>
+    getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
+
+  // Get matching products and their available quantities
+  const matchingProducts = salesStore.stocksBase.filter(isMatchingProduct)
+  const totalAvailableQty = matchingProducts.reduce(
+    (total, item) => total + getAvailableQty(item),
+    0
+  )
+  // Validate quantity
+  if (qty > totalAvailableQty) {
+    formAction.value.formErrorMessage = 'Quantity exceeds stock remaining'
+    return
+  }
+
+  // Helper function to create cart item
+  const createCartItem = (quantity, product) => ({
+    qty: quantity,
     discount: 0,
     is_cash_discount: false,
-    total_price: Number(qty) * itemData.value.unit_price,
-    discounted_price: Number(qty) * itemData.value.unit_price
+    total_price: quantity * itemData.value.unit_price,
+    discounted_price: quantity * itemData.value.unit_price,
+    product
   })
-  localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
+  // Distribute quantity across matching products
+  let remainingQty = qty
+  matchingProducts.forEach((product) => {
+    if (remainingQty <= 0) return
+
+    const availableQty = getAvailableQty(product)
+    const qtyToAdd = Math.min(remainingQty, availableQty)
+
+    if (qtyToAdd > 0) {
+      salesStore.stocksCart.push(createCartItem(qtyToAdd, product))
+      remainingQty -= qtyToAdd
+    }
+  })
+
+  // Save to localStorage if any changes were made
+  if (remainingQty < qty) localStorage.setItem('stocksCart', JSON.stringify(salesStore.stocksCart))
 }
 
 // Retrieve Data based on Filter
@@ -155,42 +188,6 @@ onMounted(async () => {
         <v-card-text class="text-center">
           <div class="font-weight-black">
             {{ getMoneyText(item.unit_price) + ' / ' + item.unit_price_metric }}
-          </div>
-
-          <div class="mt-1">
-            <span class="font-weight-bold">
-              {{
-                item.sale_products.length === 0
-                  ? item.qty_reweighed + ' ' + item.qty_metric
-                  : getStockRemaining(item) + ' ' + item.qty_metric
-              }}
-
-              <v-chip class="mx-n2 cursor-pointer" density="compact" variant="text">
-                <v-icon icon="mdi-information" size="small"></v-icon>
-              </v-chip>
-
-              <v-tooltip activator="parent" location="top" open-on-click>
-                <ul class="ms-2">
-                  <li>
-                    <span class="font-weight-bold">Stock ID:</span>
-                    {{ getPadLeftText(item.id) }}
-                  </li>
-                  <li v-if="item.is_portion">
-                    <span class="font-weight-bold">Portion of ID:</span>
-                    {{ getPadLeftText(item.stock_in_id) }}
-                  </li>
-                  <li>
-                    <span class="font-weight-bold">Purchased Date:</span>
-                    {{ date.format(item.purchased_at, 'fullDate') }}
-                  </li>
-                  <li>
-                    <span class="font-weight-bold">Expiration Date:</span>
-                    {{ item.expired_at ? date.format(item.expired_at, 'fullDate') : 'n/a' }}
-                  </li>
-                  <li><span class="font-weight-bold">Supplier:</span> {{ item.supplier }}</li>
-                </ul>
-              </v-tooltip>
-            </span>
           </div>
         </v-card-text>
       </v-card>
