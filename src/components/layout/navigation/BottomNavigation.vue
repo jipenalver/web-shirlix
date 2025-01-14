@@ -39,7 +39,7 @@ const onFilterPages = (path) => {
 
     <v-btn v-if="onFilterPages('/inventory/segregate')" to="/inventory/segregate">
       <v-icon>mdi-tray-full</v-icon>
-      Stock Segregate
+      Stock Segregation
     </v-btn>
   </v-bottom-navigation>
 </template>

@@ -298,9 +298,6 @@ const {
                 variant="text"
                 density="comfortable"
                 @click="onTransfer(item)"
-                :disabled="
-                  item.is_portion ? getStockRemaining(item) === 0 : getStockInQty(item) === 0
-                "
                 color="error"
                 icon
               >

@@ -60,23 +60,19 @@ export const useReportsStore = defineStore('reports', () => {
         product.stock_ins.filter((stock) => stock.purchased_at <= previousDate),
         'qty_reweighed'
       )
-
       const totalSales = getAccumulatedNumber(
         product.sale_products.filter((sale) => getISODate(sale.created_at) <= previousDate),
         'qty'
       )
-
       // Stock in for the specified date
       const stockInDuringDate = getAccumulatedNumber(
         product.stock_ins.filter((stock) => stock.purchased_at === todayDate),
         'qty_reweighed'
       )
-
       const stockSoldDuringDate = getAccumulatedNumber(
         product.sale_products.filter((sale) => getISODate(sale.created_at) === todayDate),
         'qty'
       )
-
       const qty_metric = product.stock_ins.length > 0 ? product.stock_ins[0].qty_metric : ''
 
       return {
