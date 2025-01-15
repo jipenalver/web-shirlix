@@ -2,18 +2,33 @@
 import AppLayout from '@/components/layout/AppLayout.vue'
 import LoginForm from '@/components/auth/LoginForm.vue'
 import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
+// Utilize pre-defined vue functions
 const { mobile } = useDisplay()
+
+// Load Variables
+const theme = ref(localStorage.getItem('theme') ?? 'light')
+
+// On Theme Update
+const onThemeUpdate = (value) => {
+  theme.value = value
+}
 </script>
 
 <template>
-  <AppLayout :is-with-app-bar-nav-icon="false">
+  <AppLayout :is-with-app-bar-nav-icon="false" @theme="onThemeUpdate">
     <template #content>
       <v-container fluid>
         <v-row>
           <v-col cols="12" lg="8" class="bg-surface-light h-screen" v-if="!mobile">
-            <v-img class="mx-auto mt-10" src="/images/img-auth.png" height="80%"></v-img>
+            <v-img
+              class="mx-auto mt-10"
+              :src="`/images/${theme === 'light' ? 'img-auth-light' : 'img-auth-dark'}.png`"
+              height="80%"
+            ></v-img>
           </v-col>
+
           <v-col cols="12" lg="4" :class="mobile ? '' : 'pt-16'">
             <v-card class="mx-auto mt-10" elevation="0" max-width="600">
               <v-card-title class="text-center">
