@@ -11,7 +11,9 @@ const { mobile } = useDisplay()
     <template #content>
       <v-container fluid>
         <v-row>
-          <v-col cols="12" lg="8" class="bg-surface-light h-screen" v-if="!mobile"></v-col>
+          <v-col cols="12" lg="8" class="bg-surface-light h-screen" v-if="!mobile">
+            <v-img class="mx-auto mt-10" src="/images/img-auth.png" height="80%"></v-img>
+          </v-col>
           <v-col cols="12" lg="4" :class="mobile ? '' : 'pt-16'">
             <v-card class="mx-auto" elevation="0" max-width="600">
               <v-card-title class="text-center">
