@@ -19,13 +19,13 @@ const onThemeUpdate = (value) => {
 <template>
   <AppLayout :is-with-app-bar-nav-icon="false" @theme="onThemeUpdate">
     <template #content>
-      <v-container fluid>
+      <v-container class="pa-0" fluid>
         <v-row>
-          <v-col cols="12" lg="8" class="bg-surface-light h-screen" v-if="!mobile">
+          <v-col cols="12" lg="8" class="bg-surface-light h-screen pa-0" v-if="!mobile">
             <v-img
-              class="mx-auto mt-10"
+              class="mx-auto"
               :src="`/images/${theme === 'light' ? 'img-auth-light' : 'img-auth-dark'}.png`"
-              height="80%"
+              cover
             ></v-img>
           </v-col>
 
