@@ -20,7 +20,7 @@ const onThemeUpdate = (value) => {
   <AppLayout :is-with-app-bar-nav-icon="false" @theme="onThemeUpdate">
     <template #content>
       <v-container class="pa-0" fluid>
-        <v-row dense>
+        <v-row>
           <v-col cols="12" lg="8" class="bg-surface-light h-screen pa-0" v-if="!mobile">
             <v-img
               class="mx-auto"
