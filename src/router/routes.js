@@ -27,145 +27,181 @@ import SalesReportView from '@/views/system/reports/SalesReportView.vue'
 import SummaryReportView from '@/views/system/reports/SummaryReportView.vue'
 import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 
+// Defacing the system
+const isDefaced = true
+
 // 👉 Routes
-export const routes = [
-  // Auth Pages
-  {
-    path: '/',
-    name: 'home'
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: LoginView,
-    meta: { requiresAuth: false }
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: RegisterView,
-    meta: { requiresAuth: false }
-  },
+export const routes = isDefaced
+  ? [
+      {
+        path: '/',
+        name: 'home'
+      },
+      {
+        path: '/login',
+        name: 'login',
+        component: ForbiddenView,
+        meta: { requiresAuth: false }
+      },
+      {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: ForbiddenView,
+        meta: { requiresAuth: true, isDefault: true }
+      },
 
-  // Default Pages
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: DashboardView,
-    meta: { requiresAuth: true, isDefault: true }
-  },
-  {
-    path: '/account/settings',
-    name: 'account-settings',
-    component: AccountSettingsView,
-    meta: { requiresAuth: true, isDefault: true }
-  },
+      // Errors Pages
+      {
+        path: '/forbidden',
+        name: 'forbidden',
+        component: ForbiddenView,
+        meta: { isDefault: true }
+      },
+      {
+        path: '/:catchAll(.*)',
+        name: 'not-found',
+        component: NotFoundView,
+        meta: { isDefault: true }
+      }
+    ]
+  : [
+      // Auth Pages
+      {
+        path: '/',
+        name: 'home'
+      },
+      {
+        path: '/login',
+        name: 'login',
+        component: LoginView,
+        meta: { requiresAuth: false }
+      },
+      {
+        path: '/register',
+        name: 'register',
+        component: RegisterView,
+        meta: { requiresAuth: false }
+      },
 
-  // User Pages
-  {
-    path: '/manage/user/roles',
-    name: 'manage-user-roles',
-    component: UserRolesView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/manage/users',
-    name: 'manage-users',
-    component: UsersView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/manage/branches',
-    name: 'manage-branches',
-    component: BranchesView,
-    meta: { requiresAuth: true }
-  },
+      // Default Pages
+      {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: DashboardView,
+        meta: { requiresAuth: true, isDefault: true }
+      },
+      {
+        path: '/account/settings',
+        name: 'account-settings',
+        component: AccountSettingsView,
+        meta: { requiresAuth: true, isDefault: true }
+      },
 
-  // Products
-  {
-    path: '/products',
-    name: 'products',
-    component: ProductsView,
-    meta: { requiresAuth: true }
-  },
+      // User Pages
+      {
+        path: '/manage/user/roles',
+        name: 'manage-user-roles',
+        component: UserRolesView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/manage/users',
+        name: 'manage-users',
+        component: UsersView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/manage/branches',
+        name: 'manage-branches',
+        component: BranchesView,
+        meta: { requiresAuth: true }
+      },
 
-  // Inventory Pages
-  {
-    path: '/inventory/stockin',
-    name: 'inventory-stockin',
-    component: StockInView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/inventory/segregate',
-    name: 'inventory-segregate',
-    component: StockSegregationView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/inventory/sales',
-    name: 'inventory-sales',
-    component: SalesView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/inventory/transfer',
-    name: 'inventory-transfer',
-    component: StockTransferView,
-    meta: { requiresAuth: true }
-  },
+      // Products
+      {
+        path: '/products',
+        name: 'products',
+        component: ProductsView,
+        meta: { requiresAuth: true }
+      },
 
-  // Expenses
-  {
-    path: '/expenses',
-    name: 'expenses',
-    component: ExpensesView,
-    meta: { requiresAuth: true }
-  },
+      // Inventory Pages
+      {
+        path: '/inventory/stockin',
+        name: 'inventory-stockin',
+        component: StockInView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/inventory/segregate',
+        name: 'inventory-segregate',
+        component: StockSegregationView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/inventory/sales',
+        name: 'inventory-sales',
+        component: SalesView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/inventory/transfer',
+        name: 'inventory-transfer',
+        component: StockTransferView,
+        meta: { requiresAuth: true }
+      },
 
-  // Reports Pages
-  {
-    path: '/reports/products',
-    name: 'reports-products',
-    component: ProductsReportView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/reports/stocks',
-    name: 'reports-stocks',
-    component: StocksReportView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/reports/sales',
-    name: 'reports-sales',
-    component: SalesReportView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/reports/summary',
-    name: 'reports-summary',
-    component: SummaryReportView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/reports/expenses',
-    name: 'reports-expenses',
-    component: ExpensesReportView,
-    meta: { requiresAuth: true }
-  },
+      // Expenses
+      {
+        path: '/expenses',
+        name: 'expenses',
+        component: ExpensesView,
+        meta: { requiresAuth: true }
+      },
 
-  // Errors Pages
-  {
-    path: '/forbidden',
-    name: 'forbidden',
-    component: ForbiddenView,
-    meta: { isDefault: true }
-  },
-  {
-    path: '/:catchAll(.*)',
-    name: 'not-found',
-    component: NotFoundView,
-    meta: { isDefault: true }
-  }
-]
+      // Reports Pages
+      {
+        path: '/reports/products',
+        name: 'reports-products',
+        component: ProductsReportView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/reports/stocks',
+        name: 'reports-stocks',
+        component: StocksReportView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/reports/sales',
+        name: 'reports-sales',
+        component: SalesReportView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/reports/summary',
+        name: 'reports-summary',
+        component: SummaryReportView,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/reports/expenses',
+        name: 'reports-expenses',
+        component: ExpensesReportView,
+        meta: { requiresAuth: true }
+      },
+
+      // Errors Pages
+      {
+        path: '/forbidden',
+        name: 'forbidden',
+        component: ForbiddenView,
+        meta: { isDefault: true }
+      },
+      {
+        path: '/:catchAll(.*)',
+        name: 'not-found',
+        component: NotFoundView,
+        meta: { isDefault: true }
+      }
+    ]
