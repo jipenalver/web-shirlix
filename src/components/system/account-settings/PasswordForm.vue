@@ -1,7 +1,7 @@
 <script setup>
+import { confirmedValidator, passwordValidator, requiredValidator } from '@/utils/validators'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import { formActionDefault, supabase } from '@/utils/supabase.js'
-import { confirmedValidator, passwordValidator, requiredValidator } from '@/utils/validators'
 import { ref } from 'vue'
 
 // Load Variables
