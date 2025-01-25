@@ -1,9 +1,9 @@
 <script setup>
 import ProductsTable from '@/components/system/manage-products/ProductsTable.vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
-import { ref } from 'vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
 import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const { mobile } = useDisplay()
