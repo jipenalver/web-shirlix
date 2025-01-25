@@ -25,8 +25,9 @@ const stockInStore = useStockInStore()
 const formDataDefault = {
   supplier: '',
   remarks: '',
-  total_cost: 0,
-  qty: 0,
+  total_cost: undefined,
+  unit_cost: undefined,
+  qty: undefined,
   qty_metric: 'kg',
   purchased_at: new Date(),
   expired_at: null,
@@ -43,7 +44,6 @@ const refVForm = ref()
 const isUpdate = ref(false)
 const imgPreview = ref('/images/img-product.png')
 const repetition = ref(1)
-const unitCost = ref(0)
 
 // Monitor itemData if it has data
 watch(
@@ -60,7 +60,7 @@ watch(
     imgPreview.value = isUpdate.value
       ? formData.value.products.image_url
       : '/images/img-product.png'
-    unitCost.value = isUpdate.value ? formData.value.total_cost / formData.value.qty : 0
+    formData.value.unit_cost = isUpdate.value ? formData.value.total_cost / formData.value.qty : 0
   }
 )
 
@@ -184,7 +184,6 @@ onMounted(async () => {
                 item-title="name"
                 item-value="id"
                 return-object
-                clearable
                 @update:model-value="onPreview"
                 :rules="[requiredValidator]"
               ></v-autocomplete>
@@ -219,7 +218,7 @@ onMounted(async () => {
                 :rules="[requiredValidator, betweenValidator(formData.qty, 0.001, 999999.999)]"
                 hint="Please select correct metric"
                 @update:model-value="
-                  formData.total_cost = getPreciseNumber(unitCost * formData.qty)
+                  formData.total_cost = getPreciseNumber(formData.unit_cost * formData.qty)
                 "
               ></v-text-field>
             </v-col>
@@ -235,14 +234,17 @@ onMounted(async () => {
 
             <v-col cols="12" sm="3">
               <v-text-field
-                v-model="unitCost"
+                v-model="formData.unit_cost"
                 prefix="Php"
                 label="Unit Cost"
                 type="number"
                 min="0"
-                :rules="[requiredValidator, betweenValidator(unitCost, 0.001, 999999.999)]"
+                :rules="[
+                  requiredValidator,
+                  betweenValidator(formData.unit_cost, 0.001, 999999.999)
+                ]"
                 @update:model-value="
-                  formData.total_cost = getPreciseNumber(unitCost * formData.qty)
+                  formData.total_cost = getPreciseNumber(formData.unit_cost * formData.qty)
                 "
               ></v-text-field>
             </v-col>

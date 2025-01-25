@@ -24,7 +24,7 @@ const authStore = useAuthUserStore()
 const formDataDefault = {
   name: '',
   description: '',
-  amount: 0,
+  amount: undefined,
   spent_at: new Date(),
   branch_id: null,
   user_id: authStore.userData.id

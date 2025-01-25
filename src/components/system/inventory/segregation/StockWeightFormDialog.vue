@@ -22,7 +22,7 @@ const stockInStore = useStockInStore()
 const formDataDefault = {
   remarks: '',
   qty: 1,
-  qty_reweighed: 0,
+  qty_reweighed: undefined,
   qty_metric: 'kg',
   product_id: null
 }
