@@ -27,14 +27,6 @@ import SalesReportView from '@/views/system/reports/SalesReportView.vue'
 import SummaryReportView from '@/views/system/reports/SummaryReportView.vue'
 import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 
-# TODO
-// running inventory -> new column stock inventory
-// remove tanan zeros sa field
-// create duplicate copy sa password, hide change password in settings
-// product name, description, unit cost, and total cost
-// search bar, trigger even if 2 characters
-// update stock, do not make image required 
-
 // Defacing the system
 const isDefaced = false
 

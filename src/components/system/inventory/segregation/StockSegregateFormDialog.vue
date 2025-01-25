@@ -25,10 +25,10 @@ const formDataPortionDefault = {
   stock_in_id: null,
   product_preview: '/images/img-product.png',
   product_id: null,
-  qty: 0,
+  qty: undefined,
   qty_metric: 'kg',
   is_reweighed: true,
-  unit_price: 0,
+  unit_price: undefined,
   unit_price_metric: 'kg',
   is_portion: true
 }
@@ -53,7 +53,7 @@ const isConfirmDialog = ref(false)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     formData.value = { ...props.itemData, stocks: [] }
     imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'

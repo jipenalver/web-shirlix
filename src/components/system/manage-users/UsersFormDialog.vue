@@ -1,10 +1,10 @@
 <script setup>
-import { useBranchesStore } from '@/stores/branches'
-import { useUserRolesStore } from '@/stores/userRoles'
-import { useUsersStore } from '@/stores/users'
-import AlertNotification from '@/components/common/AlertNotification.vue'
 import { emailValidator, passwordValidator, requiredValidator } from '@/utils/validators'
+import AlertNotification from '@/components/common/AlertNotification.vue'
 import { formActionDefault } from '@/utils/supabase.js'
+import { useUserRolesStore } from '@/stores/userRoles'
+import { useBranchesStore } from '@/stores/branches'
+import { useUsersStore } from '@/stores/users'
 import { onMounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -43,7 +43,7 @@ const isUpdate = ref(false)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData
@@ -187,7 +187,7 @@ onMounted(async () => {
               ></v-text-field>
             </v-col>
 
-            <v-col cols="12" v-if="!isUpdate">
+            <v-col cols="12">
               <v-text-field
                 v-model="formData.password"
                 label="Password"

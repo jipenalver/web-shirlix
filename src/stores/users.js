@@ -36,7 +36,7 @@ export const useUsersStore = defineStore('users', () => {
       email: formData.email,
       email_confirm: true,
       password: formData.password,
-      user_metadata: { ...userMetadata, branch: branch.toString() }
+      user_metadata: { ...userMetadata, password, branch: branch.toString() }
     })
   }
 
@@ -45,7 +45,7 @@ export const useUsersStore = defineStore('users', () => {
     const { email, password, branch, ...userMetadata } = formData
 
     return await supabaseAdmin.auth.admin.updateUserById(formData.id, {
-      user_metadata: { ...userMetadata, branch: branch.toString() }
+      user_metadata: { ...userMetadata, password, branch: branch.toString() }
     })
   }
 

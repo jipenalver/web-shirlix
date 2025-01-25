@@ -1,13 +1,13 @@
 <script setup>
-import { useUsersStore } from '@/stores/users'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import UsersFormDialog from './UsersFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { formActionDefault } from '@/utils/supabase'
+import UsersFormDialog from './UsersFormDialog.vue'
 import { tableHeaders } from './usersTableUtils'
+import { useUsersStore } from '@/stores/users'
+import { useDisplay } from 'vuetify'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
-import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()

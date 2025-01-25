@@ -24,7 +24,7 @@ const authStore = useAuthUserStore()
 const formDataDefault = {
   name: '',
   description: '',
-  amount: 0,
+  amount: undefined,
   spent_at: new Date(),
   branch_id: null,
   user_id: authStore.userData.id
@@ -40,7 +40,7 @@ const isUpdate = ref(false)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData
