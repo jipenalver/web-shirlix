@@ -156,7 +156,7 @@ const onFormReset = () => {
             <v-col cols="12" sm="6" md="8">
               <v-file-input
                 class="mt-5"
-                :rules="[requiredValidator, imageValidator]"
+                :rules="isUpdate ? [imageValidator] : [requiredValidator, imageValidator]"
                 accept="image/png, image/jpeg, image/bmp"
                 label="Browse Product Picture"
                 placeholder="Browse Product Picture"

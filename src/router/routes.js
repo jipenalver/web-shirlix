@@ -30,8 +30,6 @@ import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 // running inventory -> new column stock inventory
 // product name, description, unit cost, and total cost
 // create duplicate copy sa password, hide change password in settings
-// search bar, trigger even if 2 characters
-// update stock, do not make image required
 
 // Defacing the system
 const isDefaced = false
