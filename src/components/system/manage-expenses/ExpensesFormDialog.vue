@@ -40,7 +40,7 @@ const isUpdate = ref(false)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData

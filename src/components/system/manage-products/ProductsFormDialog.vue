@@ -38,7 +38,7 @@ const imgPreview = ref('/images/img-product.png')
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }

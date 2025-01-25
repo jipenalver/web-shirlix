@@ -53,7 +53,7 @@ const isConfirmDialog = ref(false)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     formData.value = { ...props.itemData, stocks: [] }
     imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'

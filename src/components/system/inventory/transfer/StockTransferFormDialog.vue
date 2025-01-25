@@ -47,7 +47,7 @@ const stocksTransferList = ref([])
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     // eslint-disable-next-line no-unused-vars
     const { stock_remaining, qty, qty_reweighed, ...itemData } = props.itemData
