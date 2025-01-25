@@ -162,6 +162,10 @@ const {
                 {{ item.products.name }}
               </span>
               <p class="text-caption">{{ item.products.description }}</p>
+              <p class="text-caption" v-if="item.unit_cost">
+                <span class="font-weight-bold">Unit Cost:</span>
+                {{ getMoneyText(item.unit_cost) }}
+              </p>
               <p class="text-caption" v-if="item.total_cost">
                 <span class="font-weight-bold">Total Cost:</span>
                 {{ getMoneyText(item.total_cost) }}
