@@ -66,7 +66,7 @@ export function useStocksReportTable() {
   // Retrieve Data based on Search
   const onSearchItems = () => {
     if (
-      tableFilters.value.search?.length >= 4 ||
+      tableFilters.value.search?.length >= 2 ||
       tableFilters.value.search?.length == 0 ||
       tableFilters.value.search === null
     )
