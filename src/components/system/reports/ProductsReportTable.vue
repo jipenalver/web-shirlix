@@ -143,6 +143,12 @@ const {
           </div>
         </template>
 
+        <template #item.stock_inventory="{ item }">
+          <span class="font-weight-bold">
+            {{ item.stock_inventory + ' ' + item.qty_metric }}
+          </span>
+        </template>
+
         <template #item.stock_opening="{ item }">
           <span class="font-weight-bold">
             {{ item.stock_opening + ' ' + item.qty_metric }}

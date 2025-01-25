@@ -14,6 +14,12 @@ export const tableHeaders = [
   },
 
   {
+    title: 'Opening Inventory',
+    key: 'stock_inventory',
+    sortable: false,
+    align: 'start'
+  },
+  {
     title: 'Opening Stock',
     key: 'stock_opening',
     sortable: false,

@@ -60,7 +60,9 @@ watch(
     imgPreview.value = isUpdate.value
       ? formData.value.products.image_url
       : '/images/img-product.png'
-    formData.value.unit_cost = isUpdate.value ? formData.value.total_cost / formData.value.qty : 0
+    formData.value.unit_cost = isUpdate.value
+      ? formData.value.total_cost / formData.value.qty
+      : undefined
   }
 )
 

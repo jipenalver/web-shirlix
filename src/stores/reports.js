@@ -27,9 +27,8 @@ export const useReportsStore = defineStore('reports', () => {
     let query = supabase
       .from('products')
       .select(
-        'id, name, image_url, description, stock_ins( qty_reweighed, qty_metric, branch_id, is_portion, purchased_at ), sale_products( qty, branch_id, created_at )'
+        'id, name, image_url, description, stock_ins( qty, qty_reweighed, qty_metric, branch_id, is_segregated, is_portion, purchased_at ), sale_products( qty, branch_id, created_at )'
       )
-      .eq('stock_ins.is_portion', true)
       .order('name', { ascending: true })
 
     if (branch_id)
@@ -56,8 +55,14 @@ export const useReportsStore = defineStore('reports', () => {
 
     // Remapped Date for Table
     const remappedData = data.map((product) => {
+      const totalInventory = getAccumulatedNumber(
+        product.stock_ins.filter(
+          (stock) => stock.purchased_at <= todayDate && !stock.is_segregated && !stock.is_portion
+        ),
+        'qty'
+      )
       const totalStockIns = getAccumulatedNumber(
-        product.stock_ins.filter((stock) => stock.purchased_at <= previousDate),
+        product.stock_ins.filter((stock) => stock.purchased_at <= previousDate && stock.is_portion),
         'qty_reweighed'
       )
       const totalSales = getAccumulatedNumber(
@@ -66,7 +71,7 @@ export const useReportsStore = defineStore('reports', () => {
       )
       // Stock in for the specified date
       const stockInDuringDate = getAccumulatedNumber(
-        product.stock_ins.filter((stock) => stock.purchased_at === todayDate),
+        product.stock_ins.filter((stock) => stock.purchased_at === todayDate && stock.is_portion),
         'qty_reweighed'
       )
       const stockSoldDuringDate = getAccumulatedNumber(
@@ -80,9 +85,10 @@ export const useReportsStore = defineStore('reports', () => {
         name: product.name,
         image_url: product.image_url,
         description: product.description,
+        stock_inventory: getPreciseNumber(totalInventory),
         stock_opening: getPreciseNumber(totalStockIns - totalSales),
-        stock_in: stockInDuringDate,
-        stock_sold: stockSoldDuringDate,
+        stock_in: getPreciseNumber(stockInDuringDate),
+        stock_sold: getPreciseNumber(stockSoldDuringDate),
         stock_remaining: getPreciseNumber(
           totalStockIns - totalSales + stockInDuringDate - stockSoldDuringDate
         ),
