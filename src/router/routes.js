@@ -27,8 +27,6 @@ import SalesReportView from '@/views/system/reports/SalesReportView.vue'
 import SummaryReportView from '@/views/system/reports/SummaryReportView.vue'
 import ExpensesReportView from '@/views/system/reports/ExpensesReportView.vue'
 
-// create duplicate copy sa password, hide change password in settings
-
 // Defacing the system
 const isDefaced = false
 

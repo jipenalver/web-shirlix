@@ -1,6 +1,6 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import { supabase } from '@/utils/supabase'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useUserRolesStore = defineStore('userRoles', () => {
   // States

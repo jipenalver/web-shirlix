@@ -1,9 +1,9 @@
 <script setup>
 import UserRolesList from '@/components/system/manage-users/UserRolesList.vue'
-import AppLayout from '@/components/layout/AppLayout.vue'
 import SideNavigation from '@/components/layout/navigation/SideNavigation.vue'
-import { ref } from 'vue'
+import AppLayout from '@/components/layout/AppLayout.vue'
 import { useDisplay } from 'vuetify'
+import { ref } from 'vue'
 
 // Utilize pre-defined vue functions
 const { mobile } = useDisplay()
