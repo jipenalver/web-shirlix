@@ -1,13 +1,13 @@
 <script setup>
-import { useBranchesStore } from '@/stores/branches'
 import AlertNotification from '@/components/common/AlertNotification.vue'
-import BranchesFormDialog from './BranchesFormDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import BranchesFormDialog from './BranchesFormDialog.vue'
+import { useBranchesStore } from '@/stores/branches'
 import { formActionDefault } from '@/utils/supabase'
 import { tableHeaders } from './branchesTableUtils'
+import { useDisplay } from 'vuetify'
 import { useDate } from 'vuetify'
 import { ref } from 'vue'
-import { useDisplay } from 'vuetify'
 
 // Utilize pre-defined vue functions
 const date = useDate()
