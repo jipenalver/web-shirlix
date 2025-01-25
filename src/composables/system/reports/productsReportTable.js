@@ -62,11 +62,15 @@ export function useProductsReportTable() {
     // Get the reports data and map it to be used as csv data, follow the headers arrangement
     const rows = reportsStore.productsReport.map((item) => {
       // eslint-disable-next-line no-unused-vars
-      const { date: createdDate, image_url, description, ...data } = item
+      const { date: createdDate, name, image_url, description, ...data } = item
 
       const arrayData = Object.values(data)
 
-      return [generateCSVTrim(date.format(createdDate, 'fullDate')), ...arrayData].join(',')
+      return [
+        generateCSVTrim(date.format(createdDate, 'fullDate')),
+        generateCSVTrim(name),
+        ...arrayData
+      ].join(',')
     })
 
     // Combine headers and csv data
