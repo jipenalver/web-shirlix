@@ -1,8 +1,8 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import { supabase, tablePagination } from '@/utils/supabase'
 import { getRandomCode } from '@/utils/helpers'
 import { useAuthUserStore } from './authUser'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useCodesStore = defineStore('codes', () => {
   // Use Pinia Store

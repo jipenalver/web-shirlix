@@ -97,7 +97,7 @@ const onFilterItems = () => {
 // Retrieve Data based on Search
 const onSearchItems = () => {
   if (
-    tableFilters.value.search?.length >= 3 ||
+    tableFilters.value.search?.length >= 2 ||
     tableFilters.value.search?.length == 0 ||
     tableFilters.value.search === null
   )

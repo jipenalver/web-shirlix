@@ -22,7 +22,7 @@ const stockInStore = useStockInStore()
 const formDataDefault = {
   remarks: '',
   qty: 1,
-  qty_reweighed: 0,
+  qty_reweighed: undefined,
   qty_metric: 'kg',
   product_id: null
 }
@@ -37,7 +37,7 @@ const imgPreview = ref('/images/img-product.png')
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     formData.value = { ...props.itemData, is_reweighed: true }
     imgPreview.value = formData.value.products.image_url ?? '/images/img-product.png'

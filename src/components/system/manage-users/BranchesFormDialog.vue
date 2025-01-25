@@ -1,10 +1,10 @@
 <script setup>
-import { useBranchesStore } from '@/stores/branches'
-import AlertNotification from '@/components/common/AlertNotification.vue'
 import { requiredValidator, alphaDashValidator } from '@/utils/validators'
+import AlertNotification from '@/components/common/AlertNotification.vue'
 import { formActionDefault } from '@/utils/supabase.js'
-import { ref, watch } from 'vue'
+import { useBranchesStore } from '@/stores/branches'
 import { useDisplay } from 'vuetify'
+import { ref, watch } from 'vue'
 
 const props = defineProps(['isDialogVisible', 'itemData', 'tableOptions', 'tableFilters'])
 
@@ -32,7 +32,7 @@ const isUpdate = ref(false)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     isUpdate.value = props.itemData ? true : false
     formData.value = props.itemData ? { ...props.itemData } : { ...formDataDefault }

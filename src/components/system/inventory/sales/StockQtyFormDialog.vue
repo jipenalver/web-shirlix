@@ -25,7 +25,7 @@ const remainingQty = ref(0)
 
 // Monitor itemData if it has data
 watch(
-  () => props.itemData,
+  () => props.isDialogVisible,
   () => {
     const { qty_metric } = props.itemData
     formData.value = {

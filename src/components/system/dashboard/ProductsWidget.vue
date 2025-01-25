@@ -68,9 +68,11 @@ const updateGraph = async () => {
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
   chartFilters.value.branch_id =
-    Number(localStorage.getItem('stocksBranchId')) || branchesStore.branches[0].id
+    Number(localStorage.getItem('stocksBranchId')) || branchesStore.branches > 0
+      ? branchesStore.branches[0].id
+      : null
 
-  await updateGraph()
+  if (chartFilters.value.branch_id) await updateGraph()
   setTimeout(() => (isDataLoading.value = false), 2000)
 })
 </script>
