@@ -1,7 +1,7 @@
 <script setup>
+import { getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
 import AlertNotification from '@/components/common/AlertNotification.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { getMoneyText, getPadLeftText, getPreciseNumber } from '@/utils/helpers'
 import AddSalesFormDialog from './AddSalesFormDialog.vue'
 import { formActionDefault } from '@/utils/supabase.js'
 import AddCustomerBtn from './AddCustomerBtn.vue'

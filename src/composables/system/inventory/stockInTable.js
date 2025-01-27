@@ -1,6 +1,7 @@
 import { formActionDefault } from '@/utils/supabase'
 import { useBranchesStore } from '@/stores/branches'
 import { useProductsStore } from '@/stores/products'
+import { useAuthUserStore } from '@/stores/authUser'
 import { useStockInStore } from '@/stores/stockIn'
 import { onMounted, ref } from 'vue'
 import { useDate } from 'vuetify'
@@ -11,6 +12,7 @@ export function useStockInTable() {
   const date = useDate()
 
   // Use Pinia Store
+  const authStore = useAuthUserStore()
   const productsStore = useProductsStore()
   const branchesStore = useBranchesStore()
   const stockInStore = useStockInStore()
@@ -58,8 +60,9 @@ export function useStockInTable() {
   // Trigger Delete Btn
   const onDelete = (id) => {
     deleteId.value = id
-    isCodeFormDialogVisible.value = true
     action.value = 'delete'
+    if (authStore.userRole === 'Super Administrator') isConfirmDeleteDialog.value = true
+    else isCodeFormDialogVisible.value = true
   }
 
   // Confirm Delete
@@ -145,6 +148,7 @@ export function useStockInTable() {
     onFilterItems,
     onSearchItems,
     onLoadItems,
+    authStore,
     productsStore,
     branchesStore,
     stockInStore
