@@ -30,6 +30,7 @@ const {
   onFilterItems,
   onSearchItems,
   onLoadItems,
+  authStore,
   productsStore,
   branchesStore,
   stockInStore
@@ -239,7 +240,10 @@ const {
               variant="text"
               density="comfortable"
               @click="onDelete(item.id)"
-              :disabled="item.is_portion || item.is_segregated"
+              :disabled="
+                authStore.userRole !== 'Super Administrator' &&
+                (item.is_portion || item.is_segregated)
+              "
               icon
             >
               <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
