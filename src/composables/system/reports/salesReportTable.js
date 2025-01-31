@@ -6,7 +6,9 @@ import {
   getPreciseNumber
 } from '@/utils/helpers'
 import { tableHeaders } from '@/components/system/reports/salesReportTableUtils'
+import { formActionDefault } from '@/utils/supabase'
 import { useBranchesStore } from '@/stores/branches'
+import { useAuthUserStore } from '@/stores/authUser'
 import { useReportsStore } from '@/stores/reports'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useSalesStore } from '@/stores/sales'
@@ -18,6 +20,7 @@ export function useSalesReportTable() {
   const date = useDate()
 
   // Use Pinia Store
+  const authStore = useAuthUserStore()
   const branchesStore = useBranchesStore()
   const salesStore = useSalesStore()
   const reportsStore = useReportsStore()
@@ -37,6 +40,11 @@ export function useSalesReportTable() {
   const itemData = ref(null)
   const isViewProductsDialog = ref(false)
   const isViewPaymentsDialog = ref(false)
+  const isCodeFormDialogVisible = ref(false)
+  const isConfirmDeleteDialog = ref(false)
+  const deleteId = ref('')
+  const formAction = ref({ ...formActionDefault })
+  const action = ref('')
 
   // Calculate Discount
   const getDiscount = (item) => {
@@ -50,6 +58,11 @@ export function useSalesReportTable() {
     )
   }
 
+  // Verified Code
+  const onCodeVerified = (isVerified) => {
+    if (action.value === 'delete') isConfirmDeleteDialog.value = isVerified
+  }
+
   // View Products
   const onViewProducts = (item) => {
     itemData.value = item
@@ -60,6 +73,38 @@ export function useSalesReportTable() {
   const onViewPayments = (item) => {
     itemData.value = item
     isViewPaymentsDialog.value = true
+  }
+
+  // Trigger Delete Btn
+  const onDelete = (id) => {
+    deleteId.value = id
+    action.value = 'delete'
+    if (authStore.userRole === 'Super Administrator') isConfirmDeleteDialog.value = true
+    else isCodeFormDialogVisible.value = true
+  }
+
+  // Confirm Delete
+  const onConfirmDelete = async () => {
+    // Reset Form Action utils
+    formAction.value = { ...formActionDefault, formProcess: true }
+
+    const { error } = await salesStore.deleteSales(deleteId.value)
+
+    // Turn off processing
+    formAction.value.formProcess = false
+
+    if (error) {
+      // Add Error Message and Status Code
+      formAction.value.formErrorMessage = error.message
+      formAction.value.formStatus = error.status
+      return
+    }
+
+    // Add Success Message
+    formAction.value.formSuccessMessage = 'Successfully Deleted Sales Information.'
+
+    // Retrieve Data
+    onLoadItems(tableOptions.value, tableFilters.value)
   }
 
   // Retrieve Data based on Date
@@ -138,8 +183,13 @@ export function useSalesReportTable() {
     itemData,
     isViewProductsDialog,
     isViewPaymentsDialog,
+    isCodeFormDialogVisible,
+    isConfirmDeleteDialog,
     getDiscount,
     getPaymentBalance,
+    onCodeVerified,
+    onDelete,
+    onConfirmDelete,
     onViewProducts,
     onViewPayments,
     onFilterDate,
