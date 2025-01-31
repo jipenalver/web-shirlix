@@ -162,6 +162,15 @@ export const useSalesStore = defineStore('sales', () => {
     return await supabase.from('customer_payments').insert([formData]).select()
   }
 
+  // Delete Sales Information
+  async function deleteSales(id) {
+    await supabase.from('customer_payments').delete().eq('sale_id', id)
+
+    await supabase.from('sale_products').delete().eq('sale_id', id)
+
+    return await supabase.from('sales').delete().eq('id', id)
+  }
+
   return {
     stocks,
     stocksBase,
@@ -174,6 +183,7 @@ export const useSalesStore = defineStore('sales', () => {
     getStocks,
     getCustomers,
     addSales,
-    addPayment
+    addPayment,
+    deleteSales
   }
 })
