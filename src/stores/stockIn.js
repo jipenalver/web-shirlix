@@ -62,13 +62,8 @@ export const useStockInStore = defineStore('stockIn', () => {
 
     // Set the retrieved data to state
     if (isNotSegregated) {
-      // Filter the data to get the remaining qty
-      const getRemainingQty = (item) =>
-        getPreciseNumber(item.qty_reweighed - getAccumulatedNumber(item.sale_products, 'qty'))
-      const filteredData = data.filter((item) => getRemainingQty(item) > 0)
-
-      stockTransferTable.value = filteredData
-      stockTransferTotal.value = filteredData.length
+      stockTransferTable.value = data
+      stockTransferTotal.value = count
     } else {
       stockInTable.value = data
       stockInTotal.value = count
