@@ -1,5 +1,7 @@
 <script setup>
 import { useSalesReportTable } from '@/composables/system/reports/salesReportTable'
+import CodeFormDialog from '@/components/system/inventory/CodeFormDialog.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import PaymentsFormDialog from './sales/PaymentsFormDialog.vue'
 import ProductsSoldDialog from './sales/ProductsSoldDialog.vue'
 import { getMoneyText, getPadLeftText } from '@/utils/helpers'
@@ -17,8 +19,13 @@ const {
   itemData,
   isViewProductsDialog,
   isViewPaymentsDialog,
+  isCodeFormDialogVisible,
+  isConfirmDeleteDialog,
   getDiscount,
   getPaymentBalance,
+  onCodeVerified,
+  onDelete,
+  onConfirmDelete,
   onViewProducts,
   onViewPayments,
   onFilterDate,
@@ -188,6 +195,11 @@ const {
               <v-icon icon="mdi-account-credit-card" color="red-darken-4"></v-icon>
               <v-tooltip activator="parent" location="top">View Payments</v-tooltip>
             </v-btn>
+
+            <v-btn variant="text" density="comfortable" @click="onDelete(item.id)" icon>
+              <v-icon icon="mdi-trash-can" color="red-darken-4"></v-icon>
+              <v-tooltip activator="parent" location="top">Delete Sales Information</v-tooltip>
+            </v-btn>
           </div>
         </template>
       </v-data-table-server>
@@ -205,6 +217,18 @@ const {
     :table-options="tableOptions"
     :table-filters="tableFilters"
   ></PaymentsFormDialog>
+
+  <CodeFormDialog
+    v-model:is-dialog-visible="isCodeFormDialogVisible"
+    @is-code-verified="onCodeVerified"
+  ></CodeFormDialog>
+
+  <ConfirmDialog
+    v-model:is-dialog-visible="isConfirmDeleteDialog"
+    title="Confirm Delete"
+    text="Are you sure you want to delete sales information?"
+    @confirm="onConfirmDelete"
+  ></ConfirmDialog>
 </template>
 
 <style scoped>

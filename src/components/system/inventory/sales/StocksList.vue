@@ -113,10 +113,10 @@ const onLoadItems = async ({ search, branch_id }) => {
 // Load Functions during component rendering
 onMounted(async () => {
   if (branchesStore.branches.length == 0) await branchesStore.getBranches()
+
+  const storedBranchId = Number(localStorage.getItem('stocksBranchId'))
   listFilters.value.branch_id =
-    Number(localStorage.getItem('stocksBranchId')) || branchesStore.branches.length > 0
-      ? branchesStore.branches[0].id
-      : null
+    storedBranchId || (branchesStore.branches.length > 0 ? branchesStore.branches[0].id : null)
 
   await onLoadItems(listFilters.value)
 })
