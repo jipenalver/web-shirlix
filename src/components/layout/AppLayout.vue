@@ -80,7 +80,7 @@ onMounted(async () => {
         app
       >
         <div :class="mobile ? 'w-100 text-center' : ''">
-          Copyright © 2024 - Shirlix Meatshop | All Rights Reserved
+          Copyright © {{ new Date().getFullYear() }} - Shirlix Meatshop | All Rights Reserved
         </div>
       </v-footer>
 
